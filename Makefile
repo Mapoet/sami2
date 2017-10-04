@@ -21,20 +21,25 @@ FCLOPT = $(PG_LOPT)
 default:
 
 .PHONY:default
-default: obj/hwm93.o
+default: obj/chapman.o
 
 
 obj:
 	mkdir $@
 
 
+obj/chapman.o:|obj
+obj/chapman.o:chapman.f90
+	$(FC) $(FCCOPT) -c -o $@ $^
+#chapman.f90:chapman.f
+#	cp $^ $@
 
 
 obj/nrlmsise00.o:|obj
 obj/nrlmsise00.o:nrlmsise00.f90
 	$(FC) $(FCCOPT) -c -o $@ $^
 #nrlmsise00.f90:nrlmsise00.f
-#	cp nrlmsise00.f nrlmsise00.f90
+#	cp $^ $@
 
 obj/hwm93.o:|obj
 obj/hwm93.o:hwm93.f90
