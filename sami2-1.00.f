@@ -2445,7 +2445,7 @@
         hrut = hrut + 24.
       enddo
 
-      do while ( hrut. ge. 24. )
+      do while ( hrut .ge. 24. )
         hrut = hrut - 24.
       enddo
 
