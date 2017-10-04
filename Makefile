@@ -1,48 +1,4 @@
 
-PG_COMPILER=pgfortran
-
-PG_COPT  =
-PG_COPT += -Minfo -fast
-
-PG_LOPT  =
-PG_LOPT +=-acclibs
-
-
-
-
-
-FC=$(PG_COMPILER)
-
-
-FCCOPT = $(PG_COPT)
-FCLOPT = $(PG_LOPT)
-
-
-default:
-
-.PHONY:default
-default: obj/hwm93.o
-
-
-obj:
-	mkdir $@
-
-
-
-
-obj/nrlmsise00.o:|obj
-obj/nrlmsise00.o:nrlmsise00.f90
-	$(FC) $(FCCOPT) -c -o $@ $^
-#nrlmsise00.f90:nrlmsise00.f
-#	cp nrlmsise00.f nrlmsise00.f90
-
-obj/hwm93.o:|obj
-obj/hwm93.o:hwm93.f90
-	$(FC) $(FCCOPT) -c -o $@ $^
-#hwm93.f90:hwm93.f
-#	cp $^ $@
-
-
 OBJ= hwm93.o nrlmsise00.o grid-1.00.o sami2-1.00.o
 
 # Uncomment the compiler you want to use
