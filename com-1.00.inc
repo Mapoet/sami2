@@ -1,25 +1,25 @@
-*******************************************
-*******************************************
+!*******************************************
+!*******************************************
 
 !            COM-1.00.INC
 
-*******************************************
-*******************************************
+!*******************************************
+!*******************************************
 
 !     namelist data
 
       logical fejer,fmtout
       real snn(nneut)
 
-      common / nmlst / fmtout,maxstep,hrmax,dt0,dthr,hrpr,
-     .                 grad_in,glat_in,glon_in,
-     .                 fejer,
-     .                 rmin,rmax,
-     .                 altmin,
-     .                 fbar,f10p7,ap,
-     .                 year,day,mmass,
-     .                 nion1,nion2,hrinit,tvn0,tvexb0,ve01,
-     .                 gams,gamp,snn,stn,denmin,alt_crit,cqe
+      common / nmlst / fmtout,maxstep,hrmax,dt0,dthr,hrpr,&
+                       grad_in,glat_in,glon_in,&
+                       fejer,&
+                       rmin,rmax,&
+                       altmin,&
+                       fbar,f10p7,ap,&
+                       year,day,mmass,&
+                       nion1,nion2,hrinit,tvn0,tvexb0,ve01,&
+                       gams,gamp,snn,stn,denmin,alt_crit,cqe
 
 
 !     s grid data
@@ -34,14 +34,14 @@
       real xnormp(nz,nfp1),ynormp(nz,nfp1),znormp(nz,nfp1)
       real arg(nz,nf),athg(nz,nf),aphig(nz,nf)
 
-      common / sgrid / alts,grs,glats,glons,
-     .                 bms,gs,ps,blats,
-     .                 ds,d2s,d22s,
-     .                 dels,
-     .                 grad_inp,
-     .                 xnorms,ynorms,znorms,
-     .                 xnormp,ynormp,znormp,coschicrit,
-     .                 arg,athg,aphig
+      common / sgrid / alts,grs,glats,glons,&
+                       bms,gs,ps,blats,&
+                       ds,d2s,d22s,&
+                       dels,&
+                       grad_inp,&
+                       xnorms,ynorms,znorms,&
+                       xnormp,ynormp,znormp,coschicrit,&
+                       arg,athg,aphig
 
 !       alts     altitude  (in km) on s mesh
 !       grs      radial geographic distance to field line on s mesh
@@ -60,11 +60,11 @@
       real xdels(nz,nfp1,2),xdelp(nzp1,nf,2)
       real vexbs(nzp1,nf),vexbp(nz,nfp1),vexb(nzp1,nfp1)
 
-      common / pgrid / delsp,vol,
-     .                 areap,areas,
-     .                 vnx,vny,vnz,
-     .                 xdels,xdelp,
-     .                 vexbs,vexbp,vexb
+      common / pgrid / delsp,vol,&
+                       areap,areas,&
+                       vnx,vny,vnz,&
+                       xdels,xdelp,&
+                       vexbs,vexbp,vexb
 
 !     delsp      actual arc length of grid in s direction on p grid
 !     vol        volume (i.e., area) of cell
@@ -84,8 +84,8 @@
       real te(nz,nf),ti(nz,nf,nion),tn(nz,nf)
       real u(nz,nf),v(nz,nf),vpi(nz,nf)
 
-      common / var / deni,denn,ne,te,ti,tn,u,v,vsi,vsid
-     .              ,sumvsi,vpi,vsic,ftc,dt
+      common / var / deni,denn,ne,te,ti,tn,u,v,vsi,vsid&
+                    ,sumvsi,vpi,vsic,ftc,dt
 
 !     velocity in radial (vor) and theta (vot) directions 
 
@@ -113,8 +113,8 @@
       real sigint(linesnt,7),fluxnt(nz,nf,91,linesnt)
       real thetant(linesnt,4),zaltnt(linesnt,2)
 
-      common / photdep / sigabsdt,flux,sigidt,
-     .                   sigint,fluxnt,thetant,zaltnt
+      common / photdep / sigabsdt,flux,sigidt,&
+                         sigint,fluxnt,thetant,zaltnt
 
 !     diagnostic variables
 

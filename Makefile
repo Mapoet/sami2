@@ -2,10 +2,20 @@
 PG_COMPILER=pgfortran
 
 PG_COPT  =
-PG_COPT += -Minfo -fast
+PG_COPT += -acc=autopar
+PG_COPT += -Minfo
+PG_COPT += -Mprof
+PG_COPT += -Mconcur
+PG_COPT += -Mpfi
+PG_COPT += -Mpfo
+#PG_COPT += -fast
 
 PG_LOPT  =
-PG_LOPT +=-acclibs
+PG_LOPT += -acclibs
+PG_LOPT += -Mprof
+PG_LOPT += -Mconcur
+PG_LOPT += -Mpfi
+PG_LOPT += -Mpfo
 
 
 
@@ -21,11 +31,38 @@ FCLOPT = $(PG_LOPT)
 default:
 
 .PHONY:default
-default: obj/chapman.o
+default: sami2.x
+.PHONY: clean
+clean:
+	rm -rf obj
+	rm -rf build
+.PHONY:sami2.x
+sami2.x: build/sami2.x
 
 
-obj:
+build/sami2.x:|build
+build/sami2.x:|build/*.inp build/sami2-1.00.namelist
+build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o
+	$(FC) $(FCLOPT) -o $@ $^
+
+obj build:
 	mkdir $@
+build/*.inp:
+	cp *.inp build/
+build/sami2-1.00.namelist:sami2-1.00.namelist
+	cp $^ $@
+obj/sami2-1.00.o:|obj
+obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc
+	$(FC) $(FCCOPT) -c -o $@ $<
+#sami2-1.00.f90:sami2-1.00.f
+#	cp $^ $@
+
+
+obj/grid-1.00.o:|obj
+obj/grid-1.00.o:grid-1.00.f90 com-1.00.inc param-1.00.inc
+	$(FC) $(FCCOPT) -c -o $@ $<
+#grid-1.00.f90:grid-1.00.f
+#	cp $^ $@
 
 
 obj/chapman.o:|obj
@@ -46,38 +83,4 @@ obj/hwm93.o:hwm93.f90
 	$(FC) $(FCCOPT) -c -o $@ $^
 #hwm93.f90:hwm93.f
 #	cp $^ $@
-
-
-OBJ= hwm93.o nrlmsise00.o grid-1.00.o sami2-1.00.o
-
-# Uncomment the compiler you want to use
-
-#   1. Absoft
-
-#  f77 = f77 -s -O3 -g
-
-#    2. Lahey
-
-# f77 = lf95  --sav -O
-
-#    3. Portland Group
-
-# f77 = pgf77 -Msave -fast
-
-#    4. intel
-
-  f77 = ifort -save -O2 -vec_report0
-
-.f.o:
-	$(f77) -c $*.f
-#
-sami2.x:    $(OBJ)
-	$(f77)  -o sami2.x   $(OBJ)
-#
-clean:
-	rm *.x *.o
-#
-$(OBJ): com-1.00.inc
-$(OBJ): param-1.00.inc
-
 

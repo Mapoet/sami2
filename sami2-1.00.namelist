@@ -30,6 +30,7 @@
   stn      =    1.,
   denmin   =    1.e-6,
   alt_crit =    150.,
-  cqe      =   7.e-14,
- &end
+  cqe      =   7.e-14
+  /
+
 
