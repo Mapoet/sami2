@@ -50,17 +50,6 @@
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
 
-!     open input files
-
-      open ( unit=10, file='sami2-1.00.namelist'  )
-      open ( unit=20, file='deni-init.inp'        )
-      open ( unit=30, file='ichem.inp'            )
-      open ( unit=50, file='phabsdt.inp'          )
-      open ( unit=60, file='phiondt.inp'          )
-      open ( unit=61, file='phionnt.inp'          )
-      open ( unit=65, file='euvflux.inp'          )
-      open ( unit=66, file='thetant.inp'          )
-      open ( unit=67, file='zaltnt.inp'           )
 
       call initial
   
@@ -76,15 +65,6 @@
       istep = 0
 !      call output ( hrinit,ntm,istep )
 
-      close (10)
-      close (20)
-      close (30)
-      close (50)
-      close (60)
-      close (61)
-      close (65)
-      close (66)
-      close (67)
       close (68)
 
 !     time loop
@@ -197,6 +177,22 @@
                       year,day,mmass,&
                       nion1,nion2,hrinit,tvn0,tvexb0,ve01,&
                       gams,gamp,snn,stn,denmin,alt_crit,cqe
+
+
+
+!     open input files
+
+      open ( unit=10, file='input\/sami2-1.00.namelist'  )
+      open ( unit=20, file='input\/deni-init.inp'        )
+      open ( unit=30, file='input\/ichem.inp'            )
+      open ( unit=50, file='input\/phabsdt.inp'          )
+      open ( unit=60, file='input\/phiondt.inp'          )
+      open ( unit=61, file='input\/phionnt.inp'          )
+      open ( unit=65, file='input\/euvflux.inp'          )
+      open ( unit=66, file='input\/thetant.inp'          )
+      open ( unit=67, file='input\/zaltnt.inp'           )
+
+
 
 
 !     read in parameters and initial ion density data 
@@ -538,6 +534,21 @@
           enddo
         enddo
       enddo
+
+
+
+
+
+!         close opened files
+      close (10)
+      close (20)
+      close (30)
+      close (50)
+      close (60)
+      close (61)
+      close (65)
+      close (66)
+      close (67)
 
       print *,' finished initialization'
 
