@@ -3,7 +3,7 @@ PG_COMPILER=pgfortran
 
 PG_COPT  =
 PG_COPT += -acc=autopar
-PG_COPT += -Minfo
+#PG_COPT += -Minfo
 PG_COPT += -Mprof
 PG_COPT += -Mconcur
 PG_COPT += -Mpfi
@@ -41,14 +41,15 @@ sami2.x: build/sami2.x
 
 
 build/sami2.x:|build
-build/sami2.x:|build/*.inp build/sami2-1.00.namelist
+build/sami2.x:|build/input
 build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o
 	$(FC) $(FCLOPT) -o $@ $^
 
 obj build:
 	mkdir $@
-build/*.inp:
-	cp *.inp build/
+build/input:input
+	cp -r $^ $@
+input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
 build/sami2-1.00.namelist:sami2-1.00.namelist
 	cp $^ $@
 obj/sami2-1.00.o:|obj
