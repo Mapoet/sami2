@@ -9,7 +9,6 @@ use parameters
 !*******************************************
 
 !     namelist data
-     !integer,parameter::nz=100,nf=100,nneut=7
       logical fejer,fmtout
       real snn(nneut)
 
@@ -92,5 +91,7 @@ use parameters
       real x0,y0,z0,plat,plon,bb0
  
       
+
+
 
 end module commons
