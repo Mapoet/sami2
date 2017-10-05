@@ -56,7 +56,7 @@ build/input:input
 build/sami2-1.00.namelist:sami2-1.00.namelist
 	cp $^ $@
 obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod
-obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc
+obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
 #sami2-1.00.f90:sami2-1.00.f
 #	cp $^ $@
