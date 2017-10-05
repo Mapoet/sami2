@@ -9,6 +9,7 @@ PG_COPT += -Mconcur
 PG_COPT += -Mpfi
 PG_COPT += -Mpfo
 #PG_COPT += -fast
+PG_COPT += -module obj 
 
 PG_LOPT  =
 PG_LOPT += -acclibs
@@ -16,6 +17,7 @@ PG_LOPT += -Mprof
 PG_LOPT += -Mconcur
 PG_LOPT += -Mpfi
 PG_LOPT += -Mpfo
+
 
 
 
@@ -44,20 +46,30 @@ build/sami2.x:|build
 build/sami2.x:|build/input
 build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o
 	$(FC) $(FCLOPT) -o $@ $^
+	cp $@ build/sami2.exe
 
 obj build:
 	mkdir $@
 build/input:input
 	cp -r $^ $@
-input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
+#input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
 build/sami2-1.00.namelist:sami2-1.00.namelist
 	cp $^ $@
-obj/sami2-1.00.o:|obj
+obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
 #sami2-1.00.f90:sami2-1.00.f
 #	cp $^ $@
 
+obj/parameters.mod:obj/param-1.00.o
+obj/param-1.00.o:|obj
+obj/param-1.00.o:param-1.00.f90
+	$(FC) $(FCCOPT) -c -o $@ $<
+
+obj/commons.mod:obj/com-1.00.o
+obj/com-1.00.o:|obj
+obj/com-1.00.o:com-1.00.f90
+	$(FC) $(FCCOPT) -c -o $@ $<
 
 obj/grid-1.00.o:|obj
 obj/grid-1.00.o:grid-1.00.f90 com-1.00.inc param-1.00.inc
