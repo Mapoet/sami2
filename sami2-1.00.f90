@@ -1,8 +1,8 @@
 !     *******************************************
 !     *******************************************
- 
-!                  SAMI2-1.00
-
+!
+!                  SAMI2_MPI-1.00_HEATING
+!
 !     *******************************************
 !     *******************************************
 
@@ -229,9 +229,11 @@
       alpha0(ptno) = 1.74
       alpha0(pto2) = 1.59
 
-      do i = 1,7
-        aap(i) = ap
-      enddo
+!      do i = 1,7
+!        aap(i) = ap
+!      enddo
+
+      aap = ap
 
 !     read in initial density data
 
@@ -255,8 +257,8 @@
         do j = 1,nneut
           do i = nion1,nion2
             ireact(i,j,k) = 0
-            if (      i .eq. ichem(k,1) &
-                .and. j .eq. ichem(k,2) ) ireact(i,j,k) = 1.
+            if (      i .eq. ichem(k,1)&
+               .and. j .eq. ichem(k,2) ) ireact(i,j,k) = 1.
           enddo
         enddo
       enddo
@@ -294,13 +296,13 @@
 ! MS: chicrit is the zenith angle below which the Sun is visible.
 ! For points on the surface this is just pi/2, but at higher
 ! altitudes it is bigger.
-       
-      do j = 1,nf
-        do i = 1,nz
-          coschicrit(i,j) = cos(pie - &
-                      asin( 1./ (1. + alts(i,j)/re) ))
+
+        do j = 1,nf
+          do i = 1,nz
+            coschicrit(i,j) = cos(pie -&
+                       asin( 1./ (1. + alts(i,j)/re) ))
+          enddo
         enddo
-      enddo
 
 
 !     put deni on mesh via linear interpolation
@@ -344,14 +346,13 @@
 
 !     neutral density and temperature
 
-
       do j = 1,nf
         do i = 1,nz
           hrl = hrinit + glons(i,j) / 15.
           if ( hrl .ge. 24. ) hrl = hrl - 24.
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gtd7 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
-                      hrl,fbar,f10p7,aap,mmass,d,temp )
+                     hrl,fbar,f10p7,aap,mmass,d,temp )
 
           denn(i,j,pth )  = snn(pth)  * d(7)
           denn(i,j,pthe)  = snn(pthe) * d(1)
@@ -360,9 +361,9 @@
           denn(i,j,ptn2)  = snn(ptn2) * d(3) + 1.e-30
           denn(i,j,pto2)  = snn(pto2) * d(4) + 1.e-30
           tn(i,j)         = stn * temp(2)
-          denn(i,j,ptno)  = 0.4 * exp( -3700. / tn(i,j) )& 
-                            * denn(i,j,pto2) &
-                            + 5.0e-7 * denn(i,j,pto) 
+          denn(i,j,ptno)  = 0.4 * exp( -3700. / tn(i,j) )&
+                           * denn(i,j,pto2)&
+                           + 5.0e-7 * denn(i,j,pto)
         enddo
       enddo
 
@@ -376,13 +377,13 @@
           enddo
         enddo
       enddo
+!     initialize ion velocity to zero
 
-!     initialize ion velocity to zero 
 
       do k = nion1,nion2
         do j = 1,nf
           do i = 1,nz
-            vsi(i,j,k)     = 0. 
+            vsi(i,j,k)     = 0.
             sumvsi(i,j,k)  = 0.
           enddo
         enddo
@@ -398,7 +399,7 @@
           if ( hrl .ge. 24. ) hrl = hrl - 24.
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gws5 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
-                      hrl,fbar,f10p7,app,whm93                )
+                     hrl,fbar,f10p7,app,whm93                )
           v(i,j)   = 100. * whm93(1)
           u(i,j)   = 100. * whm93(2)
         enddo
@@ -411,7 +412,7 @@
  105    format (3f7.2) 
       enddo 
 
-      do j = 1,3 
+      do j = 1,3
         do i = 1,linesuv
           sigabsdt(i,j) = tm18 * sigabsdt(i,j) 
         enddo 
@@ -565,8 +566,6 @@
       real d(9),temp(2)
       real whm93(2),app(2)
 
-
-
 !     no obtained from eq. (128) - bailey and balan (red book)
 
 !     neutral density and temperature
@@ -612,7 +611,7 @@
           if ( hrl .ge. 24. ) hrl = hrl - 24.
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gtd7 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
-                      hrl,fbar,f10p7,aap,mmass,d,temp )
+                     hrl,fbar,f10p7,aap,mmass,d,temp )
           denn(i,j,pth )  = snn(pth)  * d(7)
           denn(i,j,pthe)  = snn(pthe) * d(1)
           denn(i,j,ptn )  = snn(ptn)  * d(8)
@@ -620,9 +619,9 @@
           denn(i,j,ptn2)  = snn(ptn2) * d(3) + 1.e-30
           denn(i,j,pto2)  = snn(pto2) * d(4) + 1.e-30
           tn(i,j)         = stn * temp(2)
-          denn(i,j,ptno)  = 0.4 * exp( -3700. / tn(i,j) ) &
-                            * denn(i,j,pto2) &
-                            + 5.0e-7 * denn(i,j,pto) 
+          denn(i,j,ptno)  = 0.4 * exp( -3700. / tn(i,j) )&
+                           * denn(i,j,pto2)&
+                           + 5.0e-7 * denn(i,j,pto)
         enddo
       enddo
 
@@ -655,7 +654,7 @@
           if ( hrl .ge. 24. ) hrl = hrl - 24.
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gws5 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
-                      hrl,fbar,f10p7,app,whm93                )
+                     hrl,fbar,f10p7,app,whm93                )
           v(i,j)   = 100. * whm93(1) ! convert to cm/sec
           u(i,j)   = 100. * whm93(2) ! convert to cm/sec
         enddo
@@ -678,12 +677,12 @@
       include 'com-1.00.inc'
 
       real prod(nz,nion),loss(nz,nion),lossr,&
-           phprodr(nz,nion),chrate(nz,nchem),&
-           chloss(nz,nion),chprod(nz,nion),relossr(nz,nion)
+          phprodr(nz,nion),chrate(nz,nchem),&
+          chloss(nz,nion),chprod(nz,nion),relossr(nz,nion)
       real deni_old(nz,nion),te_old(nz),ti_old(nz,nion),vsi_old(nz,nion)
       real tvn(nz)
       real nuin(nz,nion,nneut),&
-           nuij(nz,nion,nion),sumnuj(nz,nion)
+          nuij(nz,nion,nion),sumnuj(nz,nion)
       real vsin(nz,nion),vsidn(nz,nion),denin(nz,nion)
       real ten(nz),tin(nz,nion)
 
@@ -716,20 +715,21 @@
           vsi_old(i,j)  = vsi(i,nfl,j)
         enddo
 
-       enddo 
+      enddo
+
 
        call photprod ( cx,phprodr,nfl   )         ! calculates phprodr
        call chemrate ( chrate,nfl               ) ! calculates chrate
        call chempl   ( chrate,chloss,chprod,nfl ) ! calcualtes chloss,chprod
        call recorate ( relossr,nfl              ) ! calculates relossr
 
-       do i = 1,nz      
+       do i = 1,nz
 
         do j = nion1,nion2
           prod  (i,j) =  phprodr(i,j) * denn(i,nfl,j)&
-                         + chprod(i,j)
-          lossr       =  relossr(i,j) * deni(i,nfl,j) * ne(i,nfl) &
-                         + chloss(i,j)
+                        + chprod(i,j)
+          lossr       =  relossr(i,j) * deni(i,nfl,j) * ne(i,nfl)&
+                        + chloss(i,j)
           loss (i,j)  =  lossr / deni(i,nfl,j)
         enddo
 
@@ -737,10 +737,10 @@
 !       modified 9/19/05 (MS)
 
         gs(i)   =  gzero * arg(i,nfl)&
-                   * ( re / (re + alts(i,nfl)) ) ** 2
+                  * ( re / (re + alts(i,nfl)) ) ** 2
 
-        tvn(i)  = (  v(i,nfl) * athg(i,nfl) &
-                   - u(i,nfl) * aphig(i,nfl) )
+        tvn(i)  = (  v(i,nfl) * athg(i,nfl)&
+                  - u(i,nfl) * aphig(i,nfl) )
 
         tvn(i)    = tvn0 * tvn(i) ! tvn0 used to modify tvn
 
@@ -756,8 +756,8 @@
         do nni = nion1,nion2
           sumvsi(i,nfl,nni) = 0.
           do nj = nion1,nion2
-          sumvsi(i,nfl,nni) =   sumvsi(i,nfl,nni) &
-                           + nuij(i,nni,nj)*vsi(i,nfl,nj)
+          sumvsi(i,nfl,nni) =   sumvsi(i,nfl,nni)&
+                          + nuij(i,nni,nj)*vsi(i,nfl,nj)
           enddo
         enddo
       enddo
@@ -777,7 +777,7 @@
       do ni = nion1,nion2
 
         call vsisolv ( vsin(1,ni),vsidn(1,ni),vsi_old(1,ni)&
-                      ,sumnuj(1,ni),nfl )
+                     ,sumnuj(1,ni),nfl )
 
 ! compensating filter
 
@@ -803,7 +803,7 @@
         endif
 
         call densolv2 ( ni,denin(1,ni)&
-             ,prod(1,ni),loss(1,ni),deni_old(1,ni),nfl )
+            ,prod(1,ni),loss(1,ni),deni_old(1,ni),nfl )
 
 !       put stuff back into density array
 
@@ -832,7 +832,6 @@
       enddo
 
 !     temperatures (with floors and warnings)
-
       call etemp  (ten,te_old,phprodr,nfl)
       do i = 1,nz
         te(i,nfl)  = amax1(tn(i,nfl),ten(i))
@@ -848,7 +847,7 @@
         ti(i,nfl,pthp)  = amax1(tn(i,nfl),tin(i,pthp))
         ti(i,nfl,pthp)  = amin1(ti(i,nfl,pthp),1.e4)
         if ( ti(i,nfl,pthp) .lt. 0 ) then
-          print *,' T(H) negative: i,nfl',i,nfl 
+          print *,' T(H) negative: i,nfl',i,nfl
           stop
         endif
       enddo
@@ -858,7 +857,7 @@
         ti(i,nfl,pthep)  = amax1(tn(i,nfl),tin(i,pthep))
         ti(i,nfl,pthep)  = amin1(ti(i,nfl,pthep),1.e4)
         if ( ti(i,nfl,pthep) .lt. 0 ) then
-          print *,' T(He) negative: i,nfl',i,nfl 
+          print *,' T(He) negative: i,nfl',i,nfl
           stop
         endif
       enddo
@@ -868,7 +867,7 @@
         ti(i,nfl,ptop)  = amax1(tn(i,nfl),tin(i,ptop))
         ti(i,nfl,ptop)  = amin1(ti(i,nfl,ptop),1.e4)
         if ( ti(i,nfl,ptop) .lt. 0 ) then
-          print *,' T(O) negative: i,nfl',i,nfl 
+          print *,' T(O) negative: i,nfl',i,nfl
           stop
         endif
       enddo
@@ -892,7 +891,7 @@
 !*******************************************
 !*******************************************
 
-!     photoproduction rates 
+!     photoproduction rates
 
       subroutine photprod ( cxl,phprodr,nfl )
 
@@ -922,14 +921,14 @@
          idx(3) = pto2
 
          rp    = alts(iz,nfl) + re
-         rp2   = rp * rp  
-         
+         rp2   = rp * rp
+
 !         if ( coschi .ge. 0. ) then ! sun is up
          if ( coschi .ge. coschicrit(iz,nfl) ) then ! sun is up
 
-!     daytime deposition 
+!     daytime deposition
 
-            do i = 1,3 
+            do i = 1,3
                hscale   = hcof * tn(iz,nfl) * rp2 / amn(idx(i))
                xscale   = rp / hscale
                y1       = sqrt ( .5 * xscale ) * abs(coschi)
@@ -939,11 +938,11 @@
             enddo
 
             do l=1,linesuv
-               exa =   xmass(1) * sigabsdt(l,1) &
-                    + xmass(2) * sigabsdt(l,2) &
-                    + xmass(3) * sigabsdt(l,3)
+               exa =   xmass(1) * sigabsdt(l,1)&
+                   + xmass(2) * sigabsdt(l,2)&
+                   + xmass(3) * sigabsdt(l,3)
                if(exa .gt. 35.) exa = 35.
-               flx = flux(l) * exp(-exa) 
+               flx = flux(l) * exp(-exa)
                do j=nion1,nion2
                   phprodr(iz,j) = phprodr(iz,j) + sigidt(l,j) * flx
                enddo
@@ -958,8 +957,8 @@
             itheta = int ( amax1 ( float(itheta), 1. ) )
             do l = 1,linesnt
                do j=nion1,nion2
-                  phprodr(iz,j) =   phprodr(iz,j) &
-                       + sigint(l,j) * fluxnt(iz,nfl,itheta,l)
+                  phprodr(iz,j) =   phprodr(iz,j)&
+                      + sigint(l,j) * fluxnt(iz,nfl,itheta,l)
                enddo
             enddo
 
@@ -991,8 +990,8 @@
 
       ti300o = ti(iz,nfl,ptop) / 300.
 
-      chrate (iz,1) = 2.2e-11 &
-                  * sqrt( ti(iz,nfl,pthp) )       ! h+ + o --> o+ + h (bb)
+      chrate (iz,1) = 2.2e-11&
+                 * sqrt( ti(iz,nfl,pthp) )       ! h+ + o --> o+ + h (bb)
 
       chrate (iz,2) = 3.5e-10                        ! he+ + n2 --> n2+ + he (bb)
 
@@ -1010,9 +1009,9 @@
 
       chrate (iz,9) = 2.0e-11                        ! n+ + no --> no+ + o (schunk)
 
-      chrate(iz,10) = 2.5e-11 &
-                   * sqrt( tn(iz,nfl) )           ! o+ + h --> h+ + o   (bb)
- 
+      chrate(iz,10) = 2.5e-11&
+                  * sqrt( tn(iz,nfl) )           ! o+ + h --> h+ + o   (bb)
+
       chrate(iz,11) = 1.533e-12 -&
                    5.920e-13 * ti300o +&
                    8.600e-14 * ti300o ** 2                    ! o+ + n2 --> no+ + n (bb)&
@@ -1059,7 +1058,7 @@
 !*******************************************
 !*******************************************
 
-!     recombination rates 
+!     recombination rates
 !     bb: bailley and balan (red book, 1996)
 
       subroutine recorate ( relossr,nfl )
@@ -1073,7 +1072,7 @@
 
         te300 = te(iz,nfl) / 300.
 
-        relossr(iz,pthp)  = 4.43e-12 / te300 ** .7 
+        relossr(iz,pthp)  = 4.43e-12 / te300 ** .7
         relossr(iz,pthep) = relossr(iz,pthp)
         relossr(iz,ptnp)  = relossr(iz,pthp)
         relossr(iz,ptop)  = relossr(iz,pthp)
@@ -1093,12 +1092,12 @@
 
 !*******************************************
 !*******************************************
-        
+
 !     chemical loss (chloss) and production (chprod)
 
 !     chrate: chemical reaction rates calculated in chemrate
 !     ichem: input data file showing loss, neutral, production
-!            species for each reaction 
+!            species for each reaction
 
       subroutine chempl ( chrate,chloss,chprod,nfl )
 
@@ -1122,7 +1121,7 @@
            chem  = denn(iz,nfl,in) * chrate(iz,k)
            tdeni = deni(iz,nfl,il) * chem
            chloss(iz,il) = tdeni + chloss(iz,il)
-           chprod(iz,ip) = tdeni + chprod(iz,ip)           
+           chprod(iz,ip) = tdeni + chprod(iz,ip)
         enddo
       enddo
 
@@ -1152,14 +1151,17 @@
 
 !     initialize everything to 0
 
-      do nn = 1,nneut
-        do ni = nion1,nion2
-          do iz = 1,nz
-            nuin (iz,ni,nn) = 0.
-            nuint(iz,ni)    = 0.
-          enddo
-        enddo
-      enddo
+!      do nn = 1,nneut
+!        do ni = nion1,nion2
+!          do iz = 1,nz
+!            nuin (iz,ni,nn) = 0.
+!            nuint(iz,ni)    = 0.
+!          enddo
+!        enddo
+!      enddo
+
+      nuin = 0.
+      nuint = 0.
 
 !     collision frequencies/factors
 
@@ -1169,7 +1171,6 @@
       do nn = 1,nneut
          do i = 1,nz
           if ( nn .eq. pto ) then
-
 !     MS: According to both the SAMI2 paper and the red book the
 !     temperature used here should be the H+ temperature, and not the
 !     hybrid used in the other terms. I've changed that.
@@ -1187,7 +1188,7 @@
           endif
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     helium (He)
 
@@ -1200,7 +1201,7 @@
           nuin(i,ni,nn) = nufacin * denn(i,nfl,nn)
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     nitrogen (N)
 
@@ -1213,7 +1214,7 @@
           nuin(i,ni,nn) = nufacin * denn(i,nfl,nn)
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     oxygen (O)
 
@@ -1233,7 +1234,7 @@
           endif
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     nitrogen 2(N2)
 
@@ -1256,7 +1257,7 @@
           endif
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     nitrous oxide (N0)
 
@@ -1269,7 +1270,7 @@
           nuin(i,ni,nn) = nufacin * denn(i,nfl,nn)
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     oxygen 2(O2)
 
@@ -1289,26 +1290,27 @@
           endif
           nuint(i,ni) = nuint(i,ni) + nuin(i,ni,nn)
         enddo
-      enddo      
+      enddo
 
 !     ion-ion collision frequency
 
-      do nj = nion1,nion2
-        do ni = nion1,nion2
-          do i = 1,nz
-            nuij(i,ni,nj) = 0.
-          enddo
-        enddo
-      enddo
+!      do nj = nion1,nion2
+!        do ni = nion1,nion2
+!          do i = 1,nz
+!            nuij(i,ni,nj) = 0.
+!          enddo
+!        enddo
+!      enddo
+	nuij = 0.
 
       do nj = nion1,nion2
         do ni = nion1,nion2
           if ( ni .ne. nj ) then
              do i = 1,nz
               alame1  = ( ami(ni) + ami(nj) ) * evtok /&
-                      ( ami(ni)*ti(i,nfl,nj) + ami(nj)*ti(i,nfl,ni) ) 
+                     ( ami(ni)*ti(i,nfl,nj) + ami(nj)*ti(i,nfl,ni) )
               alame2  = deni(i,nfl,ni) * evtok / ti(i,nfl,ni) +&
-                        deni(i,nfl,nj) * evtok / ti(i,nfl,nj)
+                       deni(i,nfl,nj) * evtok / ti(i,nfl,nj)
               if ( alame2 .lt. 0 ) then
                 print *,'ni,i,nj,nfl,tii,tij,alame1,alame2,nii,nij',&
                          ni,i,nj,nfl,ti(i,nfl,ni),ti(i,nfl,nj),&
@@ -1327,7 +1329,6 @@
           endif
         enddo
       enddo
-
 
  100  format(1x,2e12.2)
 
@@ -1379,32 +1380,32 @@
           k0    = bolt / mi
           term1 = nuint(i,ni) * tvn(i) + sumvsi(i,nfl,ni) + gs(i)
           pip   = 0.5 * (   deni(i+1,nfl,ni) * ti(i+1,nfl,ni)&
-                          + deni(i,nfl,ni)   * ti(i,nfl,ni)   )
+                         + deni(i,nfl,ni)   * ti(i,nfl,ni)   )
           pim   = 0.5 * (   deni(i,nfl,ni)   * ti(i,nfl,ni)&
-                          + deni(i-1,nfl,ni) * ti(i-1,nfl,ni) )
-          denid = &
-                   (        deni(i-1,nfl,ni) &
-                     + 4. * deni(i,nfl,ni) &
-                     +      deni(i+1,nfl,ni)  ) / 6.
+                         + deni(i-1,nfl,ni) * ti(i-1,nfl,ni) )
+          denid =&
+                  (        deni(i-1,nfl,ni)&
+                    + 4. * deni(i,nfl,ni)&
+                    +      deni(i+1,nfl,ni)  ) / 6.
           term2 =  - bms(i,nfl) * k0 /  denid&
-                   * ( pip - pim ) / d22s(i,nfl)
+                  * ( pip - pim ) / d22s(i,nfl)
           pep   = 0.5 * (   ne(i+1,nfl) * te(i+1,nfl)&
-                          + ne(i,nfl)   * te(i,nfl)   )
+                         + ne(i,nfl)   * te(i,nfl)   )
           pem   = 0.5 * (   ne(i,nfl)   * te(i,nfl)&
-                          + ne(i-1,nfl) * te(i-1,nfl) )
-          dened = &
-        ( ne(i-1,nfl) + 4. * ne(i,nfl) + ne(i+1,nfl) ) / 6.
+                         + ne(i-1,nfl) * te(i-1,nfl) )
+          dened =&
+       ( ne(i-1,nfl) + 4. * ne(i,nfl) + ne(i+1,nfl) ) / 6.
           term3 =  - bms(i,nfl) * k0 /  dened&
-                   * ( pep - pem ) / d22s(i,nfl)
+                  * ( pep - pem ) / d22s(i,nfl)
 
-          vsid(i,nfl,ni)  =  term1 + term2 + term3 
+          vsid(i,nfl,ni)  =  term1 + term2 + term3
 
           if ( deni(i,nfl,ni) .le. .0001*ne(i,nfl) ) &
             vsid(i,nfl,ni) =   vsid(i,nfl,ni) &
                              * exp ( -.0001*ne(i,nfl)/deni(i,nfl,ni) )
 
         enddo
-      enddo 
+      enddo
 
 !     fix up end points for vsid
 
@@ -1413,7 +1414,7 @@
         vsid (nz,nfl,ni)   = vsid (nz-1,nfl,ni)
       enddo
 
-!     calculate collisional ion velocity 
+!     calculate collisional ion velocity
 !     not used; simply a diagnostic
 
 !      do i = 1,nz
@@ -1446,43 +1447,52 @@
 
       convfac = amu / bolt / 3.
 
-      do i = 1,nz
-        s1i(i)  = 0.
-        s2i(i)  = 0.
-        s3i(i)  = 0.
-        s4i(i)  = 0.
-        s5i(i)  = 0.
-        s6i(i)  = 0.
-        s7i(i)  = 0.
-        kapi(i) = 0.
-      enddo
+!      do i = 1,nz
+!        s1i(i)  = 0.
+!        s2i(i)  = 0.
+!        s3i(i)  = 0.
+!        s4i(i)  = 0.
+!        s5i(i)  = 0.
+!        s6i(i)  = 0.
+!        s7i(i)  = 0.
+!        kapi(i) = 0.
+!      enddo
+
+      s1i = 0.
+      s2i = 0.
+      s3i = 0.
+      s4i = 0.
+      s5i = 0.
+      s6i = 0.
+      s7i = 0.
+      kapi = 0.
 
       do i = 1,nz
 
         kapi(i) = 4.6e+4 * sqrt ( ti(i,nfl,pthp)**5 ) / ne(i,nfl) *&
-                  deni(i,nfl,pthp) / sqrt(ami(pthp))
+                 deni(i,nfl,pthp) / sqrt(ami(pthp))
 
-        kapi(i)  = 0.6667 * kapi(i) * evtok 
+        kapi(i)  = 0.6667 * kapi(i) * evtok
 
 !       neutrals
 
         do nn = 1,nneut
-          redmass = &
-           ami(pthp) * amn(nn) / ( ami(pthp) + amn(nn) ) ** 2 
-          s2i(i) = s2i(i) + 2. * nuin(i,pthp,nn) * redmass 
+          redmass =&
+          ami(pthp) * amn(nn) / ( ami(pthp) + amn(nn) ) ** 2
+          s2i(i) = s2i(i) + 2. * nuin(i,pthp,nn) * redmass
           s3i(i) = s3i(i)&
-            + convfac * amn(nn) &
-                      * abs ( vsi(i,nfl,pthp) - tvn(i) ) ** 2 &
-            * 2. * nuin(i,pthp,nn) * redmass 
+           + convfac * amn(nn)&
+                     * abs ( vsi(i,nfl,pthp) - tvn(i) ) ** 2&
+           * 2. * nuin(i,pthp,nn) * redmass
         enddo
 
-        s1i(i) = s2i(i) * tn(i,nfl) 
+        s1i(i) = s2i(i) * tn(i,nfl)
 
-!       electrons 
+!       electrons
 
-        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(pthp) &
-                         / te(i,nfl) / sqrt(te(i,nfl))&
-                         * .66667 * evtok
+        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(pthp)&
+                        / te(i,nfl) / sqrt(te(i,nfl))&
+                        * .66667 * evtok
         s5i(i) = s4i(i) * te(i,nfl)
 
 !       other ions
@@ -1490,31 +1500,31 @@
         do ni = nion1,nion2
 !          if ( ni .ne. ptop ) then
           if ( ni .ne. pthp ) then
-            tfac    =    ti(i,nfl,pthp) / ami(pthp) &
-                      +  ti(i,nfl,ni) / ami(ni)
+            tfac    =    ti(i,nfl,pthp) / ami(pthp)&
+                     +  ti(i,nfl,ni) / ami(ni)
             xs6i    = 3.3e-4 * deni(i,nfl,ni) / ami(pthp) / ami(ni)&
-                      / tfac / sqrt(tfac) * .66667 * evtok
+                     / tfac / sqrt(tfac) * .66667 * evtok
             xs7i    = xs6i * ti(i,nfl,ni)
             s6i(i) = s6i(i) + xs6i
-            s7i(i) = s7i(i) + xs7i 
+            s7i(i) = s7i(i) + xs7i
           endif
         enddo
 
       enddo
 
-! MS: Neglected term, divergence of ExB drift 
-! Divergence of the ExB drift; requires equatorial drift 
+! MS: Neglected term, divergence of ExB drift
+! Divergence of the ExB drift; requires equatorial drift
 
-      nzh = (nz+1)/2 
+      nzh = (nz+1)/2
       vexbeq = vexb(nzh,nfl)
-      do i = 1,nz 
-        divvexb(i) = 6.*vexbeq / &
-                     (ps(i,nfl)*re*1.e5) * &
-                     cos(blats(i,nfl)*po180)**2 * &
-                     (1.+sin(blats(i,nfl)*po180)**2) / &
-                     (1.+3.*sin(blats(i,nfl)*po180)**2)**2 
+      do i = 1,nz
+        divvexb(i) = 6.*vexbeq /&
+                    (ps(i,nfl)*re*1.e5) *&
+                    cos(blats(i,nfl)*po180)**2 *&
+                    (1.+sin(blats(i,nfl)*po180)**2) /&
+                    (1.+3.*sin(blats(i,nfl)*po180)**2)**2
         s2i(i) = s2i(i) - 0.6667 * divvexb(i)
-      enddo 
+      enddo
 
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,pthp,nfl)
 
@@ -1540,42 +1550,51 @@
 
       convfac = amu / bolt / 3.
 
-      do i = 1,nz
-        s1i(i)  = 0.
-        s2i(i)  = 0.
-        s3i(i)  = 0.
-        s4i(i)  = 0.
-        s5i(i)  = 0.
-        s6i(i)  = 0.
-        s7i(i)  = 0.
-        kapi(i) = 0.
-      enddo
+!      do i = 1,nz
+!        s1i(i)  = 0.
+!        s2i(i)  = 0.
+!        s3i(i)  = 0.
+!        s4i(i)  = 0.
+!        s5i(i)  = 0.
+!        s6i(i)  = 0.
+!        s7i(i)  = 0.
+!        kapi(i) = 0.
+!      enddo
+
+      s1i = 0.
+      s2i = 0.
+      s3i = 0.
+      s4i = 0.
+      s5i = 0.
+      s6i = 0.
+      s7i = 0.
+      kapi = 0.
 
       do i = 1,nz
 
         kapi(i) = 4.6e+4 * sqrt ( ti(i,nfl,pthep)**5 ) / ne(i,nfl) *&
-                  deni(i,nfl,pthep) / sqrt(ami(pthep))
-        kapi(i)  = 0.6667 * kapi(i) * evtok 
+                 deni(i,nfl,pthep) / sqrt(ami(pthep))
+        kapi(i)  = 0.6667 * kapi(i) * evtok
 
 !       neutrals
 
         do nn = 1,nneut
-          redmass = &
-           ami(pthep) * amn(nn) / ( ami(pthep) + amn(nn) ) ** 2 
-          s2i(i) = s2i(i) + 2. * nuin(i,pthep,nn) * redmass 
+          redmass =&
+          ami(pthep) * amn(nn) / ( ami(pthep) + amn(nn) ) ** 2
+          s2i(i) = s2i(i) + 2. * nuin(i,pthep,nn) * redmass
           s3i(i) = s3i(i)&
-            + convfac * amn(nn) &
-                      * abs ( vsi(i,nfl,pthep) - tvn(i) ) ** 2 &
-            * 2. * nuin(i,pthep,nn) * redmass 
+           + convfac * amn(nn)&
+                     * abs ( vsi(i,nfl,pthep) - tvn(i) ) ** 2&
+           * 2. * nuin(i,pthep,nn) * redmass
         enddo
 
-        s1i(i) = s2i(i) * tn(i,nfl) 
+        s1i(i) = s2i(i) * tn(i,nfl)
 
 !       electrons
 
-        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(pthep) &
-                         / te(i,nfl) / sqrt(te(i,nfl))&
-                         * .66667 * evtok
+        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(pthep)&
+                        / te(i,nfl) / sqrt(te(i,nfl))&
+                        * .66667 * evtok
         s5i(i) = s4i(i) * te(i,nfl)
 
 !       other ions
@@ -1583,22 +1602,22 @@
         do ni = nion1,nion2
 !          if ( ni .ne. ptop ) then
           if ( ni .ne. pthep ) then
-            tfac    =   ti(i,nfl,pthep) / ami(pthep) &
-                      + ti(i,nfl,ni) / ami(ni)
+            tfac    =   ti(i,nfl,pthep) / ami(pthep)&
+                     + ti(i,nfl,ni) / ami(ni)
             xs6i    = 3.3e-4 * deni(i,nfl,ni) / ami(pthep) / ami(ni)&
-                      / tfac / sqrt(tfac) * .66667 * evtok
+                     / tfac / sqrt(tfac) * .66667 * evtok
             xs7i    = xs6i * ti(i,nfl,ni)
             s6i(i) = s6i(i) + xs6i
-            s7i(i) = s7i(i) + xs7i 
+            s7i(i) = s7i(i) + xs7i
           endif
         enddo
 
       enddo
 
-! MS: Neglected term, divergence of ExB drift 
-! Divergence of the ExB drift; requires equatorial drift 
+! MS: Neglected term, divergence of ExB drift
+! Divergence of the ExB drift; requires equatorial drift
 
-      nzh = (nz+1)/2 
+      nzh = (nz+1)/2
       vexbeq = vexb(nzh,nfl)
       do i = 1,nz 
         divvexb(i) = 6.*vexbeq / &
@@ -1633,64 +1652,73 @@
 
       convfac = amu / bolt / 3.
 
-      do i = 1,nz
-        s1i(i)  = 0.
-        s2i(i)  = 0.
-        s3i(i)  = 0.
-        s4i(i)  = 0.
-        s5i(i)  = 0.
-        s6i(i)  = 0.
-        s7i(i)  = 0.
-        kapi(i) = 0.
-      enddo
+!      do i = 1,nz
+!        s1i(i)  = 0.
+!        s2i(i)  = 0.
+!        s3i(i)  = 0.
+!        s4i(i)  = 0.
+!        s5i(i)  = 0.
+!        s6i(i)  = 0.
+!        s7i(i)  = 0.
+!        kapi(i) = 0.
+!      enddo
+
+      s1i = 0.
+      s2i = 0.
+      s3i = 0.
+      s4i = 0.
+      s5i = 0.
+      s6i = 0.
+      s7i = 0.
+      kapi = 0.
 
       do i = 1,nz
 
         kapi(i) = 4.6e+4 * sqrt ( ti(i,nfl,ptop)**5 ) / ne(i,nfl) *&
-                  deni(i,nfl,ptop) / sqrt(ami(ptop))
-        kapi(i)  = 0.6667 * kapi(i) * evtok 
+                 deni(i,nfl,ptop) / sqrt(ami(ptop))
+        kapi(i)  = 0.6667 * kapi(i) * evtok
 
 !       neutrals
 
         do nn = 1,nneut
-          redmass = &
-           ami(ptop) * amn(nn) / ( ami(ptop) + amn(nn) ) ** 2 
-          s2i(i) = s2i(i) + 2. * nuin(i,ptop,nn) * redmass 
+          redmass =&
+          ami(ptop) * amn(nn) / ( ami(ptop) + amn(nn) ) ** 2
+          s2i(i) = s2i(i) + 2. * nuin(i,ptop,nn) * redmass
           s3i(i) = s3i(i)&
-            + convfac * amn(nn) &
-                      * abs ( vsi(i,nfl,ptop) - tvn(i) ) ** 2 &
-            * 2. * nuin(i,ptop,nn) * redmass 
+           + convfac * amn(nn)&
+                     * abs ( vsi(i,nfl,ptop) - tvn(i) ) ** 2&
+           * 2. * nuin(i,ptop,nn) * redmass
         enddo
 
-        s1i(i) = s2i(i) * tn(i,nfl) 
+        s1i(i) = s2i(i) * tn(i,nfl)
 
 !       electrons
 
-        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(ptop) &
-                         / te(i,nfl) / sqrt(te(i,nfl))&
-                         * .66667 * evtok
+        s4i(i) = 7.7e-6 * ne(i,nfl) / ami(ptop)&
+                        / te(i,nfl) / sqrt(te(i,nfl))&
+                        * .66667 * evtok
         s5i(i) = s4i(i) * te(i,nfl)
 
 !       other ions
 
         do ni = nion1,nion2
           if ( ni .ne. ptop ) then
-            tfac    =    ti(i,nfl,ptop) / ami(ptop) &
-                       + ti(i,nfl,ni) / ami(ni)
+            tfac    =    ti(i,nfl,ptop) / ami(ptop)&
+                      + ti(i,nfl,ni) / ami(ni)
             xs6i    = 3.3e-4 * deni(i,nfl,ni) / ami(ptop) / ami(ni)&
-                      / tfac / sqrt(tfac) * .66667 * evtok
+                     / tfac / sqrt(tfac) * .66667 * evtok
             xs7i    = xs6i * ti(i,nfl,ni)
             s6i(i) = s6i(i) + xs6i
-            s7i(i) = s7i(i) + xs7i 
+            s7i(i) = s7i(i) + xs7i
           endif
         enddo
 
       enddo
 
-! MS: Neglected term, divergence of ExB drift 
-! Divergence of the ExB drift; requires equatorial drift 
+! MS: Neglected term, divergence of ExB drift
+! Divergence of the ExB drift; requires equatorial drift
 
-      nzh = (nz+1)/2 
+      nzh = (nz+1)/2
       vexbeq = vexb(nzh,nfl)
       do i = 1,nz 
         divvexb(i) = 6.*vexbeq / &
@@ -1751,8 +1779,8 @@
                * ( 1. + 3.6e-2  * sqrt(te(i,nfl)) )
         akpefac = fac1 + fac2 + fac3
 
-        kape(i) = 7.7e5 * sqrt ( te(i,nfl)**5 ) * 0.6667 * evtok &
-            / ( 1. + 3.22e4 * ( te(i,nfl)**2 / ne(i,nfl) * akpefac) )
+        kape(i) = 7.7e5 * sqrt ( te(i,nfl)**5 ) * 0.6667 * evtok&
+           / ( 1. + 3.22e4 * ( te(i,nfl)**2 / ne(i,nfl) * akpefac) )
 
 
 !       neutrals (Tn - Te) term
@@ -1763,45 +1791,45 @@
 !       removed (2/16/01)
 
         qen(i,ptn2) = .6667 *  evtok * denn(i,nfl,ptn2) *&
-                        ( 1.2e-19 * ( 1. - 1.2e-4 * te(i,nfl) ) &
-                                  * te(i,nfl) +&
-                          2.e-14 / sqrt(te(i,nfl)) &
-                          + 6.5e-22 * ( tn(i,nfl) - 310 ) ** 2 *&
-                            exp(.0023*(te(i,nfl) - tn(i,nfl))) )
+                       ( 1.2e-19 * ( 1. - 1.2e-4 * te(i,nfl) )&
+                                 * te(i,nfl) +&
+                         2.e-14 / sqrt(te(i,nfl))&
+                         + 6.5e-22 * ( tn(i,nfl) - 310 ) ** 2 *&
+                           exp(.0023*(te(i,nfl) - tn(i,nfl))) )
 
 !       O2
 
         qen(i,pto2) = .6667 * evtok * denn(i,nfl,pto2) *&
-                       ( 7.9e-19 * ( 1. + 3.6e-2 * sqrt(te(i,nfl)) ) * &
-                           sqrt(te(i,nfl)) +&
-                         7.e-14 / sqrt(te(i,nfl)) )
+                      ( 7.9e-19 * ( 1. + 3.6e-2 * sqrt(te(i,nfl)) ) *&
+                          sqrt(te(i,nfl)) +&
+                        7.e-14 / sqrt(te(i,nfl)) )
 
 !       O
 
         qen(i,pto) = .6667 * 7.2e-18 * evtok * denn(i,nfl,pto) *&
-                        sqrt(te(i,nfl))
+                       sqrt(te(i,nfl))
 
 !       H
 
         qen(i,pth) = .6667 * 6.3e-16 * evtok * denn(i,nfl,pth) *&
-                        ( 1. - 1.35e-4 * te(i,nfl) ) * &
-                        sqrt(te(i,nfl))
+                       ( 1. - 1.35e-4 * te(i,nfl) ) *&
+                       sqrt(te(i,nfl))
 
         do nn = 1,nneut
           s2e(i) = s2e(i) + qen(i,nn)
         enddo
 
-        s1e(i) = s2e(i) * tn(i,nfl) 
+        s1e(i) = s2e(i) * tn(i,nfl)
 
 !       ions (Ti - Te) term
 
         do ni = nion1,nion2
-          xs3e    = 7.7e-6 * deni(i,nfl,ni) / ami(ni) &
-                           / te(i,nfl) / sqrt(te(i,nfl))&
-                           * .66667 * evtok
+          xs3e    = 7.7e-6 * deni(i,nfl,ni) / ami(ni)&
+                          / te(i,nfl) / sqrt(te(i,nfl))&
+                          * .66667 * evtok
           xs4e    = xs3e * ti(i,nfl,ni)
           s3e(i) = s3e(i) + xs3e
-          s4e(i) = s4e(i) + xs4e 
+          s4e(i) = s4e(i) + xs4e
         enddo
 
       enddo
@@ -1843,16 +1871,16 @@
       if ( iz300s(nfl) .gt. iz300n(nfl) ) then
 
         do i = 1,nz
-            xarg =   ne(i,nfl) &
-                   / (        denn(i,nfl,pto2) &
-                       +      denn(i,nfl,ptn2) &
-                       + .1 * denn(i,nfl,pto)   )
+            xarg =   ne(i,nfl)&
+             / (        denn(i,nfl,pto2)&
+                 +      denn(i,nfl,ptn2)&
+                 + .1 * denn(i,nfl,pto)   )
             x    = alog ( xarg )
-            earg =     12.75 &
-                     + 6.941 * x &
-                     + 1.166 * x ** 2 &
-                     + 0.08034 * x ** 3&
-                     + 0.001996 * x ** 4
+            earg =     12.75&
+               + 6.941 * x&
+               + 1.166 * x ** 2&
+               + 0.08034 * x ** 3&
+               + 0.001996 * x ** 4
             epsi = exp ( -earg )
             qphe(i) = epsi * phprod(i)
           enddo
@@ -1890,11 +1918,11 @@
               (phprod(izs+1)-phprod(izs)) * facts
         xarg300 = ne300s / ( o2300 + n2300 + 0.1*o300 )
         x300 = alog( xarg300)
-        earg300 =     12.75 + &
-              6.941 * x300 + &
-              1.166 * x300 ** 2 + &
-              0.08034 * x300 ** 3 + &
-              0.001996 * x300 ** 4
+        earg300 =     12.75 +&
+             6.941 * x300 +&
+             1.166 * x300 ** 2 +&
+             0.08034 * x300 ** 3 +&
+             0.001996 * x300 ** 4
         epsi300 = exp ( -earg300 )
         q0s = epsi300 * phprod300 / ne300s
 
@@ -1904,11 +1932,11 @@
                     +      denn(i,nfl,ptn2) &
                     + .1 * denn(i,nfl,pto) )
           x    = alog ( xarg )
-          earg =     12.75 &
-                   + 6.941 * x &
-                   + 1.166 * x ** 2 &
-                   + 0.08034 * x ** 3&
-                   + 0.001996 * x ** 4
+          earg =     12.75&
+                  + 6.941 * x&
+                  + 1.166 * x ** 2&
+                  + 0.08034 * x ** 3&
+                  + 0.001996 * x ** 4
           epsi = exp ( -earg )
           qphe(i) = epsi * phprod(i)
         enddo
@@ -1930,11 +1958,11 @@
               (phprod(izn-1)-phprod(izn)) * factn
         xarg300 = ne300n / ( o2300 + n2300 + 0.1*o300 )
         x300 = alog( xarg300)
-        earg300 =     12.75 + &
-              6.941 * x300 + &
-              1.166 * x300 ** 2 + &
-              0.08034 * x300 ** 3 + &
-              0.001996 * x300 ** 4
+        earg300 =     12.75 +&
+             6.941 * x300 +&
+             1.166 * x300 ** 2 +&
+             0.08034 * x300 ** 3 +&
+             0.001996 * x300 ** 4
         epsi300 = exp ( -earg300 )
         q0n = epsi300 * phprod300 / ne300n
 
@@ -1991,10 +2019,10 @@
         s5e(i) = 0.66667 * evtok * qphe(i) / ne(i,nfl) ! * .15
       enddo 
 
-! MS: Neglected term, divergence of ExB drift 
-! Divergence of the ExB drift; requires equatorial drift 
+! MS: Neglected term, divergence of ExB drift
+! Divergence of the ExB drift; requires equatorial drift
 
-      nzh    = (nz+1)/2 
+      nzh    = (nz+1)/2
       vexbeq = vexb(nzh,nfl)
       do i = 1,nz 
         divvexb(i) = 6.*vexbeq / &
@@ -2036,15 +2064,15 @@
 !        c(j) = 0.
 !        d(j) = 0.
 !      enddo
-      a=0.
-      b=0.
-      c=0.
-      d=0.
 
+      a = 0.
+      b = 0.
+      c = 0.
+      d = 0.
 
       do j = 2,nz-1
 
-      ujm1  = vsi(j-1,nfl,ni)/bms(j-1,nfl) 
+      ujm1  = vsi(j-1,nfl,ni)/bms(j-1,nfl)
       uj    = vsi(j,nfl,ni)  /bms(j,nfl)
       ujp1  = vsi(j+1,nfl,ni)/bms(j+1,nfl)
       ur = .5*( uj +ujp1)
@@ -2089,16 +2117,16 @@
       a(1) = 0.
       b(1) = 1.
       c(1) = 0.
-      d(1) = &
-        sqrt ( tdeni(1) * prod(1) / loss(1) ) + denmin
+      d(1) =&
+  sqrt ( tdeni(1) * prod(1) / loss(1) ) + denmin
 
-!     upper bc 
+!     upper bc
 
       a(nz) = 0.
       b(nz) = 1.
       c(nz) = 0.
-      d(nz) = &
-        sqrt ( tdeni(nz) * prod(nz) / loss(nz) ) + denmin
+      d(nz) =&
+  sqrt ( tdeni(nz) * prod(nz) / loss(nz) ) + denmin
 
 
       call rtryds ( a,b,c,d,tdeni,nz )
@@ -2126,13 +2154,17 @@
 
 !     initialize
 
-      do j = 1,nz
-        a(j) = 0.
-        b(j) = 0.
-        c(j) = 0.
-        d(j) = 0.
-      enddo
+!      do j = 1,nz
+!        a(j) = 0.
+!        b(j) = 0.
+!        c(j) = 0.
+!        d(j) = 0.
+!      enddo
 
+      a = 0.
+      b = 0.
+      c = 0.
+      d = 0.
 
       do j = 2,nz-1
 
@@ -2184,7 +2216,7 @@
       d(1) = 0.
 
 !     upper bc
- 
+
       a(nz) = 0.
       b(nz) = 1.
       c(nz) = 0.
@@ -2216,13 +2248,17 @@
 
 !     initialize
 
-      do j = 1,nz
-        a(j) = 0.
-        b(j) = 0.
-        c(j) = 0.
-        d(j) = 0.
-      enddo
+!      do j = 1,nz
+!        a(j) = 0.
+!        b(j) = 0.
+!        c(j) = 0.
+!        d(j) = 0.
+!      enddo
 
+      a = 0.
+      b = 0.
+      c = 0.
+      d = 0.
 
       do j = 2,nz-1
         ujm1 = bms(j-1,nfl)*vsi(j-1,nfl,npt)
@@ -2252,24 +2288,24 @@
           c0 = ur
         endif
 
-        a(j) =     a0 / d22s(j,nfl) &
-               - ( bms(j,nfl)**2 / deni(j,nfl,npt) ) / d22s(j,nfl)&
-                 *.5 * ( kap(j) + kap(j-1) ) / ds(j,nfl)
-        
-        b(j) = 1. / dt + b0 / d22s(j,nfl) &
-               -.333333 * ( bms(j,nfl) &
-                           * (vsi(j+1,nfl,npt) - vsi(j-1,nfl,npt) ) &
-                           + 5. * vsi(j,nfl,npt) &
-                                * (bms(j+1,nfl) - bms(j-1,nfl) ) )&
-               / d2s(j,nfl) &
-               +  ( bms(j,nfl)**2 / deni(j,nfl,npt) ) / d22s(j,nfl)&
-                 *(.5* (kap(j+1) + kap(j) ) / ds(j+1,nfl) &
-               +.5 * (kap(j) + kap(j-1) ) / ds(j,nfl)) &
-               + s2(j) + s4(j) + s6(j)
- 
-        c(j) =     c0 / d22s(j,nfl) &
-               - ( bms(j,nfl)**2 / deni(j,nfl,npt) ) /d22s(j,nfl)&
-                 *.5 * (kap(j+1) + kap(j) ) / ds(j+1,nfl)
+        a(j) =     a0 / d22s(j,nfl)&
+         - ( bms(j,nfl)**2 / deni(j,nfl,npt) ) / d22s(j,nfl)&
+           *.5 * ( kap(j) + kap(j-1) ) / ds(j,nfl)
+
+        b(j) = 1. / dt + b0 / d22s(j,nfl)&
+         -.333333 * ( bms(j,nfl)&
+                     * (vsi(j+1,nfl,npt) - vsi(j-1,nfl,npt) )&
+                     + 5. * vsi(j,nfl,npt)&
+                          * (bms(j+1,nfl) - bms(j-1,nfl) ) )&
+         / d2s(j,nfl)&
+         +  ( bms(j,nfl)**2 / deni(j,nfl,npt) ) / d22s(j,nfl)&
+           *(.5* (kap(j+1) + kap(j) ) / ds(j+1,nfl)&
+         +.5 * (kap(j) + kap(j-1) ) / ds(j,nfl))&
+         + s2(j) + s4(j) + s6(j)
+
+        c(j) =     c0 / d22s(j,nfl)&
+         - ( bms(j,nfl)**2 / deni(j,nfl,npt) ) /d22s(j,nfl)&
+           *.5 * (kap(j+1) + kap(j) ) / ds(j+1,nfl)
 
         d(j) = tio(j)/dt + s1(j) + s3(j) + s5(j) + s7(j)
 
@@ -2286,7 +2322,7 @@
       d(1) = tn(1,nfl)
 
 !     upper bc
- 
+
       a(nz) = 0.
       b(nz) = 1.
       c(nz) = 0.
@@ -2317,27 +2353,32 @@
 
 !     initialize
 
-      do j = 1,nz
-        a(j) = 0.
-        b(j) = 0.
-        c(j) = 0.
-        d(j) = 0.
-      enddo
+!      do j = 1,nz
+!        a(j) = 0.
+!        b(j) = 0.
+!        c(j) = 0.
+!        d(j) = 0.
+!      enddo
+
+      a = 0.
+      b = 0.
+      c = 0.
+      d = 0.
 
 !     note: ne used here is in a common block
 
       do j = 2,nz-1
 
         a(j) = - bms(j,nfl)**2 / ne(j,nfl) / d22s(j,nfl)&
-               *.5 * ( kap(j) + kap(j-1) ) / ds(j,nfl)
+         *.5 * ( kap(j) + kap(j-1) ) / ds(j,nfl)
 
         b(j) = 1. / dt + bms(j,nfl)**2 / ne(j,nfl) / d22s(j,nfl)&
-              *(  .5 * (kap(j+1) + kap(j)   ) /ds(j+1,nfl) &
-                 +.5 * (kap(j)   + kap(j-1) ) /ds(j,nfl)   ) &
-              + s2(j) + s3(j)
+        *(  .5 * (kap(j+1) + kap(j)   ) /ds(j+1,nfl)&
+           +.5 * (kap(j)   + kap(j-1) ) /ds(j,nfl)   )&
+        + s2(j) + s3(j)
 
         c(j) = - bms(j,nfl)**2 / ne(j,nfl) /d22s(j,nfl)&
-               *.5 * ( kap(j+1) + kap(j) )/ ds(j+1,nfl)
+         *.5 * ( kap(j+1) + kap(j) )/ ds(j+1,nfl)
 
         d(j) = te_old(j)/dt + s1(j) + s4(j) + s5(j)
 
@@ -2354,7 +2395,7 @@
       d(1) = tn(1,nfl)
 
 !     upper bc
- 
+
       a(nz) = 0.
       b(nz) = 1.
       c(nz) = 0.
@@ -2434,7 +2475,7 @@
 
       subroutine msistim ( iyr,iday,hrl,glong,iyd,secut )
 
-!     msistim calculates time parameters for the 
+!     msistim calculates time parameters for the
 !     nrlmsise00 neutral atmosphere model.
 
 !     the arguments are defined as follows:
@@ -2485,19 +2526,19 @@
          hrl = hrut + glons(i,nfl) / 15.
          if ( hrl .ge. 24. ) hrl = hrl - 24.
          sdec         = rtod * asin (  sin (2.*pie*(day-dayve)/sidyr)&
-                                     * sin (solinc/rtod)             )
+                               * sin (solinc/rtod)             )
          cossdec      = cos ( po180 * sdec )
          sinsdec      = sin ( po180 * sdec )
          clat         = cos ( po180 * glats(i,nfl) )
          slat         = sin ( po180 * glats(i,nfl) )
-         cx(i,nfl)    =   slat * sinsdec &
-                        - clat * cossdec * cos ( 15.0*po180*hrl )
+         cx(i,nfl)    =   slat * sinsdec&
+                  - clat * cossdec * cos ( 15.0*po180*hrl )
 !         u3(i,nfl)    = cx(i,nfl)
 ! MS: Since we will be taking acos of this value in photprod, make
 ! sure that the absolute value does not minutely exceed 1 because of
 ! round-off error.
-        if (abs(abs(cx(i,nfl))-1.) .lt. 1.e-6) &
-           cx(i,nfl) = sign(1.,cx(i,nfl))
+         if (abs(abs(cx(i,nfl))-1.) .lt. 1.e-6)&
+      cx(i,nfl) = sign(1.,cx(i,nfl))
        enddo
 
        return
@@ -2517,11 +2558,11 @@
         include 'param-1.00.inc'
 
           t          = 1. / (1 + pas * x)
-          xerfcexp   = (   z1 * t &
-                         + z2 * t ** 2 &
-                         + z3 * t ** 3 &
-                         + z4 * t ** 4 &
-                         + z5 * t ** 5  )
+          xerfcexp   = (   z1 * t&
+                        + z2 * t ** 2&
+                        + z3 * t ** 3&
+                        + z4 * t ** 4&
+                        + z5 * t ** 5  )
 
         return
         end
@@ -2554,33 +2595,33 @@
             f( i,nfl,int(thetant(line,k))+1-90 ) = 1.
           enddo
         elseif ( zaltnt(line,1) .le. alts(i,nfl) .and.&
-                 alts(i,nfl) .le. zaltnt(line,2)       ) then
+                alts(i,nfl) .le. zaltnt(line,2)       ) then
           f( i,nfl,int(thetant(line,1))+1-90 ) =&
-             1.4e8 * tanh ( (alts(i,nfl) - 90.) / 50. )
+            1.4e8 * tanh ( (alts(i,nfl) - 90.) / 50. )
           f( i,nfl,int(thetant(line,2))+1-90 ) =&
-             3.8e7 * tanh ( (alts(i,nfl) - 90.) / 50. )
+            3.8e7 * tanh ( (alts(i,nfl) - 90.) / 50. )
           f( i,nfl,int(thetant(line,3))+1-90 ) =&
-             1.4e7 * tanh ( (alts(i,nfl) - 93.) / 55. )
+            1.4e7 * tanh ( (alts(i,nfl) - 93.) / 55. )
           f( i,nfl,int(thetant(line,4))+1-90 ) =&
-             9.2e6 * tanh ( (alts(i,nfl) - 94.) / 55. )
+            9.2e6 * tanh ( (alts(i,nfl) - 94.) / 55. )
           imax = i
         else
           do k = 1,4
-            f( i,nfl,   int(thetant(line,k))+1-90 ) = &
-            f( imax,nfl,int(thetant(line,k))+1-90 )
+            f( i,nfl,   int(thetant(line,k))+1-90 ) =&
+           f( imax,nfl,int(thetant(line,k))+1-90 )
           enddo
-        endif           
+        endif
       enddo
 
       do k = 1,4
         do i = 1,nz
-          f( i,nfl,int(thetant(line,k))+1-90 ) = &
-          amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) ) 
+          f( i,nfl,int(thetant(line,k))+1-90 ) =&
+         amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) )
         enddo
       enddo
 
 !     now interpolate to all valuse of theta (90 - 180)
- 
+
       do k = 1,91
         k90 = 90 + k - 1
         ji  = 1
@@ -2593,13 +2634,13 @@
         enddo
         jip1 = ji + 1
         kip1 = int(thetant(line,jip1))
-        delk = float (   int(thetant(line,jip1)) &
-                       - int(thetant(line,ji  )) )
+        delk = float (   int(thetant(line,jip1))&
+                      - int(thetant(line,ji  )) )
         do i = 1,nz
-          flog =   alog10(f(i,nfl,ki+1-90)) &
-                 + (k90 - ki) / delk &
-                              * (  alog10(f(i,nfl,kip1+1-90)) &
-                                 - alog10(f(i,nfl,ki  +1-90)) ) 
+          flog =   alog10(f(i,nfl,ki+1-90))&
+                + (k90 - ki) / delk&
+                             * (  alog10(f(i,nfl,kip1+1-90))&
+                                - alog10(f(i,nfl,ki  +1-90)) )
           f(i,nfl,k) = 10 ** flog
         enddo
       enddo
@@ -2635,33 +2676,33 @@
             f( i,nfl,int(thetant(line,k))+1-90 ) = 1.
           enddo
         elseif ( zaltnt(line,1) .le. alts(i,nfl) .and.&
-                 alts(i,nfl) .le. zaltnt(line,2)       ) then
+                alts(i,nfl) .le. zaltnt(line,2)       ) then
           f( i,nfl,int(thetant(line,1))+1-90 ) =&
-             1.85e5 * ( alts(i,nfl) - 170. ) ** 1.20        
+            1.85e5 * ( alts(i,nfl) - 170. ) ** 1.20
           f( i,nfl,int(thetant(line,2))+1-90 ) =&
-             2.60e4 * ( alts(i,nfl) - 170. ) ** 1.25        
+            2.60e4 * ( alts(i,nfl) - 170. ) ** 1.25
           f( i,nfl,int(thetant(line,3))+1-90 ) =&
-             2.60e3 * ( alts(i,nfl) - 170. ) ** 1.20        
+            2.60e3 * ( alts(i,nfl) - 170. ) ** 1.20
           f( i,nfl,int(thetant(line,4))+1-90 ) =&
-             2.60e2 * ( alts(i,nfl) - 170. ) ** 1.20       
+            2.60e2 * ( alts(i,nfl) - 170. ) ** 1.20
           imax = i
         else
           do k = 1,4
-            f( i   ,nfl,int(thetant(line,k))+1-90 ) = &
-            f( imax,nfl,int(thetant(line,k))+1-90 )
+            f( i   ,nfl,int(thetant(line,k))+1-90 ) =&
+           f( imax,nfl,int(thetant(line,k))+1-90 )
           enddo
-        endif           
+        endif
       enddo
 
       do k = 1,4
         do i = 1,nz
-          f( i,nfl,int(thetant(line,k))+1-90 ) = &
-          amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) ) 
+          f( i,nfl,int(thetant(line,k))+1-90 ) =&
+         amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) )
         enddo
       enddo
 
 !     now interpolate to all valuse of theta (90 - 180)
-!     set f(i,nfl,theta=180) = 1. 
+!     set f(i,nfl,theta=180) = 1.
 
       do k = 1,91
         k90 = 90 + k - 1
@@ -2676,23 +2717,23 @@
         if ( ji .ne. 4 ) then
           jip1 = ji + 1
           kip1 = int(thetant(line,jip1))
-          delk = float (   int(thetant(line,jip1)) &
-                         - int(thetant(line,ji  )) )
+          delk = float (   int(thetant(line,jip1))&
+                        - int(thetant(line,ji  )) )
           do i = 1,nz
-            flog =   alog10(f(i,nfl,ki+1-90)) &
-                   + (k90 - ki) / delk &
-                                * (  alog10(f(i,nfl,kip1+1-90)) &
-                                   - alog10(f(i,nfl,ki  +1-90)) ) 
+            flog =   alog10(f(i,nfl,ki+1-90))&
+                  + (k90 - ki) / delk&
+                               * (  alog10(f(i,nfl,kip1+1-90))&
+                                  - alog10(f(i,nfl,ki  +1-90)) )
             f(i,nfl,k) = 10 ** flog
           enddo
         else
-          delk = float (   180 &
-                         - int(thetant(line,ji  )) )
+          delk = float (   180&
+                        - int(thetant(line,ji  )) )
           do i = 1,nz
-            flog =   alog10(f(i,nfl,ki+1-90)) &
-                   + (k90 - ki) / delk &
-                                * (  alog10(1.) &
-                                   - alog10(f(i,nfl,ki  +1-90)) ) 
+            flog =   alog10(f(i,nfl,ki+1-90))&
+                  + (k90 - ki) / delk&
+                               * (  alog10(1.)&
+                                  - alog10(f(i,nfl,ki  +1-90)) )
             f(i,nfl,k) = 10 ** flog
           enddo
         endif
@@ -2729,33 +2770,33 @@
             f( i,nfl,int(thetant(line,k))+1-90 ) = 1.
           enddo
         elseif ( zaltnt(line,1) .le. alts(i,nfl) .and.&
-                 alts(i,nfl) .le. zaltnt(line,2)       ) then
+                alts(i,nfl) .le. zaltnt(line,2)       ) then
           f( i,nfl,int(thetant(line,1))+1-90 ) =&
-             3.8e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
+            3.8e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
           f( i,nfl,int(thetant(line,2))+1-90 ) =&
-             3.0e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
+            3.0e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
           f( i,nfl,int(thetant(line,3))+1-90 ) =&
-             2.5e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
+            2.5e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
           f( i,nfl,int(thetant(line,4))+1-90 ) =&
-             2.5e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
+            2.5e6 * tanh ( (alts(i,nfl) - 138.) / 80. )
           imax = i
         else
           do k = 1,4
-            f( i,   nfl,int(thetant(line,k))+1-90 ) = &
-            f( imax,nfl,int(thetant(line,k))+1-90 )
+            f( i,   nfl,int(thetant(line,k))+1-90 ) =&
+           f( imax,nfl,int(thetant(line,k))+1-90 )
           enddo
-        endif           
+        endif
       enddo
 
       do k = 1,4
         do i = 1,nz
-          f( i,nfl,int(thetant(line,k))+1-90 ) = &
-          amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) ) 
+          f( i,nfl,int(thetant(line,k))+1-90 ) =&
+         amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) )
         enddo
       enddo
 
 !     now interpolate to all valuse of theta (90 - 180)
-!     set f(i,nfl,theta=180) = 1. 
+!     set f(i,nfl,theta=180) = 1.
 
       do k = 1,91
         k90 = 90 + k - 1
@@ -2770,23 +2811,23 @@
         if ( ji .ne. 4 ) then
           jip1 = ji + 1
           kip1 = int(thetant(line,jip1))
-          delk = float (   int(thetant(line,jip1)) &
-                         - int(thetant(line,ji  )) )
+          delk = float (   int(thetant(line,jip1))&
+                        - int(thetant(line,ji  )) )
           do i = 1,nz
-            flog =   alog10(f(i,nfl,ki+1-90)) &
-                   + (k90 - ki) / delk &
-                                * (  alog10(f(i,nfl,kip1+1-90)) &
-                                   - alog10(f(i,nfl,ki  +1-90)) ) 
+            flog =   alog10(f(i,nfl,ki+1-90))&
+                  + (k90 - ki) / delk&
+                               * (  alog10(f(i,nfl,kip1+1-90))&
+                                  - alog10(f(i,nfl,ki  +1-90)) )
             f(i,nfl,k) = 10 ** flog
           enddo
         else
-          delk = float (   180 &
-                         - int(thetant(line,ji  )) )
+          delk = float (   180&
+                        - int(thetant(line,ji  )) )
           do i = 1,nz
-            flog =   alog10(f(i,nfl,ki+1-90)) &
-                   + (k90 - ki) / delk &
-                                * (  alog10(1.) &
-                                   - alog10(f(i,nfl,ki  +1-90)) ) 
+            flog =   alog10(f(i,nfl,ki+1-90))&
+                  + (k90 - ki) / delk&
+                               * (  alog10(1.)&
+                                  - alog10(f(i,nfl,ki  +1-90)) )
             f(i,nfl,k) = 10 ** flog
           enddo
         endif
@@ -2823,33 +2864,33 @@
             f( i,nfl,int(thetant(line,k))+1-90 ) = 1.
           enddo
         elseif ( zaltnt(line,1) .le. alts(i,nfl) .and.&
-                 alts(i,nfl) .le. zaltnt(line,2)       ) then
+                alts(i,nfl) .le. zaltnt(line,2)       ) then
           f( i,nfl,int(thetant(line,1))+1-90 ) =&
-             1.2e10 * tanh ( (alts(i,nfl) - 80.) / 50. ) + 3.e9
+            1.2e10 * tanh ( (alts(i,nfl) - 80.) / 50. ) + 3.e9
           f( i,nfl,int(thetant(line,2))+1-90 ) =&
-             4.0e9  * tanh ( (alts(i,nfl) - 80.) / 50. ) + 1.e9
+            4.0e9  * tanh ( (alts(i,nfl) - 80.) / 50. ) + 1.e9
           f( i,nfl,int(thetant(line,3))+1-90 ) =&
-             2.0e9  * tanh ( (alts(i,nfl) - 65.) / 50. ) + 1.e8
+            2.0e9  * tanh ( (alts(i,nfl) - 65.) / 50. ) + 1.e8
           f( i,nfl,int(thetant(line,4))+1-90 ) =&
-             1.5e9  * tanh ( (alts(i,nfl) - 75.) / 50. ) + 1.e8
+            1.5e9  * tanh ( (alts(i,nfl) - 75.) / 50. ) + 1.e8
           imax = i
         else
           do k = 1,4
-            f( i,   nfl,int(thetant(line,k))+1-90 ) = &
-            f( imax,nfl,int(thetant(line,k))+1-90 )
+            f( i,   nfl,int(thetant(line,k))+1-90 ) =&
+           f( imax,nfl,int(thetant(line,k))+1-90 )
           enddo
-        endif           
+        endif
       enddo
 
       do k = 1,4
         do i = 1,nz
-          f( i,nfl,int(thetant(line,k))+1-90 ) = &
-          amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) ) 
+          f( i,nfl,int(thetant(line,k))+1-90 ) =&
+         amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) )
         enddo
       enddo
 
 !     now interpolate to all valuse of theta (90 - 180)
- 
+
       do k = 1,91
         k90 = 90 + k - 1
         ji  = 1
@@ -2862,13 +2903,13 @@
         enddo
         jip1 = ji + 1
         kip1 = int(thetant(line,jip1))
-        delk = float (   int(thetant(line,jip1)) &
-                       - int(thetant(line,ji  )) )
+        delk = float (   int(thetant(line,jip1))&
+                      - int(thetant(line,ji  )) )
         do i = 1,nz
-          flog =   alog10(f(i,nfl,ki+1-90)) &
-                 + (k90 - ki) / delk &
-                              * (  alog10(f(i,nfl,kip1+1-90)) &
-                                 - alog10(f(i,nfl,ki  +1-90)) ) 
+          flog =   alog10(f(i,nfl,ki+1-90))&
+                + (k90 - ki) / delk&
+                             * (  alog10(f(i,nfl,kip1+1-90))&
+                                - alog10(f(i,nfl,ki  +1-90)) )
           f(i,nfl,k) = 10 ** flog
         enddo
       enddo
@@ -2888,7 +2929,7 @@
 
 !     open output files (unformatted, except time.dat)
 
-      open ( unit=70, file='time.dat'      ,form='formatted'   )  
+      open ( unit=70, file='time.dat'      ,form='formatted'   )
       open ( unit=71, file='deniu.dat'     ,form='unformatted' )
       open ( unit=72, file='tiu.dat'       ,form='unformatted' )
       open ( unit=73, file='vsiu.dat'      ,form='unformatted' )
@@ -2925,7 +2966,7 @@
 
 !     open output files (formatted)
 
-      open ( unit=70, file='time.dat'      ,form='formatted' )  
+      open ( unit=70, file='time.dat'      ,form='formatted' )
       open ( unit=71, file='denif.dat'     ,form='formatted' )
       open ( unit=72, file='tif.dat'       ,form='formatted' )
       open ( unit=73, file='vsif.dat'      ,form='formatted' )
@@ -3339,7 +3380,7 @@
 !*******************************************
 !*******************************************
 
-       subroutine courant ( hrut )
+       subroutine courant (hrut)
 
        include 'param-1.00.inc'
        include 'com-1.00.inc'
