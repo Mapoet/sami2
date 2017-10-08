@@ -509,10 +509,10 @@
         call sf1216 ( f1216,4,j )
         do k = 1,91
           do i = 1,nz
-            fluxnt(i,j,k,1) = f1026(i,j,k)            
-            fluxnt(i,j,k,2) = f584 (i,j,k)            
-            fluxnt(i,j,k,3) = f304 (i,j,k)            
-            fluxnt(i,j,k,4) = f1216(i,j,k)            
+            fluxnt(i,j,k,1) = f1026(i,j,k)
+            fluxnt(i,j,k,2) = f584 (i,j,k)
+            fluxnt(i,j,k,3) = f304 (i,j,k)
+            fluxnt(i,j,k,4) = f1216(i,j,k)
           enddo
         enddo
       enddo
@@ -593,7 +593,7 @@
 !                    to current time
 !        mass - mass number (only density for selected gas is
 !                 calculated.  mass 0 is temperature.  mass 48 for all.
-!     output: 
+!     output:
 !        d(1) - he number density(cm-3)
 !        d(2) - o number density(cm-3)
 !        d(3) - n2 number density(cm-3)
@@ -630,7 +630,7 @@
 
 !        iyd - year and day as yyddd
 !        sec - ut(sec)  (not important in lower atmosphere)
-!        alt - altitude(km) 
+!        alt - altitude(km)
 !        glat - geodetic latitude(deg)
 !        glong - geodetic longitude(deg)
 !        stl - local apparent solar time(hrs)
@@ -640,7 +640,7 @@
 !             ap(1) = magnetic index(daily) (use 4 in lower atmos.)
 !             ap(2)=current 3hr ap index (used only when sw(9)=-1.)
 !     note:  ut, local time, and longitude are used independently in the
-!            model and are not of equal importance for every situation.  
+!            model and are not of equal importance for every situation.
 !            for the most physically realistic calculation these three
 !            variables should be consistent.
 !      output
@@ -662,7 +662,7 @@
       enddo
 
       return
-      end 
+      end
 
 !*******************************************
 !*******************************************
@@ -694,12 +694,16 @@
 !       chprod:  chemical production term
 !       relossr: recombination loss rates
 
-!     initialize tvn and gs 
+!     initialize tvn and gs
 
-      do i = 1,nz
-        tvn(i) = 0.
-        gs(i)  = 0.
-      enddo
+!      do i = 1,nz
+!        tvn(i) = 0.
+!        gs(i)  = 0.
+!      enddo
+
+       
+      tvn = 0.
+      gs = 0.
 
       do i = 1,nz
 
@@ -707,7 +711,7 @@
         te_old(i)   = te(i,nfl)
         do j = nion1,nion2
           deni_old(i,j) = deni(i,nfl,j)
-          ne(i,nfl)     = ne(i,nfl) + deni(i,nfl,j)  
+          ne(i,nfl)     = ne(i,nfl) + deni(i,nfl,j)
           ti_old(i,j)   = ti(i,nfl,j)
           vsi_old(i,j)  = vsi(i,nfl,j)
         enddo
@@ -2026,12 +2030,16 @@
 
 !     initialize
 
-      do j = 1,nz
-        a(j) = 0.
-        b(j) = 0.
-        c(j) = 0.
-        d(j) = 0.
-      enddo
+!      do j = 1,nz
+!        a(j) = 0.
+!        b(j) = 0.
+!        c(j) = 0.
+!        d(j) = 0.
+!      enddo
+      a=0.
+      b=0.
+      c=0.
+      d=0.
 
 
       do j = 2,nz-1
