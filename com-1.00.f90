@@ -1,5 +1,6 @@
 module commons
 use parameters
+implicit none
 !*******************************************
 !*******************************************
 
@@ -9,21 +10,37 @@ use parameters
 !*******************************************
 
 !     namelist data
-      logical fejer,fmtout
-      real snn(nneut)
+      logical::fejer
+      logical::fmtout
+      real,dimension(nneut)::snn
 
 
 !     s grid data
+      real,dimension(nz,nf)::alts
 
-      real alts(nz,nf),grs(nz,nf),glats(nz,nf),glons(nz,nf)
-      real bms(nz,nf),gs(nz),ps(nz,nf),blats(nz,nf)
-      real coschicrit(nz,nf)
-      real ds(nz,nf),d2s(nz,nf),d22s(nz,nf)
-      real dels(nz,nf)
-      real grad_inp (nf)
-      real xnorms(nzp1,nf),ynorms(nzp1,nf),znorms(nzp1,nf)
-      real xnormp(nz,nfp1),ynormp(nz,nfp1),znormp(nz,nfp1)
-      real arg(nz,nf),athg(nz,nf),aphig(nz,nf)
+      real,dimension(nz,nf)::grs
+      real,dimension(nz,nf)::glats
+      real,dimension(nz,nf)::glons
+      real,dimension(nz,nf)::bms
+      real,dimension(nz)::gs
+      real,dimension(nz,nf)::ps
+      real,dimension(nz,nf)::blats
+      real,dimension(nz,nf)::coschicrit
+      real,dimension(nz,nf)::ds
+      real,dimension(nz,nf)::d2s
+      real,dimension(nz,nf)::d22s
+      real,dimension(nz,nf)::dels
+      real,dimension(nf)::grad_inp
+
+      real,dimension(nzp1,nf)::xnorms
+      real,dimension(nzp1,nf)::ynorms
+      real,dimension(nzp1,nf)::znorms
+      real,dimension(nz,nfp1)::xnormp
+      real,dimension(nz,nfp1)::ynormp
+      real,dimension(nz,nfp1)::znormp
+      real,dimension(nz,nf)::arg
+      real,dimension(nz,nf)::athg
+      real,dimension(nz,nf)::aphig
 
 
 !       alts     altitude  (in km) on s mesh
@@ -37,58 +54,92 @@ use parameters
  
 !     p grid data
 
-      real delsp(nz,nfp1),vol(nz,nf)
-      real areap(nz,nfp1),areas(nzp1,nf)
-      real vnx(nzp1,nfp1),vny(nzp1,nfp1),vnz(nzp1,nfp1)
-      real xdels(nz,nfp1,2),xdelp(nzp1,nf,2)
-      real vexbs(nzp1,nf),vexbp(nz,nfp1),vexb(nzp1,nfp1)
+      real,dimension(nz,nfp1)::delsp
+      real,dimension(nz,nf)::vol
+      real,dimension(nz,nfp1)::areap
+      real,dimension(nz,nfp1)::areas
+      real,dimension(nzp1,nfp1)::vnx
+      real,dimension(nzp1,nfp1)::vny
+      real,dimension(nzp1,nfp1)::vnz
+      real,dimension(nz,nfp1,2)::xdels
+      real,dimension(nzp1,nf,2)::xdelp
+      real,dimension(nzp1,nf)::vexbs
+      real,dimension(nz,nfp1)::vexbp
+      real,dimension(nzp1,nfp1)::vexb
 
 !     delsp      actual arc length of grid in s direction on p grid
 !     vol        volume (i.e., area) of cell
 
 !     chemical reaction data
 
-      integer ichem(nchem,3)
-      real ireact(nion,nneut,nchem)
+      integer,dimension(nchem,3):: ichem
+      real,dimension(nion,nneut,nchem)::ireact
 
 
 !     variables
 
-      real deni(nz,nf,nion),denn(nz,nf,nneut),ne(nz,nf)
-      real vsi(nz,nf,nion),vsid(nz,nf,nion)
-      real sumvsi(nz,nf,nion),vsic(nz,nf,nion)
-      real te(nz,nf),ti(nz,nf,nion),tn(nz,nf)
-      real u(nz,nf),v(nz,nf),vpi(nz,nf)
+      real,dimension(nz,nf,nion)::deni
+      real,dimension(nz,nf,nneut)::denn
+      real,dimension(nz,nf)::ne
+      real,dimension(nz,nf,nion)::vsi
+      real,dimension(nz,nf,nion)::vsid
+      real,dimension(nz,nf,nion)::sumvsi
+      real,dimension(nz,nf,nion)::vsic
+      real,dimension(nz,nf)::te
+      real,dimension(nz,nf,nion)::ti
+      real,dimension(nz,nf)::tn
+      real,dimension(nz,nf)::u
+      real,dimension(nz,nf)::v
+      real,dimension(nz,nf)::vpi
 
 
 !     velocity in radial (vor) and theta (vot) directions 
 
-      real vot(nz,nf,nion),vor(nz,nf,nion)
+      real,dimension(nz,nf,nion)::vot
+      real,dimension(nz,nf,nion)::vor
 
 
 !     atomic masses
 
-      real ami(nion),amn(nneut),alpha0(nneut),aap(7)
+      real,dimension(nion)::ami
+      real,dimension(nneut)::amn
+      real,dimension(nneut)::alpha0
+      real,dimension(7)::aap
 
 !     zenith datt
 
-      real cx(nz,nf)
+      real,dimension(nz,nf)::cx
 
 !     photodeposition rates
 !     used 3 (absorption) and 7 (nion) explicitly
 !     used 4 (number of angles in nighttime deposition)
 
-      real sigabsdt(linesuv,3),flux(linesuv),sigidt(linesuv,7)
-      real sigint(linesnt,7),fluxnt(nz,nf,91,linesnt)
-      real thetant(linesnt,4),zaltnt(linesnt,2)
+      real,dimension(linesuv,3):: sigabsdt
+      real,dimension(linesuv)::flux
+      real,dimension(linesuv,7)::sigidt
+      real,dimension(linesnt,7)::sigint
+      real,dimension(nz,nf,91,linesnt)::fluxnt
+      real,dimension(linesnt,4)::thetant
+      real,dimension(linesnt,2)::zaltnt
 
 
 !     diagnostic variables
 
-      real t1(nz,nf,nion),t2(nz,nf,nion),t3(nz,nf,nion)
-      real u1(nz,nf),u2(nz,nf),u3(nz,nf),u4(nz,nf),u5(nz,nf)
+      real,dimension(linesnt,2)::t1(nz,nf,nion)
+      real,dimension(linesnt,2)::t2(nz,nf,nion)
+      real,dimension(linesnt,2)::t3(nz,nf,nion)
+      real,dimension(linesnt,2)::u1(nz,nf)
+      real,dimension(linesnt,2)::u2(nz,nf)
+      real,dimension(linesnt,2)::u3(nz,nf)
+      real,dimension(linesnt,2)::u4(nz,nf)
+      real,dimension(linesnt,2)::u5(nz,nf)
 
-      real x0,y0,z0,plat,plon,bb0
+      real::x0
+      real::y0
+      real::z0
+      real::plat
+      real::plon
+      real::bb0
  
       
 
