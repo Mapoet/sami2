@@ -95,3 +95,22 @@ use parameters
 
 
 end module commons
+
+
+
+module inputfiles
+      integer,parameter:: inputf=1
+contains
+      subroutine open_input_files
+            open ( unit=10, file='input\/sami2-1.00.namelist'  )
+      open ( unit=20, file='input\/deni-init.inp'        )
+      open ( unit=30, file='input\/ichem.inp'            )
+      open ( unit=50, file='input\/phabsdt.inp'          )
+      open ( unit=60, file='input\/phiondt.inp'          )
+      open ( unit=61, file='input\/phionnt.inp'          )
+      open ( unit=65, file='input\/euvflux.inp'          )
+      open ( unit=66, file='input\/thetant.inp'          )
+      open ( unit=67, file='input\/zaltnt.inp'           )
+
+      end subroutine open_input_files
+end module inputfiles

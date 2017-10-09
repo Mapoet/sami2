@@ -55,7 +55,7 @@ build/input:input
 #input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
 build/sami2-1.00.namelist:sami2-1.00.namelist
 	cp $^ $@
-obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod
+obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
 #sami2-1.00.f90:sami2-1.00.f
@@ -66,6 +66,7 @@ obj/param-1.00.o:|obj
 obj/param-1.00.o:param-1.00.f90
 	$(FC) $(FCCOPT) -c -o $@ $<
 
+obj/inputfiles.mod:obj/com-1.00.o
 obj/commons.mod:obj/com-1.00.o
 obj/com-1.00.o:|obj
 obj/com-1.00.o:com-1.00.f90

@@ -168,20 +168,20 @@
       real zi(29),denii(29,7),d(9),temp(2),app(2),whm93(2)
       real phionr(linesuv,5),fluxdat(linesuv,2)
 
-      include "gonamelist.inc"
+
 
 
 !     open input files
-
-      open ( unit=10, file='input\/sami2-1.00.namelist'  )
-      open ( unit=20, file='input\/deni-init.inp'        )
-      open ( unit=30, file='input\/ichem.inp'            )
-      open ( unit=50, file='input\/phabsdt.inp'          )
-      open ( unit=60, file='input\/phiondt.inp'          )
-      open ( unit=61, file='input\/phionnt.inp'          )
-      open ( unit=65, file='input\/euvflux.inp'          )
-      open ( unit=66, file='input\/thetant.inp'          )
-      open ( unit=67, file='input\/zaltnt.inp'           )
+      call open_input_files
+!      open ( unit=10, file='input\/sami2-1.00.namelist'  )
+!      open ( unit=20, file='input\/deni-init.inp'        )
+!      open ( unit=30, file='input\/ichem.inp'            )
+!      open ( unit=50, file='input\/phabsdt.inp'          )
+!      open ( unit=60, file='input\/phiondt.inp'          )
+!      open ( unit=61, file='input\/phionnt.inp'          )
+!      open ( unit=65, file='input\/euvflux.inp'          )
+!      open ( unit=66, file='input\/thetant.inp'          )
+!      open ( unit=67, file='input\/zaltnt.inp'           )
 
 
 
