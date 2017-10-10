@@ -17,6 +17,7 @@ PG_LOPT += -Mprof
 PG_LOPT += -Mconcur
 PG_LOPT += -Mpfi
 PG_LOPT += -Mpfo
+PG_LOPT += -module obj 
 
 
 
@@ -44,7 +45,7 @@ sami2.x: build/sami2.x
 
 build/sami2.x:|build
 build/sami2.x:|build/input
-build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o
+build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
 

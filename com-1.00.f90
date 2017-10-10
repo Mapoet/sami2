@@ -100,17 +100,42 @@ end module commons
 
 module inputfiles
       integer,parameter:: inputf=1
+      char(len=20)::inputpath='input\/'
+
+      integer,parameter::sami2_1_00_namelist=10
+      integer,parameter::deni_init_inp=20
+      integer,parameter::ichem_inp=30
+      integer,parameter::phabsdt_inp=50
+      integer,parameter::phiondt_inp=60
+      integer,parameter::phionnt_inp=61
+      integer,parameter::euvflux_inp=65
+      integer,parameter::thetant_inp=66
+      integer,parameter::zaltnt_inp=67
 contains
       subroutine open_input_files
-            open ( unit=10, file='input\/sami2-1.00.namelist'  )
-      open ( unit=20, file='input\/deni-init.inp'        )
-      open ( unit=30, file='input\/ichem.inp'            )
-      open ( unit=50, file='input\/phabsdt.inp'          )
-      open ( unit=60, file='input\/phiondt.inp'          )
-      open ( unit=61, file='input\/phionnt.inp'          )
-      open ( unit=65, file='input\/euvflux.inp'          )
-      open ( unit=66, file='input\/thetant.inp'          )
-      open ( unit=67, file='input\/zaltnt.inp'           )
+      open ( unit=sami2_1_00_namelist, file=trim(inputpath)//'sami2-1.00.namelist')
+      open ( unit=deni_init_inp, file='input\/deni-init.inp')
+      open ( unit=ichem_inp, file='input\/ichem.inp')
+      open ( unit=phabsdt_inp, file='input\/phabsdt.inp')
+      open ( unit=phiondt_inp, file='input\/phiondt.inp')
+      open ( unit=phionnt_inp, file='input\/phionnt.inp')
+      open ( unit=euvflux_inp, file='input\/euvflux.inp')
+      open ( unit=thetant_inp, file='input\/thetant.inp')
+      open ( unit=zaltnt_inp, file='input\/zaltnt.inp')
 
       end subroutine open_input_files
+
+      subroutine close_input_files
+      close ( sami2_1_00_namelist)
+      close ( deni_init_inp)
+      close ( unit=ichem_inp)
+      close ( unit=phabsdt_inp)
+      close ( unit=phiondt_inp)
+      close ( unit=phionnt_inp)
+      close ( unit=euvflux_inp)
+      close ( unit=thetant_inp)
+      close ( unit=zaltnt_inp)
+
+
+      end subroutine close_input_files
 end module inputfiles

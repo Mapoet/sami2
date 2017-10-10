@@ -188,7 +188,7 @@
 
 !     read in parameters and initial ion density data 
 
-      read(10,go)
+      read(sami2_1_00_namelist,go)
 
       dt = dt0
 
