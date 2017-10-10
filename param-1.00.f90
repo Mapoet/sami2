@@ -6,48 +6,44 @@
 !*******************************************
 !*******************************************
 module parameters
+implicit none
 !      number of altitudes
-
-       parameter ( nf   = 98,&
-                   nfp1 = nf + 1,&
-                   nfm1 = nf - 1,&
-                   nfm2 = nf - 2  )
+      INTEGER,PARAMETER::nf=98
+      INTEGER,PARAMETER::nfp1 = nf + 1
+      INTEGER,PARAMETER::nfm1 = nf - 1
+      INTEGER,PARAMETER::nfm2 = nf - 2
 
 !      number of grid cells
-     
-       parameter ( nz = 101,&
-                   nzp1 = nz + 1,&
-                   nzm1 = nz - 1  )
+      INTEGER,PARAMETER::nz = 101
+      INTEGER,PARAMETER::nzp1 = nz + 1
+      INTEGER,PARAMETER::nzm1 = nz - 1
 
 !      ion densities
 
-       integer nion,pthp,pthep,ptnp,ptop,ptn2p,ptnop,pto2p
-
-       parameter ( nion  = 7 )   ! number of ions
-       parameter ( pthp  = 1 )   ! h+
-       parameter ( pthep = 5 )   ! he+
-       parameter ( ptnp  = 7 )   ! n+
-       parameter ( ptop  = 2 )   ! o+
-       parameter ( ptn2p = 6 )   ! n2+
-       parameter ( ptnop = 3 )   ! no+
-       parameter ( pto2p = 4 )   ! o2+
+       INTEGER,PARAMETER::nion  = 7    ! number of ions
+       INTEGER,PARAMETER::pthp  = 1    ! h+
+       INTEGER,PARAMETER::pthep = 5    ! he+
+       INTEGER,PARAMETER::ptnp  = 7    ! n+
+       INTEGER,PARAMETER::ptop  = 2    ! o+
+       INTEGER,PARAMETER::ptn2p = 6    ! n2+
+       INTEGER,PARAMETER::ptnop = 3    ! no+
+       INTEGER,PARAMETER::pto2p = 4    ! o2+
 
 !      neutrals 
 
-       integer nneut,pth,pthe,ptn,pto,ptn2,ptno,pto2
 
-       parameter ( nneut = 7 )   ! number of neutrals
-       parameter ( pth   = 1 )   ! h
-       parameter ( pthe  = 5 )   ! he
-       parameter ( ptn   = 7 )   ! n
-       parameter ( pto   = 2 )   ! o
-       parameter ( ptn2  = 6 )   ! n2
-       parameter ( ptno  = 3 )   ! no
-       parameter ( pto2  = 4 )   ! o2
+       INTEGER,PARAMETER::nneut = 7    ! number of neutrals
+       INTEGER,PARAMETER::pth   = 1    ! h
+       INTEGER,PARAMETER::pthe  = 5    ! he
+       INTEGER,PARAMETER::ptn   = 7    ! n
+       INTEGER,PARAMETER::pto   = 2    ! o
+       INTEGER,PARAMETER::ptn2  = 6    ! n2
+       INTEGER,PARAMETER::ptno  = 3    ! no
+       INTEGER,PARAMETER::pto2  = 4    ! o2
 
 !      number of chemical reactions
 
-       parameter ( nchem = 21 )
+       INTEGER,PARAMETER::nchem = 21
 
 !      various constants
 
@@ -56,28 +52,37 @@ module parameters
 !      variables to keep down the error messages
 
 
-       parameter ( pie    = 3.1415927   )
-       parameter ( po180  = 1.745329e-02 )
-       parameter ( rtod   = 57.295780    )
-       parameter ( tm18   = 1.e-18       ) 
+       REAL,PARAMETER::pie    = 3.1415927   
+       REAL,PARAMETER::po180  = 1.745329e-02
+       REAL,PARAMETER::rtod   = 57.295780   
+       REAL,PARAMETER::tm18   = 1.e-18      
 
-       parameter ( spday  = 86400., sphr = 3600.   )
+       REAL,PARAMETER::spday  = 86400.
+       REAL,PARAMETER::sphr = 3600.
 
-       parameter ( gzero  = 980.665, re = 6370., bmag = 0.25 )  
+       REAL,PARAMETER::gzero  = 980.665
+       REAL,PARAMETER::re = 6370.
+       REAL,PARAMETER::bmag = 0.25
 
-       parameter ( bolt   = 1.38044e-16 )
-       parameter ( amu    = 1.67252e-24 )
-       parameter ( evtok  = 1.1604e+04  ) 
+       REAL,PARAMETER::bolt   = 1.38044e-16 
+       REAL,PARAMETER::amu    = 1.67252e-24 
+       REAL,PARAMETER::evtok  = 1.1604e+04   
 
-       parameter ( linesuv = 37, linesnt = 4 )
+       INTEGER,PARAMETER::linesuv = 37
+       INTEGER,PARAMETER::linesnt = 4
 
-       parameter ( dayve = 80., sidyr = 365.4, solinc = 23.5 )
+       REAL,PARAMETER::dayve = 80.
+       REAL,PARAMETER::sidyr = 365.4
+       REAL,PARAMETER::solinc = 23.5
 
 !      these are for the error function
 
-       parameter ( pas =   .3275911, z1 =  .2548295,&
-                   z2  = - .284496 , z3 = 1.421413,&
-                   z4  = -1.453152 , z5 = 1.0614054  )
+       REAL,PARAMETER::pas =   .3275911
+       REAL,PARAMETER::z1 =  .2548295
+       REAL,PARAMETER::z2  = - .284496
+       REAL,PARAMETER::z3 = 1.421413
+       REAL,PARAMETER::z4  = -1.453152
+       REAL,PARAMETER::z5 = 1.0614054
 
 
 end module parameters
