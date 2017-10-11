@@ -49,17 +49,15 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
-
+      implicit none
+      integer::ntm,istep,nfl
+      real::hrut,timemax,time,tprnt,tneut
 
       call initial
   
 !     open output files
 
-      if ( fmtout ) then
-        call open_f
-      else
-        call open_u
-      endif 
+      call open_uf
 
       ntm   = 0
       istep = 0
@@ -68,7 +66,6 @@
       close (68)
 
 !     time loop
-
       hrut    = hrinit
       timemax = hrmax * sphr
       istep   = 0
@@ -77,7 +74,6 @@
       time    = 0.
 
       call neutambt (hrinit) 
-
       do while (      istep .le. maxstep &
                 .and. time  .lt. timemax  )
 
@@ -115,36 +111,16 @@
           ntm      = ntm + 1
           call output ( hrut,ntm,istep )
           tprnt   = 0.
+          print *,'ouput - hour = ',hrut
         elseif ( tprnt .ge. dthr ) then
           print *,'no ouput yet - hour = ',hrut
           tprnt   = 0.
         endif
-
       enddo    ! end time loop
 
 !     close files
 
-      close (70)
-      close (71)
-      close (72)
-      close (73)
-      close (75)
-      close (78)
-      close (81)
-      close (82)
-      close (83)
-      close (84)
-      close (85)
-      close (86)
-      close (87)
-      close (88)
-
-      close (90)
-      close (91)
-      close (92)
-      close (93)
- 
- 
+      call close_uf
 
       stop
       end
@@ -162,29 +138,27 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
-
-      real f1026(nz,nf,91),f584(nz,nf,91),&
-           f304 (nz,nf,91),f1216(nz,nf,91)
-      real zi(29),denii(29,7),d(9),temp(2),app(2),whm93(2)
-      real phionr(linesuv,5),fluxdat(linesuv,2)
-
-
+      implicit none
+      include "gonamelist.inc"
+      !LOCAL VARIABLES
+      real,dimension(nz,nf,91):: f1026
+      real,dimension(nz,nf,91):: f584
+      real,dimension(nz,nf,91):: f304 
+      real,dimension(nz,nf,91):: f1216
+      real,dimension(29):: zi
+      real,dimension(29,7):: denii
+      real,dimension(9):: d
+      real,dimension(2):: temp
+      real,dimension(2):: app
+      real,dimension(2):: whm93
+      real,dimension(linesuv,5):: phionr
+      real,dimension(linesuv,2):: fluxdat
+      REAL::slope,hrl,f74,ai,xflux,sec,p
+      INTEGER::i,j,k,k0,j0,n,l,nn,iyd
 
 
 !     open input files
       call open_input_files
-!      open ( unit=10, file='input\/sami2-1.00.namelist'  )
-!      open ( unit=20, file='input\/deni-init.inp'        )
-!      open ( unit=30, file='input\/ichem.inp'            )
-!      open ( unit=50, file='input\/phabsdt.inp'          )
-!      open ( unit=60, file='input\/phiondt.inp'          )
-!      open ( unit=61, file='input\/phionnt.inp'          )
-!      open ( unit=65, file='input\/euvflux.inp'          )
-!      open ( unit=66, file='input\/thetant.inp'          )
-!      open ( unit=67, file='input\/zaltnt.inp'           )
-
-
-
 
 !     read in parameters and initial ion density data 
 
@@ -216,16 +190,12 @@
       alpha0(ptno) = 1.74
       alpha0(pto2) = 1.59
 
-!      do i = 1,7
-!        aap(i) = ap
-!      enddo
-
       aap = ap
 
 !     read in initial density data
 
       do i = 1,29
-        read(20,102) zi(i),(denii(i,j),j=1,7)
+        read(deni_init_inp,102) zi(i),(denii(i,j),j=1,7)
  102    format(1x,f7.1,1p7e8.1)
       enddo
 
@@ -234,7 +204,7 @@
 !     in format statement 104 need to 'hardwire' nneut (= 7)
 
       do k = 1,nchem
-        read(30,103) (ichem(k,j),j=1,3)
+        read(ichem_inp,103) (ichem(k,j),j=1,3)
  103    format(3i3)
       enddo
 
@@ -255,30 +225,10 @@
       call grid
 
 !     output grid data
+      call open_output_grid_files
+      call write_output_grid_files
+      call close_output_grid_files
 
-      if ( fmtout ) then
-        open ( unit=69, file='zaltf.dat'   ,form='formatted' )
-        open ( unit=76, file='glatf.dat'   ,form='formatted' )
-        open ( unit=77, file='glonf.dat'   ,form='formatted' )
-        write(69,100) alts
-        write(76,100) glats
-        write(77,100) glons
-        close(69)
-        close(76)
-        close(77)
-      else
-        open ( unit=69, file='zaltu.dat'   ,form='unformatted' )
-        open ( unit=76, file='glatu.dat'   ,form='unformatted' )
-        open ( unit=77, file='glonu.dat'   ,form='unformatted' )
-        write(69) alts
-        write(76) glats
-        write(77) glons
-        close(69)
-        close(76)
-        close(77)
-      endif
-
- 100  format (1x,1p10e16.6)
 
 ! MS: chicrit is the zenith angle below which the Sun is visible.
 ! For points on the surface this is just pi/2, but at higher
@@ -332,15 +282,17 @@
 !     initialize neutrals
 
 !     neutral density and temperature
-
+!      stop
       do j = 1,nf
         do i = 1,nz
           hrl = hrinit + glons(i,j) / 15.
-          if ( hrl .ge. 24. ) hrl = hrl - 24.
+          do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
+          
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gtd7 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
                      hrl,fbar,f10p7,aap,mmass,d,temp )
-
           denn(i,j,pth )  = snn(pth)  * d(7)
           denn(i,j,pthe)  = snn(pthe) * d(1)
           denn(i,j,ptn )  = snn(ptn)  * d(8)
@@ -353,7 +305,6 @@
                            + 5.0e-7 * denn(i,j,pto)
         enddo
       enddo
-
 !     electron and ion temperature initialization
 
       do k = nion1,nion2
@@ -383,7 +334,9 @@
           app(1)   = ap
           app(2)   = ap
           hrl = hrinit + glons(i,j) / 15.
-          if ( hrl .ge. 24. ) hrl = hrl - 24.
+          do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gws5 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
                      hrl,fbar,f10p7,app,whm93                )
@@ -395,7 +348,7 @@
 !     read in photoabsorption rates
 
       do i = 1,linesuv
-        read (50,105) (sigabsdt(i,j), j=1,3)
+        read (phabsdt_inp,105) (sigabsdt(i,j), j=1,3)
  105    format (3f7.2) 
       enddo 
 
@@ -420,7 +373,7 @@
 !     (only n, o, he, n_2, o_2)
 
       do i = 1,linesuv
-        read(60,106) (phionr(i,j), j=1,5)
+        read(phiondt_inp,106) (phionr(i,j), j=1,5)
         sigidt(i,ptn ) = phionr(i,1)
         sigidt(i,pto ) = phionr(i,2)
         sigidt(i,pthe) = phionr(i,3)
@@ -439,7 +392,7 @@
 !     (only o, n_2, n0, o_2)
 
       do i = 1,linesnt
-        read(61,106) (phionr(i,j), j=1,4)
+        read(phionnt_inp,106) (phionr(i,j), j=1,4)
         sigint(i,pto ) = phionr(i,1)
         sigint(i,ptn2) = phionr(i,2)
         sigint(i,ptno) = phionr(i,3)
@@ -458,7 +411,7 @@
       p  = 0.5 * ( f10p7 + fbar )
 
       do i = 1,linesuv
-        read (65,107) (fluxdat(i,j),j=1,2)
+        read (euvflux_inp,107) (fluxdat(i,j),j=1,2)
         f74   = fluxdat(i,1)
         ai    = fluxdat(i,2)
         xflux = 1. + ai * ( p - 80.)
@@ -474,7 +427,7 @@
 !     read in angles for nighttime deposition fluxes
 
       do i = 1,linesnt
-        read(66,108) (thetant(i,j), j=1,4)
+        read(thetant_inp,108) (thetant(i,j), j=1,4)
       enddo
  108  format (4f7.1)
 
@@ -483,7 +436,7 @@
 !       zaltnt(i,2): zmax(i)
 
       do i = 1,linesnt
-        read(67,108) (zaltnt(i,j), j=1,2)
+        read(zaltnt_inp,108) (zaltnt(i,j), j=1,2)
       enddo
  109  format (2f7.1)
 
@@ -507,40 +460,22 @@
 
 !     intialize diagnostic variables to 0
 
-      do j = 1,nf
-        do i = 1,nz
-          u1(i,j) = 0.
-          u2(i,j) = 0.
-          u3(i,j) = 0.
-          u4(i,j) = 0.
-          u5(i,j) = 0.
-        enddo
-      enddo
-
-      do k = 1,nion
-        do j = 1,nf
-          do i = 1,nz
-            t1(i,j,k) = 0.
-            t2(i,j,k) = 0.
-            t3(i,j,k) = 0.
-          enddo
-        enddo
-      enddo
-
+      u1=0.
+      u2=0.
+      u3=0.
+      u4=0.
+      u5=0.
+      
+      
+      t1 = 0.
+      t2 = 0.
+      t3 = 0.
 
 
 
 
 !         close opened files
-      close (10)
-      close (20)
-      close (30)
-      close (50)
-      close (60)
-      close (61)
-      close (65)
-      close (66)
-      close (67)
+      call close_input_files
 
       print *,' finished initialization'
 
@@ -610,7 +545,9 @@
       do j = 1,nf
         do i = 1,nz
           hrl = hrut + glons(i,j) / 15.
-          if ( hrl .ge. 24. ) hrl = hrl - 24.
+          do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gtd7 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
                      hrl,fbar,f10p7,aap,mmass,d,temp )
@@ -653,7 +590,9 @@
           app(1)   = ap
           app(2)   = ap
           hrl = hrut + glons(i,j) / 15.
-          if ( hrl .ge. 24. ) hrl = hrl - 24.
+          do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
           call msistim ( int(year),int(day),hrl,glons(i,j),iyd,sec )
           call gws5 ( iyd,sec,alts(i,j),glats(i,j),glons(i,j),&
                      hrl,fbar,f10p7,app,whm93                )
@@ -2526,7 +2465,9 @@
 
        do i = 1,nz
          hrl = hrut + glons(i,nfl) / 15.
-         if ( hrl .ge. 24. ) hrl = hrl - 24.
+         do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
          sdec         = rtod * asin (  sin (2.*pie*(day-dayve)/sidyr)&
                                * sin (solinc/rtod)             )
          cossdec      = cos ( po180 * sdec )
@@ -2919,79 +2860,7 @@
       return
       end
 
-!*******************************************
-!*******************************************
 
-!             open_u
-
-!*******************************************
-!*******************************************
-
-      subroutine open_u
-
-!     open output files (unformatted, except time.dat)
-
-      open ( unit=70, file='time.dat'      ,form='formatted'   )
-      open ( unit=71, file='deniu.dat'     ,form='unformatted' )
-      open ( unit=72, file='tiu.dat'       ,form='unformatted' )
-      open ( unit=73, file='vsiu.dat'      ,form='unformatted' )
-      open ( unit=75, file='teu.dat'       ,form='unformatted' )
-      open ( unit=78, file='vnu.dat'       ,form='unformatted' )
-      open ( unit=90, file='vtu.dat'       ,form='unformatted' )
-      open ( unit=91, file='vru.dat'       ,form='unformatted' )
-      open ( unit=92, file='dennu.dat'     ,form='unformatted' )
-      open ( unit=93, file='vexbu.dat'     ,form='unformatted' )
-
-!     diagnostic files (unformatted)
-
-      open ( unit=81, file='t1u.dat'  ,form='unformatted' )
-      open ( unit=82, file='t2u.dat'  ,form='unformatted' )
-      open ( unit=83, file='t3u.dat'  ,form='unformatted' )
-      open ( unit=84, file='u1u.dat'  ,form='unformatted' )
-      open ( unit=85, file='u2u.dat'  ,form='unformatted' )
-      open ( unit=86, file='u3u.dat'  ,form='unformatted' )
-      open ( unit=87, file='u4u.dat'  ,form='unformatted' )
-      open ( unit=88, file='u5u.dat'  ,form='unformatted' )
-
-      return
-      end
-
-!*******************************************
-!*******************************************
-
-!             open_f
-
-!*******************************************
-!*******************************************
-
-      subroutine open_f
-
-!     open output files (formatted)
-
-      open ( unit=70, file='time.dat'      ,form='formatted' )
-      open ( unit=71, file='denif.dat'     ,form='formatted' )
-      open ( unit=72, file='tif.dat'       ,form='formatted' )
-      open ( unit=73, file='vsif.dat'      ,form='formatted' )
-      open ( unit=75, file='tef.dat'       ,form='formatted' )
-      open ( unit=78, file='vnf.dat'       ,form='formatted' )
-      open ( unit=90, file='vtf.dat'       ,form='formatted' )
-      open ( unit=91, file='vrf.dat'       ,form='formatted' )
-      open ( unit=92, file='dennf.dat'     ,form='formatted' )
-      open ( unit=93, file='vexbf.dat'     ,form='formatted' )
-
-!     diagnostic files (formatted)
-
-      open ( unit=81, file='t1f.dat'  ,form='formatted' )
-      open ( unit=82, file='t2f.dat'  ,form='formatted' )
-      open ( unit=83, file='t3f.dat'  ,form='formatted' )
-      open ( unit=84, file='u1f.dat'  ,form='formatted' )
-      open ( unit=85, file='u2f.dat'  ,form='formatted' )
-      open ( unit=86, file='u3f.dat'  ,form='formatted' )
-      open ( unit=87, file='u4f.dat'  ,form='formatted' )
-      open ( unit=88, file='u5f.dat'  ,form='formatted' )
-
-      return
-      end
 
 !*******************************************
 !*******************************************
@@ -3103,7 +2972,9 @@
 
 
       hrl = hrut + glons(nzh,1) / 15.
-      if ( hrl .ge. 24. ) hrl = hrl - 24.
+      do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
       call vdrift_model(hrl,glon_in,param,vd,fejer,ve01)
 
       do j = 1,nf

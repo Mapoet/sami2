@@ -54,8 +54,8 @@ obj build:
 build/input:input
 	cp -r $^ $@
 #input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
-build/sami2-1.00.namelist:sami2-1.00.namelist
-	cp $^ $@
+build/input/sami2-1.00.namelist:input/sami2-1.00.namelist
+	cp -f $^ $@
 obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
