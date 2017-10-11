@@ -499,10 +499,14 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
+      implicit  none
+      REAL::hrut
 
       real d(9),temp(2)
       real whm93(2),app(2)
-
+      !LOCAL VARIABLES
+      INTEGER::i,j,iyd,SEC
+      REAL::hrl
 !     no obtained from eq. (128) - bailey and balan (red book)
 
 !     neutral density and temperature
@@ -616,7 +620,7 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc'
-
+      implicit none
       real prod(nz,nion),loss(nz,nion),lossr,&
           phprodr(nz,nion),chrate(nz,nchem),&
           chloss(nz,nion),chprod(nz,nion),relossr(nz,nion)
@@ -626,6 +630,8 @@
           nuij(nz,nion,nion),sumnuj(nz,nion)
       real vsin(nz,nion),vsidn(nz,nion),denin(nz,nion)
       real ten(nz),tin(nz,nion)
+      !LOCAL VARIABLES
+      INTEGER::i,j,nfl,nni,nj,ni
 
 !     calculation of production and loss
 !       phprodr: photo production rates
@@ -838,11 +844,19 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
+      implicit none
+      !external atm_chapman
+      REAL atm_chapman
 
       real cxl(nz,nf)
-      real phprodr(nz,nion),xmass(3)
+      real phprodr(nz,nion)
+      INTEGER::nfl
+
+      real xmass(3)
       integer idx(3)
 
+      REAL::hcof,rp,rp2,xscale,hscale,exa,coschi,y1,ch1,flx,ang
+      INTEGER::iz,i,j,l,itheta
 !     scale height of neutral atmosphere
 
       hcof = 1.e-5 * bolt / ( gzero * amu * re ** 2 )
@@ -924,9 +938,11 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc'
-
+      implicit none
       real chrate(nz,nchem)
-
+      INTEGER::nfl
+      INTEGER::iz
+      REAL::ti300o
       do iz = 1,nz
 
       ti300o = ti(iz,nfl,ptop) / 300.
@@ -1006,8 +1022,12 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
-
+      implicit none
       real relossr(nz,nion)
+      INTEGER::nfl
+
+      INTEGER::iz
+      REAL::te300
 
       do iz = 1,nz
 
@@ -1044,9 +1064,14 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
+      implicit none
+      real chrate(nz,nchem)
+      REAL::chloss(nz,nion)
+      REAL::chprod(nz,nion)
+      INTEGER::nfl
 
-      real chrate(nz,nchem),chloss(nz,nion),chprod(nz,nion)
-
+      INTEGER::i,iz,k,il,in,ip
+      REAL::chem,tdeni
       do i = nion1,nion2
         do iz = 1,nz
           chloss(iz,i)   = 0.
@@ -1081,13 +1106,19 @@
 
       include 'param-1.00.inc'
       include 'com-1.00.inc'
+      implicit none
 
-      real nuin(nz,nion,nneut),nuij(nz,nion,nion)
-      real nuint(nz,nion)
-      real sumnuj(nz,nion),nufacij,nufacin
       real tvn(nz)
-      real k0,mi
+      real nuin(nz,nion,nneut)
+      REAL::sumnuj(nz,nion)
+      REAL::nuij(nz,nion,nion)
+      INTEGER::nfl
 
+      real nuint(nz,nion)
+      real nufacij,nufacin
+      real k0,mi
+      INTEGER::ni,nn,i,nj
+      REAL::teff,fac,tfactor,amuf,amimn,alame1,alame2,alame,alam,amufac,term1,term2,term3,pip,pim,pep,pem,denid,dened
 !     ion-neutral collision frequency
 
 !     initialize everything to 0
