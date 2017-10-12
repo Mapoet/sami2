@@ -869,15 +869,6 @@ contains
 
 !     initialize everything to 0
 
-!      do nn = 1,nneut
-!        do ni = nion1,nion2
-!          do iz = 1,nz
-!            nuin (iz,ni,nn) = 0.
-!            nuint(iz,ni)    = 0.
-!          enddo
-!        enddo
-!      enddo
-
       nuin = 0.
       nuint = 0.
 
@@ -1012,14 +1003,7 @@ contains
 
 !     ion-ion collision frequency
 
-!      do nj = nion1,nion2
-!        do ni = nion1,nion2
-!          do i = 1,nz
-!            nuij(i,ni,nj) = 0.
-!          enddo
-!        enddo
-!      enddo
-	nuij = 0.
+      nuij = 0.
 
       do nj = nion1,nion2
         do ni = nion1,nion2
@@ -1064,20 +1048,7 @@ contains
 
 !     update ne
 
-!     modified do loop to speed up
-
-!      do i = 1,nz
-!      ne(i,nfl) = 1.
-!        do ni = nion1,nion2
-!          ne(i,nfl) = ne(i,nfl) + deni(i,nfl,ni)
-!        enddo
-!      enddo
-
-      do ni = nion1,nion2
-        do i = 1,nz
-          ne(i,nfl) = 1.
-        enddo
-      enddo
+      ne = 1.
 
       do ni = nion1,nion2
         do i = 1,nz
@@ -1234,13 +1205,6 @@ contains
       
 
 !     initialize
-
-!      do j = 1,nz
-!        a(j) = 0.
-!        b(j) = 0.
-!        c(j) = 0.
-!        d(j) = 0.
-!      enddo
 
       a = 0.
       b = 0.
@@ -1403,13 +1367,6 @@ contains
 
 !     initialize
 
-!      do j = 1,nz
-!        a(j) = 0.
-!        b(j) = 0.
-!        c(j) = 0.
-!        d(j) = 0.
-!      enddo
-
       a = 0.
       b = 0.
       c = 0.
@@ -1516,16 +1473,13 @@ contains
       REAL::dels300s,dels300n,xn,xs,xints,xintn,xqs
       REAL::xqn,vexbeq
 
-      do i = 1,nz
-        s1e(i)  = 0.
-        s2e(i)  = 0.
-        s3e(i)  = 0.
-        s4e(i)  = 0.
-        kape(i) = 0.
-        do ni = 1,nneut
-          qen(i,ni) = 0.
-        enddo
-      enddo
+      s1e = 0.
+      s2e = 0.
+      s3e = 0.
+      s4e = 0.
+      kape = 0.
+      qen = 0.
+
 
       do i = 1,nz
 
@@ -1826,17 +1780,6 @@ contains
 
       convfac = amu / bolt / 3.
 
-!      do i = 1,nz
-!        s1i(i)  = 0.
-!        s2i(i)  = 0.
-!        s3i(i)  = 0.
-!        s4i(i)  = 0.
-!        s5i(i)  = 0.
-!        s6i(i)  = 0.
-!        s7i(i)  = 0.
-!        kapi(i) = 0.
-!      enddo
-
       s1i = 0.
       s2i = 0.
       s3i = 0.
@@ -1941,17 +1884,6 @@ contains
 
       convfac = amu / bolt / 3.
 
-!      do i = 1,nz
-!        s1i(i)  = 0.
-!        s2i(i)  = 0.
-!        s3i(i)  = 0.
-!        s4i(i)  = 0.
-!        s5i(i)  = 0.
-!        s6i(i)  = 0.
-!        s7i(i)  = 0.
-!        kapi(i) = 0.
-!      enddo
-
       s1i = 0.
       s2i = 0.
       s3i = 0.
@@ -2053,17 +1985,6 @@ contains
 
       convfac = amu / bolt / 3.
 
-!      do i = 1,nz
-!        s1i(i)  = 0.
-!        s2i(i)  = 0.
-!        s3i(i)  = 0.
-!        s4i(i)  = 0.
-!        s5i(i)  = 0.
-!        s6i(i)  = 0.
-!        s7i(i)  = 0.
-!        kapi(i) = 0.
-!      enddo
-
       s1i = 0.
       s2i = 0.
       s3i = 0.
@@ -2163,13 +2084,6 @@ contains
       
 
 !     initialize
-
-!      do j = 1,nz
-!        a(j) = 0.
-!        b(j) = 0.
-!        c(j) = 0.
-!        d(j) = 0.
-!      enddo
 
       a = 0.
       b = 0.
@@ -2273,13 +2187,6 @@ contains
       INTEGER::j
 !     initialize
 
-!      do j = 1,nz
-!        a(j) = 0.
-!        b(j) = 0.
-!        c(j) = 0.
-!        d(j) = 0.
-!      enddo
-
       a = 0.
       b = 0.
       c = 0.
@@ -2325,5 +2232,55 @@ contains
 
       return
       end
+
+
+!*******************************************
+!*******************************************
+
+!            zenith
+
+!*******************************************
+!*******************************************
+
+       subroutine zenith (hrut,nfl)
+
+       include 'param-1.00.inc'
+       include 'com-1.00.inc' 
+      implicit none
+      REAL::hrut,sdec,cossdec,sinsdec,clat,slat
+      INTEGER::nfl
+!      geometric variables
+
+!      sdec: solar zenith angle
+!      cx:  cos of the zenith angle
+
+      !LOCAL VARIABLES
+      INTEGER::i
+      REAL::hrl
+       do i = 1,nz
+         hrl = hrut + glons(i,nfl) / 15.
+         do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
+         sdec         = rtod * asin (  sin (2.*pie*(day-dayve)/sidyr)&
+                               * sin (solinc/rtod)             )
+         cossdec      = cos ( po180 * sdec )
+         sinsdec      = sin ( po180 * sdec )
+         clat         = cos ( po180 * glats(i,nfl) )
+         slat         = sin ( po180 * glats(i,nfl) )
+         cx(i,nfl)    =   slat * sinsdec&
+                  - clat * cossdec * cos ( 15.0*po180*hrl )
+!         u3(i,nfl)    = cx(i,nfl)
+! MS: Since we will be taking acos of this value in photprod, make
+! sure that the absolute value does not minutely exceed 1 because of
+! round-off error.
+         if (abs(abs(cx(i,nfl))-1.) .lt. 1.e-6)&
+      cx(i,nfl) = sign(1.,cx(i,nfl))
+       enddo
+
+       return
+       end
+
+
 
 end module commonsubroutines

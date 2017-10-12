@@ -45,7 +45,7 @@ sami2.x: build/sami2.x
 
 build/sami2.x:|build
 build/sami2.x:|build/input
-build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o
+build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
 
@@ -56,13 +56,20 @@ build/input:input
 #input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
 build/input/sami2-1.00.namelist:input/sami2-1.00.namelist
 	cp -f $^ $@
-obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod obj/commonsubroutines.mod
+obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod obj/commonsubroutines.mod obj/vdrift_model.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
 
 obj/parameters.mod:obj/param-1.00.o
 obj/param-1.00.o:|obj
 obj/param-1.00.o:param-1.00.f90
+	$(FC) $(FCCOPT) -c -o $@ $<
+
+
+
+obj/vdrift_model.mod:obj/vdrift_model.o
+obj/vdrift_model.o:|obj
+obj/vdrift_model.o:vdrift_model.f90
 	$(FC) $(FCCOPT) -c -o $@ $<
 
 obj/commonsubroutines.mod:obj/com-subroutines.o
