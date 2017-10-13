@@ -1,3 +1,8 @@
+ARCH=i386
+ARCH=amd64
+INC_ADD= '$(subst \,/,$(MSMPI_INC));$(subst \,/,$(MSMPI_INC))$(ARCH)'
+
+
 
 PG_COMPILER=pgfortran
 
@@ -9,7 +14,8 @@ PG_COPT  =
 #PG_COPT += -Mpfi
 #PG_COPT += -Mpfo
 #PG_COPT += -fast
-PG_COPT += -module obj 
+PG_COPT += -module obj
+PG_COPT += -I$(INC_ADD)
 
 PG_LOPT  =
 #PG_LOPT += -acclibs
@@ -17,7 +23,8 @@ PG_LOPT  =
 #PG_LOPT += -Mconcur
 #PG_LOPT += -Mpfi
 #PG_LOPT += -Mpfo
-PG_LOPT += -module obj 
+PG_LOPT += -module obj
+PG_LOPT += -Mmpi=msmpi
 
 
 
@@ -45,7 +52,7 @@ sami2.x: build/sami2.x
 
 build/sami2.x:|build
 build/sami2.x:|build/input
-build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o
+build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
 
@@ -56,7 +63,7 @@ build/input:input
 #input:deni-init.inp euvflux.inp ichem.inp phabsdt.inp phiondt.inp
 build/input/sami2-1.00.namelist:input/sami2-1.00.namelist
 	cp -f $^ $@
-obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod obj/commonsubroutines.mod obj/vdrift_model.mod
+obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod obj/commonsubroutines.mod obj/vdrift_model.mod obj/mpi_client.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
 
@@ -66,6 +73,11 @@ obj/param-1.00.o:param-1.00.f90
 	$(FC) $(FCCOPT) -c -o $@ $<
 
 
+
+obj/mpi_client.mod:obj/mpi_client.o
+obj/mpi_client.o:|obj
+obj/mpi_client.o:mpi_client.f90
+	$(FC) $(FCCOPT) -c -o $@ $<
 
 obj/vdrift_model.mod:obj/vdrift_model.o
 obj/vdrift_model.o:|obj

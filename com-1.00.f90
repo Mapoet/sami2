@@ -494,15 +494,15 @@ contains
       use commons
       implicit none
       if ( fmtout ) then
-        write(zaltf_dat,100) alts
-        write(glatf_dat,100) glats
-        write(glonf_dat,100) glons
+        write(zaltf_dat,105) alts
+        write(glatf_dat,105) glats
+        write(glonf_dat,105) glons
       else
         write(zaltf_dat) alts
         write(glatf_dat) glats
         write(glonf_dat) glons
       endif
- 100  format (1x,1p10e16.6)
+ 105  format (1x,1p10e16.6)
 
       end subroutine write_output_grid_files
       
@@ -540,7 +540,7 @@ contains
       INTEGER::fileunit=0
 
       call system('mkdir ' // adjustl(trim( outputpath ) ) )
-      
+
       filename='time'//'.dat'
       fileunit=time_dat
       fileform=merge('formatted  ','unformatted',.true.)
@@ -688,45 +688,45 @@ contains
 
        write (*,*) 'istep = ',istep,'ntm = ',ntm,&
                    'time step = ',dt,' hour = ',hrut
-       write (70,100) ntm,nthr,ntmin,ntsec
+       write (time_dat,100) ntm,nthr,ntmin,ntsec
 
        if ( fmtout ) then
-         write(71,101) deni
-         write(72,101) ti
-         write(73,101) vsi
-         write(75,101) te
-!         write(78,101) vn
-!         write(81,101) t1
-!         write(82,101) t2
-!         write(83,101) t3
-!         write(84,101) u1
-!         write(85,101) u2
-!         write(86,101) u3
-!         write(87,101) u4
-!         write(88,101) u5
-!         write(90,101) vot
-!         write(91,101) vor
-!         write(92,101) denn
+         write(denif_dat,101) deni
+         write(tif_dat,101) ti
+         write(vsif_dat,101) vsi
+         write(tef_dat,101) te
+!         write(vnf_dat,101) vn
+!         write(t1f_dat,101) t1
+!         write(t2f_dat,101) t2
+!         write(t3f_dat,101) t3
+!         write(u1f_dat,101) u1
+!         write(u2f_dat,101) u2
+!         write(u3f_dat,101) u3
+!         write(u4f_dat,101) u4
+!         write(u5f_dat,101) u5
+!         write(vtf_dat,101) vot
+!         write(vrf_dat,101) vor
+!         write(dennf_dat,101) denn
        endif 
 
        if ( .not. fmtout ) then
-         write(71) deni
-         write(72) ti
-         write(73) vsi
-         write(75) te
-!         write(78) vn
-!         write(81) t1
-!         write(82) t2
-!         write(83) t3
-         write(84) u1
-         write(85) u2
-         write(86) u3
-         write(87) u4
-         write(88) u5
-!         write(90) vot
-!         write(91) vor
-!         write(92) denn
-!         write(93) vexbp
+         write(denif_dat) deni
+         write(tif_dat) ti
+         write(vsif_dat) vsi
+         write(tef_dat) te
+!         write(vnf_dat) vn
+!         write(t1f_dat) t1
+!         write(t2f_dat) t2
+!         write(t3f_dat) t3
+         write(u1f_dat) u1
+         write(u2f_dat) u2
+         write(u3f_dat) u3
+         write(u4f_dat) u4
+         write(u5f_dat) u5
+!         write(vtf_dat) vot
+!         write(vrf_dat) vor
+!         write(dennf_dat) denn
+!         write(vexbf_dat) vexbp
        endif
 
  100   format(1x,4i6)

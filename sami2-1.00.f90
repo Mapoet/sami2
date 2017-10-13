@@ -46,14 +46,29 @@
 !     *******************************************
 !
       program main
+      
 
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
       use commonsubroutines
+      use mpi_client
       implicit none
+      include "mpif.h"
+      integer::status(MPI_STATUS_SIZE)
+      !MPI_Request request
       integer::ntm,istep,nfl
       real::hrut,timemax,time,tprnt,tneut
+      INTEGER::i
+      INTEGER,DIMENSION(:),allocatable::nfsize,nfstindex
 
+
+      call MPI_INIT(ierr)
+      call MPI_COMM_RANK(MPI_COMM_WORLD, taskid, ierr)
+      call MPI_COMM_SIZE(MPI_COMM_WORLD, numtasks, ierr)
+
+
+      if(taskid .EQ. 0) then
+      call init_param
       call initial
   
 !     open output files
@@ -65,7 +80,36 @@
 !      call output ( hrinit,ntm,istep )
 
       close (68)
+      ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
+      nfstindex=1
+      i=1
+      do i = 1,numtasks-1,1
+          call MPI_SEND(merge(i-1,numtasks-1,i .ne. 1),1,MPI_INT,i,0,MPI_COMM_WORLD,status)
+          call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status)
 
+          nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2),i.ne.numtasks-1)+merge(1,0,i.eq.1)+merge(1,0,i.eq.numtasks-1)
+          
+          nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
+          call MPI_SEND(nfsize(i)+2,1,MPI_INT,i,0,MPI_COMM_WORLD,status)
+
+
+          !
+          !MPI_SEND(nzpart,1,MPI_INT,i,MPI_COMM_WORLD,status)
+      enddo 
+      endif
+
+      if(taskid .NE. 0) then
+          call MPI_RECV(left,1,MPI_INT,0,0,MPI_COMM_WORLD,status)
+          call MPI_RECV(right,1,MPI_INT,0,0,MPI_COMM_WORLD,status)
+          call MPI_RECV(nf,1,MPI_INT,0,0,MPI_COMM_WORLD,status)
+
+          call init_param
+
+          print *,left,right,nf,nfp1,nfm1
+          call flush(6)
+      endif
+
+      if(taskid .EQ. 0) then
 !     time loop
       hrut    = hrinit
       timemax = hrmax * sphr
@@ -116,12 +160,18 @@
           print *,'no ouput yet - hour = ',hrut
           tprnt   = 0.
         endif
+         call flush(6)
       enddo    ! end time loop
 
 !     close files
 
       call close_uf
+      DEALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
       call deinit_memory
+      
+      endif
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      call MPI_FINALIZE(ierr)
 !      stop
       end
 
