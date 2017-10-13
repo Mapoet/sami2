@@ -503,7 +503,6 @@ contains
       imax = 1
 
 !     determine f for the 4 known values of theta
-
       do i = 1,nz
         if ( alts(i,nfl) .lt. zaltnt(line,1) ) then
           do k = 1,4
@@ -534,7 +533,6 @@ contains
          amax1 ( 1., f( i,nfl,int(thetant(line,k))+1-90 ) )
         enddo
       enddo
-
 !     now interpolate to all valuse of theta (90 - 180)
 
       do k = 1,91

@@ -45,31 +45,31 @@ implicit none
 
 
 !     s grid data
-      real,save,dimension(nz,nf)::alts
+      real,save,dimension(:,:),allocatable::alts
 
-      real,save,dimension(nz,nf)::grs
-      real,save,dimension(nz,nf)::glats
-      real,save,dimension(nz,nf)::glons
-      real,save,dimension(nz,nf)::bms
-      real,save,dimension(nz)::gs
-      real,save,dimension(nz,nf)::ps
-      real,save,dimension(nz,nf)::blats
-      real,save,dimension(nz,nf)::coschicrit
-      real,save,dimension(nz,nf)::ds
-      real,save,dimension(nz,nf)::d2s
-      real,save,dimension(nz,nf)::d22s
-      real,save,dimension(nz,nf)::dels
-      real,save,dimension(nf)::grad_inp
+      real,save,dimension(:,:),allocatable::grs
+      real,save,dimension(:,:),allocatable::glats
+      real,save,dimension(:,:),allocatable::glons
+      real,save,dimension(:,:),allocatable::bms
+      real,save,dimension(:),allocatable::gs
+      real,save,dimension(:,:),allocatable::ps
+      real,save,dimension(:,:),allocatable::blats
+      real,save,dimension(:,:),allocatable::coschicrit
+      real,save,dimension(:,:),allocatable::ds
+      real,save,dimension(:,:),allocatable::d2s
+      real,save,dimension(:,:),allocatable::d22s
+      real,save,dimension(:,:),allocatable::dels
+      real,save,dimension(:),allocatable::grad_inp
 
-      real,save,dimension(nzp1,nf)::xnorms
-      real,save,dimension(nzp1,nf)::ynorms
-      real,save,dimension(nzp1,nf)::znorms
-      real,save,dimension(nz,nfp1)::xnormp
-      real,save,dimension(nz,nfp1)::ynormp
-      real,save,dimension(nz,nfp1)::znormp
-      real,save,dimension(nz,nf)::arg
-      real,save,dimension(nz,nf)::athg
-      real,save,dimension(nz,nf)::aphig
+      real,save,dimension(:,:),allocatable::xnorms
+      real,save,dimension(:,:),allocatable::ynorms
+      real,save,dimension(:,:),allocatable::znorms
+      real,save,dimension(:,:),allocatable::xnormp
+      real,save,dimension(:,:),allocatable::ynormp
+      real,save,dimension(:,:),allocatable::znormp
+      real,save,dimension(:,:),allocatable::arg
+      real,save,dimension(:,:),allocatable::athg
+      real,save,dimension(:,:),allocatable::aphig
 
 
 !       alts     altitude  (in km) on s mesh
@@ -83,18 +83,18 @@ implicit none
  
 !     p grid data
       real,save:: dt
-      real,save,dimension(nz,nfp1)::delsp
-      real,save,dimension(nz,nf)::vol
-      real,save,dimension(nz,nfp1)::areap
-      real,save,dimension(nz,nfp1)::areas
-      real,save,dimension(nzp1,nfp1)::vnx
-      real,save,dimension(nzp1,nfp1)::vny
-      real,save,dimension(nzp1,nfp1)::vnz
-      real,save,dimension(nz,nfp1,2)::xdels
-      real,save,dimension(nzp1,nf,2)::xdelp
-      real,save,dimension(nzp1,nf)::vexbs
-      real,save,dimension(nz,nfp1)::vexbp
-      real,save,dimension(nzp1,nfp1)::vexb
+      real,save,dimension(:,:),allocatable::delsp
+      real,save,dimension(:,:),allocatable::vol
+      real,save,dimension(:,:),allocatable::areap
+      real,save,dimension(:,:),allocatable::areas
+      real,save,dimension(:,:),allocatable::vnx
+      real,save,dimension(:,:),allocatable::vny
+      real,save,dimension(:,:),allocatable::vnz
+      real,save,dimension(:,:,:),allocatable::xdels
+      real,save,dimension(:,:,:),allocatable::xdelp
+      real,save,dimension(:,:),allocatable::vexbs
+      real,save,dimension(:,:),allocatable::vexbp
+      real,save,dimension(:,:),allocatable::vexb
 
 !     delsp      actual arc length of grid in s direction on p grid
 !     vol        volume (i.e., area) of cell
@@ -107,25 +107,25 @@ implicit none
 
 !     variables
 
-      real,save,dimension(nz,nf,nion)::deni
-      real,save,dimension(nz,nf,nneut)::denn
-      real,save,dimension(nz,nf)::ne
-      real,save,dimension(nz,nf,nion)::vsi
-      real,save,dimension(nz,nf,nion)::vsid
-      real,save,dimension(nz,nf,nion)::sumvsi
-      real,save,dimension(nz,nf,nion)::vsic
-      real,save,dimension(nz,nf)::te
-      real,save,dimension(nz,nf,nion)::ti
-      real,save,dimension(nz,nf)::tn
-      real,save,dimension(nz,nf)::u
-      real,save,dimension(nz,nf)::v
-      real,save,dimension(nz,nf)::vpi
+      real,save,dimension(:,:,:),allocatable::deni
+      real,save,dimension(:,:,:),allocatable::denn
+      real,save,dimension(:,:),allocatable::ne
+      real,save,dimension(:,:,:),allocatable::vsi
+      real,save,dimension(:,:,:),allocatable::vsid
+      real,save,dimension(:,:,:),allocatable::sumvsi
+      real,save,dimension(:,:,:),allocatable::vsic
+      real,save,dimension(:,:),allocatable::te
+      real,save,dimension(:,:,:),allocatable::ti
+      real,save,dimension(:,:),allocatable::tn
+      real,save,dimension(:,:),allocatable::u
+      real,save,dimension(:,:),allocatable::v
+      real,save,dimension(:,:),allocatable::vpi
 
 
 !     velocity in radial (vor) and theta (vot) directions 
 
-      real,save,dimension(nz,nf,nion)::vot
-      real,save,dimension(nz,nf,nion)::vor
+      real,save,dimension(:,:,:),allocatable::vot
+      real,save,dimension(:,:,:),allocatable::vor
 
 
 !     atomic masses
@@ -137,7 +137,7 @@ implicit none
 
 !     zenith datt
 
-      real,save,dimension(nz,nf)::cx
+      real,save,dimension(:,:),allocatable::cx
 
 !     photodeposition rates
 !     used 3 (absorption) and 7 (nion) explicitly
@@ -147,21 +147,21 @@ implicit none
       real,save,dimension(linesuv)::flux
       real,save,dimension(linesuv,7)::sigidt
       real,save,dimension(linesnt,7)::sigint
-      real,save,dimension(nz,nf,91,linesnt)::fluxnt
+      real,save,dimension(:,:,:,:),allocatable::fluxnt
       real,save,dimension(linesnt,4)::thetant
       real,save,dimension(linesnt,2)::zaltnt
 
 
 !     diagnostic variables
 
-      real,save,dimension(nz,nf,nion)::t1
-      real,save,dimension(nz,nf,nion)::t2
-      real,save,dimension(nz,nf,nion)::t3
-      real,save,dimension(nz,nf)::u1
-      real,save,dimension(nz,nf)::u2
-      real,save,dimension(nz,nf)::u3
-      real,save,dimension(nz,nf)::u4
-      real,save,dimension(nz,nf)::u5
+      real,save,dimension(:,:,:),allocatable::t1
+      real,save,dimension(:,:,:),allocatable::t2
+      real,save,dimension(:,:,:),allocatable::t3
+      real,save,dimension(:,:),allocatable::u1
+      real,save,dimension(:,:),allocatable::u2
+      real,save,dimension(:,:),allocatable::u3
+      real,save,dimension(:,:),allocatable::u4
+      real,save,dimension(:,:),allocatable::u5
 
       real,save::x0
       real,save::y0
@@ -171,10 +171,158 @@ implicit none
       real,save::bb0
  
 
+contains
+      subroutine init_memory
+      include 'param-1.00.inc'
+      implicit none
 
+      ALLOCATE(alts(nz,nf))
+      ALLOCATE(grs(nz,nf))
+      ALLOCATE(glats(nz,nf))
+      ALLOCATE(glons(nz,nf))
+      ALLOCATE(bms(nz,nf))
+      ALLOCATE(gs(nz))
+      ALLOCATE(ps(nz,nf))
+      ALLOCATE(blats(nz,nf))
+      ALLOCATE(coschicrit(nz,nf))
+      ALLOCATE(ds(nz,nf))
+      ALLOCATE(d2s(nz,nf))
+      ALLOCATE(d22s(nz,nf))
+      ALLOCATE(dels(nz,nf))
+      ALLOCATE(grad_inp(nf))
+
+      ALLOCATE(xnorms(nzp1,nf))
+      ALLOCATE(ynorms(nzp1,nf))
+      ALLOCATE(znorms(nzp1,nf))
+      ALLOCATE(xnormp(nz,nfp1))
+      ALLOCATE(ynormp(nz,nfp1))
+      ALLOCATE(znormp(nz,nfp1))
+      ALLOCATE(arg(nz,nf))
+      ALLOCATE(athg(nz,nf))
+      ALLOCATE(aphig(nz,nf))
+
+      ALLOCATE(delsp(nz,nfp1))
+      ALLOCATE(vol(nz,nf))
+      ALLOCATE(areap(nz,nfp1))
+      ALLOCATE(areas(nz,nfp1))
+      ALLOCATE(vnx(nzp1,nfp1))
+      ALLOCATE(vny(nzp1,nfp1))
+      ALLOCATE(vnz(nzp1,nfp1))
+      ALLOCATE(xdels(nz,nfp1,2))
+      ALLOCATE(xdelp(nzp1,nf,2))
+      ALLOCATE(vexbs(nzp1,nf))
+      ALLOCATE(vexbp(nz,nfp1))
+      ALLOCATE(vexb(nzp1,nfp1))
+
+      ALLOCATE(deni(nz,nf,nion))
+      ALLOCATE(denn(nz,nf,nneut))
+      ALLOCATE(ne(nz,nf))
+      ALLOCATE(vsi(nz,nf,nion))
+      ALLOCATE(vsid(nz,nf,nion))
+      ALLOCATE(sumvsi(nz,nf,nion))
+      ALLOCATE(vsic(nz,nf,nion))
+      ALLOCATE(te(nz,nf))
+      ALLOCATE(ti(nz,nf,nion))
+      ALLOCATE(tn(nz,nf))
+      ALLOCATE(u(nz,nf))
+      ALLOCATE(v(nz,nf))
+      ALLOCATE(vpi(nz,nf))
+
+
+      ALLOCATE(vot(nz,nf,nion))
+      ALLOCATE(vor(nz,nf,nion))
+
+
+
+      ALLOCATE(cx(nz,nf))
+
+      ALLOCATE(fluxnt(nz,nf,91,linesnt))
+
+      ALLOCATE(t1(nz,nf,nion))
+      ALLOCATE(t2(nz,nf,nion))
+      ALLOCATE(t3(nz,nf,nion))
+      ALLOCATE(u1(nz,nf))
+      ALLOCATE(u2(nz,nf))
+      ALLOCATE(u3(nz,nf))
+      ALLOCATE(u4(nz,nf))
+      ALLOCATE(u5(nz,nf))
+
+      end subroutine init_memory
+
+      subroutine deinit_memory
+      implicit none
+      DEALLOCATE(alts(nz,nf))
+      DEALLOCATE(grs(nz,nf))
+      DEALLOCATE(glats(nz,nf))
+      DEALLOCATE(glons(nz,nf))
+      DEALLOCATE(bms(nz,nf))
+      DEALLOCATE(gs(nz))
+      DEALLOCATE(ps(nz,nf))
+      DEALLOCATE(blats(nz,nf))
+      DEALLOCATE(coschicrit(nz,nf))
+      DEALLOCATE(ds(nz,nf))
+      DEALLOCATE(d2s(nz,nf))
+      DEALLOCATE(d22s(nz,nf))
+      DEALLOCATE(dels(nz,nf))
+      DEALLOCATE(grad_inp(nf))
+
+      DEALLOCATE(xnorms(nzp1,nf))
+      DEALLOCATE(ynorms(nzp1,nf))
+      DEALLOCATE(znorms(nzp1,nf))
+      DEALLOCATE(xnormp(nz,nfp1))
+      DEALLOCATE(ynormp(nz,nfp1))
+      DEALLOCATE(znormp(nz,nfp1))
+      DEALLOCATE(arg(nz,nf))
+      DEALLOCATE(athg(nz,nf))
+      DEALLOCATE(aphig(nz,nf))
+
+      DEALLOCATE(delsp(nz,nfp1))
+      DEALLOCATE(vol(nz,nf))
+      DEALLOCATE(areap(nz,nfp1))
+      DEALLOCATE(areas(nz,nfp1))
+      DEALLOCATE(vnx(nzp1,nfp1))
+      DEALLOCATE(vny(nzp1,nfp1))
+      DEALLOCATE(vnz(nzp1,nfp1))
+      DEALLOCATE(xdels(nz,nfp1,2))
+      DEALLOCATE(xdelp(nzp1,nf,2))
+      DEALLOCATE(vexbs(nzp1,nf))
+      DEALLOCATE(vexbp(nz,nfp1))
+      DEALLOCATE(vexb(nzp1,nfp1))
+
+      DEALLOCATE(deni(nz,nf,nion))
+      DEALLOCATE(denn(nz,nf,nneut))
+      DEALLOCATE(ne(nz,nf))
+      DEALLOCATE(vsi(nz,nf,nion))
+      DEALLOCATE(vsid(nz,nf,nion))
+      DEALLOCATE(sumvsi(nz,nf,nion))
+      DEALLOCATE(vsic(nz,nf,nion))
+      DEALLOCATE(te(nz,nf))
+      DEALLOCATE(ti(nz,nf,nion))
+      DEALLOCATE(tn(nz,nf))
+      DEALLOCATE(u(nz,nf))
+      DEALLOCATE(v(nz,nf))
+      DEALLOCATE(vpi(nz,nf))
+
+
+      DEALLOCATE(vot(nz,nf,nion))
+      DEALLOCATE(vor(nz,nf,nion))
+
+
+
+      DEALLOCATE(cx(nz,nf))
+
+      DEALLOCATE(fluxnt(nz,nf,91,linesnt))
+
+      DEALLOCATE(t1(nz,nf,nion))
+      DEALLOCATE(t2(nz,nf,nion))
+      DEALLOCATE(t3(nz,nf,nion))
+      DEALLOCATE(u1(nz,nf))
+      DEALLOCATE(u2(nz,nf))
+      DEALLOCATE(u3(nz,nf))
+      DEALLOCATE(u4(nz,nf))
+      DEALLOCATE(u5(nz,nf))
       
-
-
+      end subroutine deinit_memory
 
 
 
@@ -391,7 +539,8 @@ contains
       CHARACTER(11)::fileform
       INTEGER::fileunit=0
 
-
+      call system('mkdir ' // adjustl(trim( outputpath ) ) )
+      
       filename='time'//'.dat'
       fileunit=time_dat
       fileform=merge('formatted  ','unformatted',.true.)
@@ -502,6 +651,89 @@ contains
       close ( unit=u5f_dat)
       
       end subroutine close_uf
+
+
+
+!*******************************************
+!*******************************************
+
+!             output
+
+!*******************************************
+!*******************************************
+
+       subroutine output ( hrut,ntm,istep )
+
+       include 'param-1.00.inc'
+      use commons
+      implicit none
+      REAL::hrut
+      INTEGER::ntm
+      INTEGER::istep
+
+      !LOCAL VARIABLES
+      REAL::hr24,totsec,thr,tmin,tsec
+      INTEGER::nthr,ntmin,ntsec
+
+       hr24   = mod (hrut,24.)
+       totsec = hr24 * 3600.
+       thr    = totsec / 3600.
+       nthr   = int(thr)
+       tmin   = ( thr - nthr ) * 60.
+       ntmin  = int(mod(tmin,60.))
+       tsec   = ( tmin - ntmin ) * 60.
+       ntsec  = int(tsec)
+
+!      put data into output variables
+
+       write (*,*) 'istep = ',istep,'ntm = ',ntm,&
+                   'time step = ',dt,' hour = ',hrut
+       write (70,100) ntm,nthr,ntmin,ntsec
+
+       if ( fmtout ) then
+         write(71,101) deni
+         write(72,101) ti
+         write(73,101) vsi
+         write(75,101) te
+!         write(78,101) vn
+!         write(81,101) t1
+!         write(82,101) t2
+!         write(83,101) t3
+!         write(84,101) u1
+!         write(85,101) u2
+!         write(86,101) u3
+!         write(87,101) u4
+!         write(88,101) u5
+!         write(90,101) vot
+!         write(91,101) vor
+!         write(92,101) denn
+       endif 
+
+       if ( .not. fmtout ) then
+         write(71) deni
+         write(72) ti
+         write(73) vsi
+         write(75) te
+!         write(78) vn
+!         write(81) t1
+!         write(82) t2
+!         write(83) t3
+         write(84) u1
+         write(85) u2
+         write(86) u3
+         write(87) u4
+         write(88) u5
+!         write(90) vot
+!         write(91) vor
+!         write(92) denn
+!         write(93) vexbp
+       endif
+
+ 100   format(1x,4i6)
+ 101   format(1x,1p10e16.6)
+
+       return
+       end
 
 
 

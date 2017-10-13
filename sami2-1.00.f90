@@ -90,7 +90,6 @@
         call exb(hrut)         
 
 !       time/step advancement
-
         istep  = istep + 1
         time   = time  + dt
         hrut   = time / sphr + hrinit
@@ -122,8 +121,8 @@
 !     close files
 
       call close_uf
-
-      stop
+      call deinit_memory
+!      stop
       end
 
 
@@ -165,6 +164,11 @@
 !     read in parameters and initial ion density data 
 
       read(sami2_1_00_namelist,go)
+      call init_memory
+
+
+
+
 
       dt = dt0
 
@@ -444,9 +448,9 @@
 
 !     call nighttime euv flux subroutines
 !     (lyman beta 1026, he i 584, he ii 304, lyman alpha 1216)
-
       do j = 1,nf
         call sf1026 ( f1026,1,j )
+
         call sf584  ( f584 ,2,j )
         call sf304  ( f304 ,3,j )
         call sf1216 ( f1216,4,j )
@@ -459,7 +463,6 @@
           enddo
         enddo
       enddo
-
 !     intialize diagnostic variables to 0
 
       u1=0.
@@ -480,6 +483,7 @@
       call close_input_files
 
       print *,' finished initialization'
+
 
       return
       end
@@ -731,81 +735,6 @@
 
         return
         end
-
-
-
-!*******************************************
-!*******************************************
-
-!             output
-
-!*******************************************
-!*******************************************
-
-       subroutine output ( hrut,ntm,istep )
-
-       include 'param-1.00.inc'
-       include 'com-1.00.inc'
-
-       hr24   = mod (hrut,24.)
-       totsec = hr24 * 3600.
-       thr    = totsec / 3600.
-       nthr   = int(thr)
-       tmin   = ( thr - nthr ) * 60.
-       ntmin  = int(mod(tmin,60.))
-       tsec   = ( tmin - ntmin ) * 60.
-       ntsec  = int(tsec)
-
-!      put data into output variables
-
-       write (*,*) 'istep = ',istep,'ntm = ',ntm,&
-                   'time step = ',dt,' hour = ',hrut
-       write (70,100) ntm,nthr,ntmin,ntsec
-
-       if ( fmtout ) then
-         write(71,101) deni
-         write(72,101) ti
-         write(73,101) vsi
-         write(75,101) te
-!         write(78,101) vn
-!         write(81,101) t1
-!         write(82,101) t2
-!         write(83,101) t3
-!         write(84,101) u1
-!         write(85,101) u2
-!         write(86,101) u3
-!         write(87,101) u4
-!         write(88,101) u5
-!         write(90,101) vot
-!         write(91,101) vor
-!         write(92,101) denn
-       endif 
-
-       if ( .not. fmtout ) then
-         write(71) deni
-         write(72) ti
-         write(73) vsi
-         write(75) te
-!         write(78) vn
-!         write(81) t1
-!         write(82) t2
-!         write(83) t3
-         write(84) u1
-         write(85) u2
-         write(86) u3
-         write(87) u4
-         write(88) u5
-!         write(90) vot
-!         write(91) vor
-!         write(92) denn
-!         write(93) vexbp
-       endif
-
- 100   format(1x,4i6)
- 101   format(1x,1p10e16.6)
-
-       return
-       end
 
 
 !*******************************************
