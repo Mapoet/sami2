@@ -100,7 +100,7 @@
 
           call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
 
-          call MPI_SEND(alts(1:nz,&
+          call MPI_SEND(alts(:,&
           nfstindex(i)-merge(1,0,i.ne.1):nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1)),&
           (nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1))*nz,&
           MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
@@ -119,8 +119,8 @@
           call init_memory
 
           call MPI_RECV(alts,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-
           
+
           !print *,alts(1:nz,1:nf)
           call flush(6)
       endif
