@@ -127,35 +127,17 @@
       tprnt   = 0.
       tneut   = 0.
       time    = 0.
-          print*,hrut,timemax,hrinit
       call neutambt (hrinit) 
-      print*,maxstep,timemax
       do while (      istep .le. maxstep &
                 .and. time  .lt. timemax  )
-      print*,taskid,":","we're inside"
-      flush(6)
 !       parallel transport
         do nfl = nf,1,-1
-          print*,nfl,":","1"
-          flush(6)
           call zenith (hrut,nfl)
-          print*,nfl,":","2"
-          flush(6)
-          !call transprt (nfl)
-          print*,nfl,":","3"
-          flush(6)
-                   
-
+          call transprt (nfl)
         enddo         
-      print*,taskid,":","2 step"
-      flush(6)
 
 !       perpendicular transport
-print*,"3 step"
-flush(6)
-        !call exb(hrut)         
-print*,"4 step"
-      flush(6)
+        call exb(hrut)         
 !       time/step advancement
         istep  = istep + 1
         time   = time  + dt
@@ -168,7 +150,7 @@ print*,"4 step"
 !       update neutrals
 
         if ( tneut .ge. 0.25 ) then
-          !call neutambt (hrut) 
+          call neutambt (hrut) 
           tneut = 0.
         endif
 
@@ -627,7 +609,6 @@ print*,"4 step"
 
       enddo
 
-print*,"+++++++++++++++++++++++++++++++"
        call photprod ( cx,phprodr,nfl   )         ! calculates phprodr
        call chemrate ( chrate,nfl               ) ! calculates chrate
        call chempl   ( chrate,chloss,chprod,nfl ) ! calcualtes chloss,chprod
@@ -842,7 +823,6 @@ print*,"+++++++++++++++++++++++++++++++"
        real param(2)
 
 !     define the e x b drift
-     print*,"-----------------------------"
      flush(6)
 
       param(1) = day
@@ -854,16 +834,12 @@ print*,"+++++++++++++++++++++++++++++++"
 !           blats = 0 at the magnetic equator 
 !           (as opposed to pi/2 in spherical coordinates)
 
-     print*,"-----------------------------"
-     flush(6)
 
       hrl = hrut + glons(nzh,1) / 15.
       do while ( hrl .ge. 24. ) 
                hrl = hrl - 24.
          enddo
       call vdrift_model(hrl,glon_in,param,vd,fejer,ve01)
-     print*,"-----------------------------"
-     flush(6)
 
       do j = 1,nf
 !        altfac = ( alts(nzh,j) + re ) / re ! L^2 dependence on E x B drift
