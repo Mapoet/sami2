@@ -8,13 +8,13 @@
 module parameters
 implicit none
 !      number of altitudes
-      INTEGER::nf=22
+      INTEGER::nf=52
       INTEGER::nfp1 
       INTEGER::nfm1 
       INTEGER::nfm2 
 
 !      number of grid cells
-      INTEGER,PARAMETER::nz = 51
+      INTEGER,PARAMETER::nz = 101
       INTEGER,PARAMETER::nzp1 = nz + 1
       INTEGER,PARAMETER::nzm1 = nz - 1
 
@@ -84,8 +84,9 @@ implicit none
        REAL,PARAMETER::z4  = -1.453152
        REAL,PARAMETER::z5 = 1.0614054
 
-contains 
+contains
       subroutine init_param
+      implicit none
       nfp1 = nf + 1
       nfm1 = nf - 1
       nfm2 = nf - 2

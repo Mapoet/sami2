@@ -68,7 +68,7 @@ contains
       include 'param-1.00.inc'
       include 'com-1.00.inc' 
       implicit  none
-      REAL::hrut
+      REAL,intent(in)::hrut
 
      !LOCAL VARIABLES
       INTEGER::i
