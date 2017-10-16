@@ -8,20 +8,30 @@ contains
       implicit none
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
+          
+          call MPI_RECV(year,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(day,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(fbar,1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(f10p7,1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
-         call MPI_RECV(grs,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(glats,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(app,7,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(mmass,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(snn,nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+
+
+          !call MPI_RECV(grs,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(glats,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(glons,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(bms,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(gs,nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(ps,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(blats,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(coschicrit,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(ds,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(d2s,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(d22s,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(dels,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_RECV(grad_inp,nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(bms,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(gs,nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(ps,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(blats,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(coschicrit,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(ds,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(d2s,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(d22s,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(dels,nf*nz,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_RECV(grad_inp,nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
 
           call MPI_RECV(xnorms,nzp1*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
