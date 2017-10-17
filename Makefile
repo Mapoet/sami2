@@ -1,10 +1,11 @@
 ARCH=i386
 ARCH=amd64
 INC_ADD= '$(subst \,/,$(MSMPI_INC));$(subst \,/,$(MSMPI_INC))$(ARCH)'
-
+#INC_ADD= '/opt/pgi/linux86-64/2017/mpi/openmpi/include/'
 
 
 PG_COMPILER=pgfortran
+#PG_COMPILER=mpifort
 
 PG_COPT  =
 #PG_COPT += -acc=autopar
@@ -16,6 +17,8 @@ PG_COPT  =
 #PG_COPT += -fast
 PG_COPT += -module obj
 PG_COPT += -I$(INC_ADD)
+PG_COPT += -cpp
+PG_COPT += -D _USE_MPI_
 
 PG_LOPT  =
 #PG_LOPT += -acclibs
@@ -52,7 +55,7 @@ sami2.x: build/sami2.x
 
 build/sami2.x:|build
 build/sami2.x:|build/input
-build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o
+build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o obj/com-1.00.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
 
