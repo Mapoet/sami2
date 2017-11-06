@@ -20,6 +20,21 @@ PG_COPT += -I$(INC_ADD)
 PG_COPT += -cpp
 PG_COPT += -D _USE_MPI_
 
+PG_COPT += -Mbounds
+PG_COPT += -Minfo=all
+PG_COPT += -traceback
+PG_COPT += -Mchkfpstk
+PG_COPT += -Mchkstk
+PG_COPT += -Mdalign
+##PG_COPT +=-Mdclchk 
+PG_COPT +=-Mdepchk 
+PG_COPT +=-Miomutex 
+PG_COPT +=-Mrecursive 
+PG_COPT +=-Msave 
+PG_COPT +=-Ktrap=fp 
+PG_COPT +=-g 
+PG_COPT +=-byteswapio
+
 PG_LOPT  =
 #PG_LOPT += -acclibs
 #PG_LOPT += -Mprof
