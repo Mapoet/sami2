@@ -131,3 +131,6 @@ obj/hwm93.o:|obj
 obj/hwm93.o:hwm93.f90
 	$(FC) $(FCCOPT) -c -o $@ $^
 
+
+#.PHONY:run
+#run: 

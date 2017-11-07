@@ -338,7 +338,7 @@ module inputfiles
 
       character(6),parameter::inputpath="input"
       character(7),parameter::outputpath="output"
-      character::delimeter='\/'
+      character::delimiter='\/'
       integer,parameter::sami2_1_00_namelist=10
       integer,parameter::deni_init_inp=20
       integer,parameter::ichem_inp=30
@@ -377,7 +377,46 @@ module inputfiles
       
 
 contains
+          !subroutine flush_file(fileunit,filename)
+          subroutine flush_all
+               implicit none
+               call flush(sami2_1_00_namelist)
+               call flush(deni_init_inp)
+               call flush(ichem_inp)
+               call flush(phabsdt_inp)
+               call flush(phiondt_inp)
+               call flush(phionnt_inp)
+               call flush(euvflux_inp)
+               call flush(thetant_inp)
+               call flush(zaltnt_inp)
 
+               !grid output files
+               call flush(zaltf_dat)
+               call flush(glatf_dat)
+               call flush(glonf_dat)
+
+               call flush(time_dat)
+               call flush(denif_dat)
+               call flush(tif_dat)
+               call flush(vsif_dat)
+               call flush(tef_dat)
+               call flush(vnf_dat)
+
+               call flush(vtf_dat)
+               call flush(vrf_dat)
+               call flush(dennf_dat)
+               call flush(vexbf_dat)
+
+               call flush(t1f_dat)
+               call flush(t2f_dat)
+               call flush(t3f_dat)
+               call flush(u1f_dat)
+               call flush(u2f_dat)
+               call flush(u3f_dat)
+               call flush(u4f_dat)
+               call flush(u5f_dat)
+               
+          end subroutine flush_all
 
       subroutine open_file(fileunit,filename)
             implicit none
@@ -385,9 +424,9 @@ contains
       CHARACTER(20)::filename
       INTEGER::fileunit
       
-      open ( STATUS='OLD',IOSTAT=ios, unit=fileunit,  file=trim(inputpath)//delimeter//trim(filename))
+      open ( STATUS='OLD',IOSTAT=ios, unit=fileunit,  file=trim(inputpath)//delimiter//trim(filename))
       IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error opening file: '//trim(inputpath)//delimeter//trim(filename)
+          WRITE(6,*) 'Error opening file: '//trim(inputpath)//delimiter//trim(filename)
           STOP
       ENDIF
       end subroutine open_file
@@ -516,16 +555,16 @@ contains
       CHARACTER(11)::fileform
       INTEGER::fileunit
 
-      open ( STATUS='REPLACE',IOSTAT=ios, unit=fileunit,  file=trim(outputpath)//delimeter//trim(filename))
+      open ( STATUS='REPLACE',IOSTAT=ios, unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
       IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error replacing file: '//trim(outputpath)//delimeter//trim(filename)
+          WRITE(6,*) 'Error replacing file: '//trim(outputpath)//delimiter//trim(filename)
           STOP
       ENDIF
       close(unit=fileunit)
       ios=0
-      open (ACCESS='APPEND',IOSTAT=ios,form=trim(fileform), unit=fileunit,  file=trim(outputpath)//delimeter//trim(filename))
+      open (ACCESS='APPEND',IOSTAT=ios,form=trim(fileform), unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
       IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error opening file: '//trim(outputpath)//delimeter//trim(filename),ios
+          WRITE(6,*) 'Error opening file: '//trim(outputpath)//delimiter//trim(filename),ios
           STOP
       ENDIF
 

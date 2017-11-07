@@ -90,22 +90,22 @@
 #ifdef _USE_MPI_      
       endif
       if((taskid .EQ. 0).and.(numtasks.gt.1)) then
-      ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
-      nfstindex=1
-      i=1
-      do i = 1,numtasks-1,1
-          call MPI_SEND(merge(i-1,numtasks-1,i .ne. 1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
+          ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
+          nfstindex=1
+          i=1
+          do i = 1,numtasks-1,1
+               call MPI_SEND(merge(i-1,numtasks-1,i .ne. 1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
+               call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
 
-          nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2)-1,i.ne.numtasks-1)+merge(1,0,(i .eq.1).and.(i .ne.(numtasks-1)))
-          if(i.gt.1) then 
-          nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
-          endif
+               nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2)-1,i.ne.numtasks-1)+merge(1,0,(i .eq.1).and.(i .ne.(numtasks-1)))
+               if(i.gt.1) then 
+               nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
+               endif
 
-          call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
-          call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
-          
-      enddo 
+               call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
+               call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
+               
+          enddo 
       endif
 
       if(taskid .NE. 0) then
@@ -116,12 +116,8 @@
           call init_param
           call init_memory
           call share_data_client!share chanks
-          
-
       endif
 
-      !if(taskid .EQ. 0) then
-      !if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
 !     time loop
@@ -202,7 +198,7 @@
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
         if ( tneut .ge. 0.25 ) then
-          !call neutambt (hrut) 
+          call neutambt (hrut) 
           tneut = 0.
         endif
 
@@ -230,6 +226,7 @@
         endif   
 #endif
           call output ( hrut,ntm,istep )
+          call flush_all()
 #ifdef _USE_MPI_
         endif
 #endif
@@ -251,6 +248,7 @@
         if(taskid.ne.0) then
               
               !send data to neighbrs 
+              call share_data_btwn_clients
         endif      
 
 #endif
@@ -262,7 +260,6 @@
       call close_uf
       
 #ifdef _USE_MPI_      
-!      endif
 
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
