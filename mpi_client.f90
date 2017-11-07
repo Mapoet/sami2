@@ -1,6 +1,8 @@
 module mpi_client
       INTEGER,PARAMETER::MPI_TAG_DT_SYNC=1001
       INTEGER,PARAMETER::MPI_TAG_OUTPUT_DATA_SYNC=1002
+      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC=2000
+      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC=3000
       integer,save::left,right,taskid,numtasks,ierr
       
 contains
@@ -112,10 +114,10 @@ contains
           !call MPI_SEND(vexbp,nz*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vexb,nzp1*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
-            call MPI_SEND(ichem,nchem*3,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+            call MPI_SEND(ichem,nchem*3,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)!02 to share
             call MPI_SEND(ireact,nion*nneut*nchem,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
-          call MPI_SEND(deni(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(deni(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)!01 to share
           call MPI_SEND(denn(:,nfl:nfr,:),nz*size*nneut,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           call MPI_SEND(ne(:,nfl:nfr),nz*size,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           call MPI_SEND(vsi(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
@@ -137,7 +139,7 @@ contains
           call MPI_SEND(alpha0(:),nneut,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           call MPI_SEND(aap(:),7,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
-          call MPI_SEND(cx(:,nfl:nfr),nz*size,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(cx(:,nfl:nfr),nz*size,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)!Evaluated for each client by itself
 
           call MPI_SEND(fluxnt(:,nfl:nfr,:,:),nz*size*91*linesnt,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
@@ -260,7 +262,7 @@ contains
             call MPI_RECV(ireact,nion*nneut*nchem,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
 
-          call MPI_RECV(deni,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(deni,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)!01 to share
           call MPI_RECV(denn,nz*nf*nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(ne,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(vsi,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
@@ -282,7 +284,7 @@ contains
           call MPI_RECV(alpha0,nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(aap,7,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
-          call MPI_RECV(cx,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(cx,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)!Evaluated for each client by itself
 
           call MPI_RECV(fluxnt,nz*nf*91*linesnt,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
@@ -307,7 +309,7 @@ contains
       !INTEGER::size,sizep1
             
             print*,"Sent datasize= ",nz*nf*nion,nz,nf,nion
-          call MPI_SEND(deni,nz*nf*nion,MPI_REAL,0,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(deni,nz*nf*nion,MPI_REAL,0,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)!01 to share
           !call MPI_SEND(denn,nz*nf*nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(ne,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vsi,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
@@ -315,6 +317,7 @@ contains
           !call MPI_SEND(sumvsi,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vsic,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(te,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(te,nz*nf,MPI_REAL,0,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(ti,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(tn,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(u,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
@@ -339,7 +342,7 @@ contains
       !real,save,dimension(:,:,:),allocatable::vsid
       !real,save,dimension(:,:,:),allocatable::sumvsi
       !real,save,dimension(:,:,:),allocatable::vsic
-      !real,save,dimension(:,:),allocatable::te
+      real,save,dimension(:,:),allocatable::tmp_te
       !real,save,dimension(:,:,:),allocatable::ti
       !real,save,dimension(:,:),allocatable::tn
       !real,save,dimension(:,:),allocatable::u
@@ -352,15 +355,68 @@ contains
             nfsizewrkr=nfsize(SRCwrkr)
             nfstindexwrkr=nfstindex(SRCwrkr)
             realsizewrkr=nfsizewrkr+merge(1,0,SRCwrkr.ne.1)+merge(1,0,SRCwrkr.ne.numtasks-1)
+
+
             print*,"Receiving data size= ",nz*realsizewrkr*nion,nfsizewrkr,nfstindexwrkr,nz,realsizewrkr,nion
             ALLOCATE(tmp_deni(nz,realsizewrkr,nion)) 
-            call MPI_RECV(tmp_deni,nz*realsizewrkr*nion,MPI_REAL,SRCwrkr,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
+            call MPI_RECV(tmp_deni,nz*realsizewrkr*nion,MPI_REAL,SRCwrkr,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)!01 to share
             print*,SRCwrkr,": realsize vs nfsize ",realsizewrkr,nfsizewrkr
             print*,SRCwrkr,": deniind ",nfstindexwrkr,(nfstindexwrkr+nfsizewrkr-1)
             print*,SRCwrkr,": tmpind",merge(1,0,SRCwrkr.ne.1)+1,merge(1,0,SRCwrkr.ne.1)+nfsizewrkr
-            deni(:,nfstindexwrkr:(nfstindexwrkr+nfsizewrkr-1),:)=tmp_deni(:,merge(1,0,SRCwrkr.ne.1)+1:merge(1,0,SRCwrkr.ne.1)+nfsizewrkr,:)!??????
+            deni(:,nfstindexwrkr:(nfstindexwrkr+nfsizewrkr-1),:)=tmp_deni(:,merge(1,0,SRCwrkr.ne.1)+1:merge(1,0,SRCwrkr.ne.1)+nfsizewrkr,:)
             DeALLOCATE(tmp_deni(nz,realsizewrkr,nion)) 
 
-      end subroutine share_output_data_server
 
+
+
+            ALLOCATE(tmp_te(nz,realsizewrkr)) 
+            call MPI_RECV(tmp_te,nz*realsizewrkr,MPI_REAL,SRCwrkr,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
+            print*,"te start"
+            te(:,nfstindexwrkr:(nfstindexwrkr+nfsizewrkr-1))=tmp_te(:,merge(1,0,SRCwrkr.ne.1)+1:merge(1,0,SRCwrkr.ne.1)+nfsizewrkr)
+            DeALLOCATE(tmp_te(nz,realsizewrkr)) 
+            print*,"Done te"
+
+      end subroutine share_output_data_server
+      subroutine share_data_btwn_clients!(nfl,nfr,i)
+      use parameters
+      use commons
+      implicit none
+      include "mpif.h"
+      integer::status(MPI_STATUS_SIZE)
+      INTEGER::targetleft,targetright,datanum
+
+          targetleft=taskid-1
+          datanum=0
+          if(targetleft.ge.1) then
+               call MPI_iSEND(deni(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+          endif
+
+          targetright=taskid+1
+          datanum=0
+          if(targetright.le.numtasks-1) then
+               call MPI_iSEND(deni(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+          endif
+
+          datanum=0
+          if(targetright.le.numtasks-1) then
+               call MPI_RECV(deni(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(te(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+          endif
+
+          datanum=0
+          if(targetleft.ge.1) then
+               call MPI_RECV(deni(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(te(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+          endif
+      end subroutine share_data_btwn_clients
 end module mpi_client
