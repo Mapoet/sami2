@@ -60,6 +60,8 @@
       integer::status(MPI_STATUS_SIZE)
       !MPI_Request request
       INTEGER,DIMENSION(:),allocatable::nfsize,nfstindex
+      INTEGER::itask
+      REAL::dtnew
 #endif
 
       integer::ntm,istep,nfl
@@ -96,11 +98,13 @@
           call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
 
           nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2)-1,i.ne.numtasks-1)+merge(1,0,(i .eq.1).and.(i .ne.(numtasks-1)))
+          if(i.gt.1) then 
           nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
+          endif
 
           call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
           call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
-
+          
       enddo 
       endif
 
@@ -111,13 +115,13 @@
 
           call init_param
           call init_memory
-          call share_data_client
+          call share_data_client!share chanks
           
 
       endif
 
       !if(taskid .EQ. 0) then
-      if((taskid .NE. 0).or.(numtasks.eq.1)) then
+      !if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
 !     time loop
@@ -130,6 +134,12 @@
       call neutambt (hrinit) 
       do while (      istep .le. maxstep &
                 .and. time  .lt. timemax  )
+
+#ifdef _USE_MPI_      
+      if((taskid .NE. 0).or.(numtasks.eq.1)) then
+#endif
+
+
 !       parallel transport
         do nfl = nf,1,-1
           call zenith (hrut,nfl)
@@ -138,34 +148,113 @@
 
 !       perpendicular transport
         call exb(hrut)         
+
+
+#ifdef _USE_MPI_
+        endif
+#endif
+
+
+#ifdef _USE_MPI_      
+      if((taskid .NE. 0).or.(numtasks.eq.1)) then
+#endif
+
+
+#ifdef _USE_MPI_
+        endif
+#endif
+
 !       time/step advancement
+
         istep  = istep + 1
         time   = time  + dt
         hrut   = time / sphr + hrinit
         tprnt  = tprnt + dt / sphr
         tneut  = tneut + dt / sphr
 
+#ifdef _USE_MPI_      
+      if((taskid .NE. 0).or.(numtasks.eq.1)) then
+#endif
+
         call courant ( hrut )
 
 !       update neutrals
 
+#ifdef _USE_MPI_
+        if(numtasks.gt.1) then
+          call MPI_SEND(dt,1,MPI_REAL,0,MPI_TAG_DT_SYNC,MPI_COMM_WORLD,ierr)
+        endif
+        endif
+
+        if((taskid.eq.0).and.(numtasks.gt.1)) then
+          dt = dt0
+          do itask=1,numtasks-1
+            call MPI_Probe(MPI_ANY_SOURCE, MPI_TAG_DT_SYNC, MPI_COMM_WORLD, status, ierr)
+            CALL MPI_RECV(dtnew,1,MPI_REAL,status(MPI_SOURCE),MPI_TAG_DT_SYNC,MPI_COMM_WORLD, status, ierr)
+            dt=min(dt,dtnew)
+          enddo
+
+        endif
+        call mpi_bcast(dt,1,MPI_REAL,0,MPI_COMM_WORLD,ierr)
+#endif
+
+#ifdef _USE_MPI_      
+      if((taskid .NE. 0).or.(numtasks.eq.1)) then
+#endif
         if ( tneut .ge. 0.25 ) then
           !call neutambt (hrut) 
           tneut = 0.
         endif
 
+
+#ifdef _USE_MPI_
+        endif
+#endif
+
+
 !       output data
 
         if ( tprnt .ge. dthr .and. hrut .gt. hrpr+hrinit) then
           ntm      = ntm + 1
-          !call output ( hrut,ntm,istep )
+#ifdef _USE_MPI_
+        if((taskid .ne.0)) then  
+          !send data to master
+          call share_output_data_client()
+          else
+        if(numtasks .gt.1)then
+          !Gather data from workers
+          do itask=1,numtasks-1
+            call share_output_data_server(nfsize,nfstindex)
+          enddo
+         call flush(6)
+        endif   
+#endif
+          call output ( hrut,ntm,istep )
+#ifdef _USE_MPI_
+        endif
+#endif
           tprnt   = 0.
           print *,'ouput - hour = ',hrut
+          
         elseif ( tprnt .ge. dthr ) then
+#ifdef _USE_MPI_
+        if(taskid.EQ.0)then      
+#endif
           print *,'no ouput yet - hour = ',hrut
+#ifdef _USE_MPI_
+        endif      
+#endif
           tprnt   = 0.
         endif
          call flush(6)
+#ifdef _USE_MPI_
+        if(taskid.ne.0) then
+              
+              !send data to neighbrs 
+        endif      
+
+#endif
+
       enddo    ! end time loop
 
 !     close files
@@ -173,7 +262,9 @@
       call close_uf
       
 #ifdef _USE_MPI_      
-      endif
+!      endif
+
+
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       if((taskid.eq.0).and.(numtasks.gt.1))then
       DEALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
@@ -608,7 +699,7 @@
         enddo
 
       enddo
-
+ 
        call photprod ( cx,phprodr,nfl   )         ! calculates phprodr
        call chemrate ( chrate,nfl               ) ! calculates chrate
        call chempl   ( chrate,chloss,chprod,nfl ) ! calcualtes chloss,chprod
@@ -1136,7 +1227,7 @@
          do j = 1,nf
            do i = 1,nz
              dt1 = dels(i,j) / amax1(1.,abs(vsi(i,j,k)))
-             if ( dt1 .le. dtnew ) dtnew = dt1
+             if ( dt1 .lt. dtnew ) dtnew = dt1
            enddo
          enddo
        enddo
@@ -1148,7 +1239,7 @@
            dts = xdels(i,j,1) / amax1(1.,abs(vexbs(i,j)))
            dtp = xdelp(i,j,1) / amax1(1.,abs(vexbp(i,j)))
            dt1 = amin1 ( dts,dtp )
-           if ( dt1 .le. dtnew ) dtnew = dt1
+           if ( dt1 .lt. dtnew ) dtnew = dt1
          enddo
        enddo
 

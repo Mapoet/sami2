@@ -1,4 +1,6 @@
 module mpi_client
+      INTEGER,PARAMETER::MPI_TAG_DT_SYNC=1001
+      INTEGER,PARAMETER::MPI_TAG_OUTPUT_DATA_SYNC=1002
       integer,save::left,right,taskid,numtasks,ierr
       
 contains
@@ -104,11 +106,14 @@ contains
          ! call MPI_SEND(vnx,nzp1*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
          ! call MPI_SEND(vny,nzp1*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
          ! call MPI_SEND(vnz,nzp1*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
-          !call MPI_SEND(xdels,nz*sizep1*2,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
-          !call MPI_SEND(xdelp(:,nfl:nfr,:),nzp1*size*2,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(xdels(:,nfl:nfr,:),nz*sizep1*2,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(xdelp(:,nfl:nfr,:),nzp1*size*2,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vexbs(:,nfl:nfr),nzp1*size,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vexbp,nz*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_SEND(vexb,nzp1*sizep1,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+
+            call MPI_SEND(ichem,nchem*3,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+            call MPI_SEND(ireact,nion*nneut*nchem,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
           call MPI_SEND(deni(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           call MPI_SEND(denn(:,nfl:nfr,:),nz*size*nneut,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
@@ -126,6 +131,11 @@ contains
 
           call MPI_SEND(vot(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
           call MPI_SEND(vor(:,nfl:nfr,:),nz*size*nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+
+          call MPI_SEND(ami(:),nion,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(amn(:),nneut,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(alpha0(:),nneut,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_SEND(aap(:),7,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
           call MPI_SEND(cx(:,nfl:nfr),nz*size,MPI_REAL,i,0,MPI_COMM_WORLD,status,ierr)
 
@@ -240,11 +250,15 @@ contains
           !call MPI_RECV(vnx,nzp1*nfp1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_RECV(vny,nzp1*nfp1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_RECV(vnz,nzp1*nfp1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          !call MPI_RECV(xdels,nz*nfp1*2,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
-          !call MPI_RECV(xdelp,nzp1*nf*2,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(xdels,nz*nfp1*2,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(xdelp,nzp1*nf*2,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_RECV(vexbs,nzp1*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_RECV(vexbp,nz*nfp1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           !call MPI_RECV(vexb,nzp1*nfp1,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+
+            call MPI_RECV(ichem,nchem*3,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+            call MPI_RECV(ireact,nion*nneut*nchem,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+
 
           call MPI_RECV(deni,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(denn,nz*nf*nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
@@ -262,6 +276,11 @@ contains
 
           call MPI_RECV(vot,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(vor,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          
+          call MPI_RECV(ami,nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(amn,nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(alpha0,nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(aap,7,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
           call MPI_RECV(cx,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
@@ -277,4 +296,71 @@ contains
           call MPI_RECV(u5,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
 
       end subroutine share_data_client
+
+      subroutine share_output_data_client
+      use parameters
+      use commons
+      implicit none
+      include "mpif.h"
+      !INTEGER,INTENT(IN)::nfl,nfr,i
+      integer::status(MPI_STATUS_SIZE)
+      !INTEGER::size,sizep1
+            
+            print*,"Sent datasize= ",nz*nf*nion,nz,nf,nion
+          call MPI_SEND(deni,nz*nf*nion,MPI_REAL,0,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(denn,nz*nf*nneut,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(ne,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(vsi,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(vsid,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(sumvsi,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(vsic,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(te,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(ti,nz*nf*nion,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(tn,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(u,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(v,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+          !call MPI_SEND(vpi,nz*nf,MPI_REAL,0,0,MPI_COMM_WORLD,status,ierr)
+
+
+      end subroutine share_output_data_client
+      subroutine share_output_data_server(nfsize,nfstindex)
+      use parameters
+      use commons
+      implicit none
+      include "mpif.h"
+      INTEGER,DImEnsion(:),INTENT(IN)::nfsize,nfstindex
+      integer::status(MPI_STATUS_SIZE)
+      INTEGER::SRCwrkr,nfsizewrkr,nfstindexwrkr,realsizewrkr
+      !INTEGER::size,sizep1
+      real,dimension(:,:,:),allocatable::tmp_deni
+      !real,save,dimension(:,:,:),allocatable::denn
+      !real,save,dimension(:,:),allocatable::ne
+      !real,save,dimension(:,:,:),allocatable::vsi
+      !real,save,dimension(:,:,:),allocatable::vsid
+      !real,save,dimension(:,:,:),allocatable::sumvsi
+      !real,save,dimension(:,:,:),allocatable::vsic
+      !real,save,dimension(:,:),allocatable::te
+      !real,save,dimension(:,:,:),allocatable::ti
+      !real,save,dimension(:,:),allocatable::tn
+      !real,save,dimension(:,:),allocatable::u
+      !real,save,dimension(:,:),allocatable::v
+      !real,save,dimension(:,:),allocatable::vpi
+
+            call MPI_Probe(MPI_ANY_SOURCE, MPI_TAG_OUTPUT_DATA_SYNC, MPI_COMM_WORLD, status, ierr)
+            SRCwrkr=status(MPI_SOURCE)
+            
+            nfsizewrkr=nfsize(SRCwrkr)
+            nfstindexwrkr=nfstindex(SRCwrkr)
+            realsizewrkr=nfsizewrkr+merge(1,0,SRCwrkr.ne.1)+merge(1,0,SRCwrkr.ne.numtasks-1)
+            print*,"Receiving data size= ",nz*realsizewrkr*nion,nfsizewrkr,nfstindexwrkr,nz,realsizewrkr,nion
+            ALLOCATE(tmp_deni(nz,realsizewrkr,nion)) 
+            call MPI_RECV(tmp_deni,nz*realsizewrkr*nion,MPI_REAL,SRCwrkr,MPI_TAG_OUTPUT_DATA_SYNC,MPI_COMM_WORLD,status,ierr)
+            print*,SRCwrkr,": realsize vs nfsize ",realsizewrkr,nfsizewrkr
+            print*,SRCwrkr,": deniind ",nfstindexwrkr,(nfstindexwrkr+nfsizewrkr-1)
+            print*,SRCwrkr,": tmpind",merge(1,0,SRCwrkr.ne.1)+1,merge(1,0,SRCwrkr.ne.1)+nfsizewrkr
+            deni(:,nfstindexwrkr:(nfstindexwrkr+nfsizewrkr-1),:)=tmp_deni(:,merge(1,0,SRCwrkr.ne.1)+1:merge(1,0,SRCwrkr.ne.1)+nfsizewrkr,:)!??????
+            DeALLOCATE(tmp_deni(nz,realsizewrkr,nion)) 
+
+      end subroutine share_output_data_server
+
 end module mpi_client
