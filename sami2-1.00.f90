@@ -150,7 +150,7 @@
 !       update neutrals
 
         if ( tneut .ge. 0.25 ) then
-          call neutambt (hrut) 
+          !call neutambt (hrut) 
           tneut = 0.
         endif
 
