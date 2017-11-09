@@ -1,0 +1,1 @@
+            namelist / parameters / nf,nz
