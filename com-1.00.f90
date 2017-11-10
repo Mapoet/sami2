@@ -380,6 +380,7 @@ contains
           !subroutine flush_file(fileunit,filename)
           subroutine flush_all
                implicit none
+               call flush(6)
                call flush(sami2_1_00_namelist)
                call flush(deni_init_inp)
                call flush(ichem_inp)

@@ -384,22 +384,23 @@ contains
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
       INTEGER::targetleft,targetright,datanum
+      INTEGER:: mpirequest
 
           targetleft=taskid-1
           datanum=0
           if(targetleft.ge.1) then
-               call MPI_iSEND(deni(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               call MPI_iSEND(deni(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
                datanum=datanum+1
-               call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
           endif
 
           targetright=taskid+1
           datanum=0
           if(targetright.le.numtasks-1) then
-               call MPI_iSEND(deni(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               call MPI_iSEND(deni(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
-               call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
           endif
 

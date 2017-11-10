@@ -58,7 +58,6 @@
 #ifdef _USE_MPI_
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
-      !MPI_Request request
       INTEGER,DIMENSION(:),allocatable::nfsize,nfstindex
       INTEGER::itask
       REAL::dtnew
@@ -143,7 +142,7 @@
         enddo         
 
 !       perpendicular transport
-        call exb(hrut)         
+        call exb(hrut)
 
 
 #ifdef _USE_MPI_
@@ -151,7 +150,7 @@
 #endif
 
 
-#ifdef _USE_MPI_      
+#ifdef _USE_MPI_
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
@@ -214,7 +213,7 @@
           ntm      = ntm + 1
 #ifdef _USE_MPI_
         if((taskid .ne.0)) then  
-          !send data to master
+          !Send data to master
           call share_output_data_client()
           else
         if(numtasks .gt.1)then
@@ -222,7 +221,6 @@
           do itask=1,numtasks-1
             call share_output_data_server(nfsize,nfstindex)
           enddo
-         call flush(6)
         endif   
 #endif
           call output ( hrut,ntm,istep )
@@ -243,7 +241,6 @@
 #endif
           tprnt   = 0.
         endif
-         call flush(6)
 #ifdef _USE_MPI_
         if(taskid.ne.0) then
               
@@ -252,7 +249,7 @@
         endif      
 
 #endif
-
+         call flush(6)
       enddo    ! end time loop
 
 !     close files
