@@ -14,9 +14,9 @@ implicit none
       INTEGER::nfm2 
 
 !      number of grid cells
-      INTEGER,PARAMETER::nz = 101
-      INTEGER,PARAMETER::nzp1 = nz + 1
-      INTEGER,PARAMETER::nzm1 = nz - 1
+      INTEGER::nz = 51
+      INTEGER::nzp1
+      INTEGER::nzm1
 
 !      ion densities
 
@@ -90,5 +90,7 @@ contains
       nfp1 = nf + 1
       nfm1 = nf - 1
       nfm2 = nf - 2
+      nzp1 = nz + 1
+      nzm1 = nz - 1
       end subroutine init_param
 end module parameters

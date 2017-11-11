@@ -340,6 +340,8 @@ module inputfiles
       character(7),parameter::outputpath="output"
       character::delimeter='\/'
       integer,parameter::sami2_1_00_namelist=10
+      integer,parameter::parameters_namelist=11
+
       integer,parameter::deni_init_inp=20
       integer,parameter::ichem_inp=30
       integer,parameter::phabsdt_inp=50

@@ -55,6 +55,8 @@
       use mpi_client
 #endif
       implicit none
+      include "parametersnamelist.inc"
+      CHARACTER(20)::filename
 #ifdef _USE_MPI_
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
@@ -74,6 +76,10 @@
       call MPI_COMM_SIZE(MPI_COMM_WORLD, numtasks, ierr)
       if(taskid .EQ. 0) then
 #endif
+      filename='parameters.namelist'
+      call open_file(parameters_namelist,filename)
+      read(parameters_namelist,parameters)
+      print*,nf,nz
       call init_param
       call initial
   
