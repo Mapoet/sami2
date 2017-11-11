@@ -60,7 +60,6 @@
 #ifdef _USE_MPI_
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
-      !MPI_Request request
       INTEGER,DIMENSION(:),allocatable::nfsize,nfstindex
       INTEGER::itask
       REAL::dtnew
@@ -96,22 +95,22 @@
 #ifdef _USE_MPI_      
       endif
       if((taskid .EQ. 0).and.(numtasks.gt.1)) then
-      ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
-      nfstindex=1
-      i=1
-      do i = 1,numtasks-1,1
-          call MPI_SEND(merge(i-1,numtasks-1,i .ne. 1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
-          call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
+          ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
+          nfstindex=1
+          i=1
+          do i = 1,numtasks-1,1
+               call MPI_SEND(merge(i-1,numtasks-1,i .ne. 1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
+               call MPI_SEND(merge(i+1,1,i .ne. numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,status,ierr)
 
-          nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2)-1,i.ne.numtasks-1)+merge(1,0,(i .eq.1).and.(i .ne.(numtasks-1)))
-          if(i.gt.1) then 
-          nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
-          endif
+               nfsize(i)=merge((nf-2)/(numtasks-1),nf-((nf-2)/(numtasks-1))*(numtasks-2)-1,i.ne.numtasks-1)+merge(1,0,(i .eq.1).and.(i .ne.(numtasks-1)))
+               if(i.gt.1) then 
+               nfstindex(i)=merge(nfstindex(i-1)+nfsize(i-1),1,i .ne. 1)
+               endif
 
-          call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
-          call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
-          
-      enddo 
+               call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
+               call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
+               
+          enddo 
       endif
 
       if(taskid .NE. 0) then
@@ -122,12 +121,8 @@
           call init_param
           call init_memory
           call share_data_client!share chanks
-          
-
       endif
 
-      !if(taskid .EQ. 0) then
-      !if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
 !     time loop
@@ -153,7 +148,7 @@
         enddo         
 
 !       perpendicular transport
-        call exb(hrut)         
+        call exb(hrut)
 
 
 #ifdef _USE_MPI_
@@ -161,7 +156,7 @@
 #endif
 
 
-#ifdef _USE_MPI_      
+#ifdef _USE_MPI_
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
@@ -224,7 +219,7 @@
           ntm      = ntm + 1
 #ifdef _USE_MPI_
         if((taskid .ne.0)) then  
-          !send data to master
+          !Send data to master
           call share_output_data_client()
           else
         if(numtasks .gt.1)then
@@ -232,10 +227,10 @@
           do itask=1,numtasks-1
             call share_output_data_server(nfsize,nfstindex)
           enddo
-         call flush(6)
         endif   
 #endif
           call output ( hrut,ntm,istep )
+          call flush_all()
 #ifdef _USE_MPI_
         endif
 #endif
@@ -252,15 +247,15 @@
 #endif
           tprnt   = 0.
         endif
-         call flush(6)
 #ifdef _USE_MPI_
         if(taskid.ne.0) then
               
               !send data to neighbrs 
+              call share_data_btwn_clients
         endif      
 
 #endif
-
+         call flush(6)
       enddo    ! end time loop
 
 !     close files
@@ -268,7 +263,6 @@
       call close_uf
       
 #ifdef _USE_MPI_      
-!      endif
 
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
