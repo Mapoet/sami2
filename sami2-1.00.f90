@@ -108,6 +108,7 @@
                endif
 
                call MPI_SEND(nfsize(i)+merge(1,0,i.ne.1)+merge(1,0,i.ne.numtasks-1),1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
+               call MPI_SEND(nz,1,MPI_INT,i,0,MPI_COMM_WORLD,ierr)
                call share_data_server(nfstindex(i)-merge(1,0,i.ne.1),nfstindex(i)+nfsize(i)-1+merge(1,0,i.ne.numtasks-1),i)
                
           enddo 
@@ -117,6 +118,7 @@
           call MPI_RECV(left,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(right,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(nf,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
+          call MPI_RECV(nz,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
 
           call init_param
           call init_memory
