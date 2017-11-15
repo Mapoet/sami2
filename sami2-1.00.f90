@@ -233,11 +233,12 @@
 #endif
           call output ( hrut,ntm,istep )
           call flush_all()
+          print *,'ouput - hour = ',hrut
+          
 #ifdef _USE_MPI_
         endif
 #endif
           tprnt   = 0.
-          print *,'ouput - hour = ',hrut
           
         elseif ( tprnt .ge. dthr ) then
 #ifdef _USE_MPI_

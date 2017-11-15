@@ -585,7 +585,7 @@ contains
 
       filename='time'//'.dat'
       fileunit=time_dat
-      fileform=merge('formatted  ','unformatted',.true.)
+      fileform=merge('formatted  ','unformatted',fmtout)
       call open_file_with_replace(fileunit,filename,fileform)
 
       fileform=merge('formatted  ','unformatted',fmtout)
@@ -730,9 +730,10 @@ contains
 
        write (*,*) 'istep = ',istep,'ntm = ',ntm,&
                    'time step = ',dt,' hour = ',hrut
-       write (time_dat,100) ntm,nthr,ntmin,ntsec
+
 
        if ( fmtout ) then
+       write (time_dat,100) ntm,nthr,ntmin,ntsec
          write(denif_dat,101) deni
          write(tif_dat,101) ti
          write(vsif_dat,101) vsi
@@ -752,6 +753,7 @@ contains
        endif 
 
        if ( .not. fmtout ) then
+         write (time_dat) ntm,nthr,ntmin,ntsec
          write(denif_dat) deni
          write(tif_dat) ti
          write(vsif_dat) vsi
