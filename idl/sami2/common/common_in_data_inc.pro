@@ -1,10 +1,11 @@
 COMMON common_in_data,$
     time,$
     nf,$
-    nz,4
+    nz,$
     nion,$
     nt,$
     deni,$
+    dene,$
     vsi,$
     ti,$
     glat,$

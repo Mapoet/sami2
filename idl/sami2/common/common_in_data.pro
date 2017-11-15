@@ -9,6 +9,8 @@ COMMON common_in_data
 	glat=READ_GLATU_DAT(DataPath,nz,nf)
 	zalt=READ_ZALTU_DAT(DataPath,nz,nf)
 	deni=READ_DENIU_DAT(DataPath,nz,nf,nion,nt)
+	dene=total(deni,3)
+
 
 
 
