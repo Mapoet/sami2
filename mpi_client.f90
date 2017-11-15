@@ -417,10 +417,23 @@ contains
                datanum=datanum+1
                call MPI_iSEND(denn(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
                datanum=datanum+1
+               call MPI_iSEND(ne(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsi(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsid(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(sumvsi(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsic(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               datanum=datanum+1
+               
                call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
-!               call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
-!               datanum=datanum+1
+               call MPI_iSEND(ti(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(tn(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
           endif
 
           targetright=taskid+1
@@ -430,10 +443,23 @@ contains
                datanum=datanum+1
                call MPI_iSEND(denn(:,nf-1,:),nz*1*nneut,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
+               call MPI_iSEND(ne(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsi(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsid(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(sumvsi(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(vsic(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+
                call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
                datanum=datanum+1
-!               call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
-!               datanum=datanum+1
+               call MPI_iSEND(ti(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
+               call MPI_iSEND(tn(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               datanum=datanum+1
           endif
 
           datanum=0
@@ -442,7 +468,22 @@ contains
                datanum=datanum+1
                call MPI_RECV(denn(:,nf,:),nz*1*nneut,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
+               call MPI_RECV(ne(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsi(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsid(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(sumvsi(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsic(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+
                call MPI_RECV(te(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(ti(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(tn(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
           endif
 
@@ -452,7 +493,22 @@ contains
                datanum=datanum+1
                call MPI_RECV(denn(:,1,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
+               call MPI_RECV(ne(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsi(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsid(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(sumvsi(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(vsic(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+
                call MPI_RECV(te(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(ti(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               datanum=datanum+1
+               call MPI_RECV(tn(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
           endif
       end subroutine share_data_btwn_clients
