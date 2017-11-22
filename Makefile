@@ -1,11 +1,52 @@
-ARCH=i386
-ARCH=amd64
-INC_ADD= '$(subst \,/,$(MSMPI_INC));$(subst \,/,$(MSMPI_INC))$(ARCH)'
-INC_ADD= '/opt/pgi/linux86-64/2017/mpi/openmpi/include/'
+ifeq ($(OS),Windows_NT)
+    CCFLAGS += -D WIN32
+    OSFLAG= WIN32
+    ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
+        CCFLAGS += -D AMD64
+	   ARCH=amd64
+    else
+        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+            CCFLAGS += -D AMD64
+		  ARCH=amd64
+        endif
+        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+            CCFLAGS += -D IA32
+		  ARCH=i386
+        endif
+    endif
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        CCFLAGS += -D LINUX
+	   OSFLAG= LINUX
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        CCFLAGS += -D OSX
+	   OSFLAG= OSX
+    endif
+    UNAME_P := $(shell uname -p)
+    ifeq ($(UNAME_P),x86_64)
+        CCFLAGS += -D AMD64
+    endif
+    ifneq ($(filter %86,$(UNAME_P)),)
+        CCFLAGS += -D IA32
+    endif
+    ifneq ($(filter arm%,$(UNAME_P)),)
+        CCFLAGS += -D ARM
+    endif
+endif
 
-
+PG_COMPILER=
 PG_COMPILER=pgfortran
-PG_COMPILER=mpifort
+ifeq ($(OSFLAG),WIN32)
+INC_ADD= '$(subst \,/,$(MSMPI_INC));$(subst \,/,$(MSMPI_INC))$(ARCH)'
+else
+INC_ADD= '/opt/pgi/linux86-64/2017/mpi/openmpi/include/'
+endif
+
+
+
+
 
 PG_COPT  =
 #PG_COPT += -acc=autopar
@@ -42,7 +83,10 @@ PG_LOPT  =
 #PG_LOPT += -Mpfi
 #PG_LOPT += -Mpfo
 PG_LOPT += -module obj
-#PG_LOPT += -Mmpi=msmpi
+
+ifeq ($(OSFLAG),WIN32)
+PG_LOPT += -Mmpi=msmpi
+endif
 
 
 

@@ -10,4 +10,10 @@ COMMON common_in_data,$
     ti,$
     glat,$
     zalt
+
+
+COMMON block_constants,$
+    ions_names,$
+    ions_out
+
 common_in_data
