@@ -9,6 +9,18 @@ implicit none
 !*******************************************
 !*******************************************
 
+
+!      number of altitudes
+      INTEGER::nf=52
+      INTEGER::nfp1 
+      INTEGER::nfm1 
+      INTEGER::nfm2 
+
+!      number of grid cells
+      INTEGER::nz = 51
+      INTEGER::nzp1
+      INTEGER::nzm1
+
 !     namelist data
       logical,save::fejer
       logical,save::fmtout
@@ -172,6 +184,16 @@ implicit none
  
 
 contains
+      subroutine init_param
+      implicit none
+      nfp1 = nf + 1
+      nfm1 = nf - 1
+      nfm2 = nf - 2
+      nzp1 = nz + 1
+      nzm1 = nz - 1
+      end subroutine init_param
+
+
       subroutine init_memory
       include 'param-1.00.inc'
       implicit none
@@ -783,3 +805,16 @@ contains
 
 
 end module inputfiles
+
+module TRACE
+contains 
+      subroutine TRACE(a,b,c,d,e,f,g)
+      optional::a,b,c,d,e,f,g
+#ifdef _TRACE_
+      !print*,a,b,c,d,e,f,g
+      call flush(6)
+#endif
+      RETURN
+      end subroutine TRACE
+
+end module TRACE

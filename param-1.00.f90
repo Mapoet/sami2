@@ -7,16 +7,6 @@
 !*******************************************
 module parameters
 implicit none
-!      number of altitudes
-      INTEGER::nf=52
-      INTEGER::nfp1 
-      INTEGER::nfm1 
-      INTEGER::nfm2 
-
-!      number of grid cells
-      INTEGER::nz = 51
-      INTEGER::nzp1
-      INTEGER::nzm1
 
 !      ion densities
 
@@ -85,12 +75,5 @@ implicit none
        REAL,PARAMETER::z5 = 1.0614054
 
 contains
-      subroutine init_param
-      implicit none
-      nfp1 = nf + 1
-      nfm1 = nf - 1
-      nfm2 = nf - 2
-      nzp1 = nz + 1
-      nzm1 = nz - 1
-      end subroutine init_param
+
 end module parameters
