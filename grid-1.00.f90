@@ -14,7 +14,7 @@
 !     s grid parameters: gridding for parallel dynamics
 
       real s(nz,nf)
-      real qs(nz,nf)
+      real qs(nzp1,nf)
       real xs(nz,nf),ys(nz,nf),zs(nz,nf)
       real brs(nz,nf)
 

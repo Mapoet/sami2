@@ -79,6 +79,7 @@
       call open_file(parameters_namelist,filename)
       read(parameters_namelist,parameters)
       print*,nf,nz
+      call flush(6)
       call init_param
       call initial
   
@@ -94,6 +95,10 @@
 
 #ifdef _USE_MPI_      
       endif
+      !print*,taskid,":","Barrier 2"
+      !call flush(6)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
       if((taskid .EQ. 0).and.(numtasks.gt.1)) then
           ALLOCATE(nfsize(numtasks-1),nfstindex(numtasks-1))
           nfstindex=1
@@ -119,12 +124,15 @@
           call MPI_RECV(right,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(nf,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
           call MPI_RECV(nz,1,MPI_INT,0,0,MPI_COMM_WORLD,status,ierr)
-
+          
           call init_param
           call init_memory
           call share_data_client!share chanks
       endif
 
+!print*,taskid,":","Barrier 3"
+!call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 #endif
 
 !     time loop
@@ -139,6 +147,11 @@
                 .and. time  .lt. timemax  )
 
 #ifdef _USE_MPI_      
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier Iteration:",istep
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
@@ -146,15 +159,40 @@
 !       parallel transport
         do nfl = nf,1,-1
           call zenith (hrut,nfl)
-          call transprt (nfl)
-        enddo         
+#ifdef _USE_MPI_
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier Zenith",sphr
+call flush(6)
+#endif
+#endif
 
+          call transprt (nfl)
+#ifdef _USE_MPI_
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier transport",sphr
+call flush(6)
+#endif
+#endif
+
+ 
+        enddo         
+#ifdef _USE_MPI_
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier Zenith&transport",sphr
+call flush(6)
+#endif
+#endif
 !       perpendicular transport
         call exb(hrut)
 
 
 #ifdef _USE_MPI_
         endif
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier exb",sphr
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
 #endif
 
 
@@ -175,7 +213,12 @@
         tprnt  = tprnt + dt / sphr
         tneut  = tneut + dt / sphr
 
-#ifdef _USE_MPI_      
+#ifdef _USE_MPI_
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier time/step advancement"
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
@@ -199,6 +242,11 @@
 
         endif
         call mpi_bcast(dt,1,MPI_REAL,0,MPI_COMM_WORLD,ierr)
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier dt sync"
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
 #endif
 
 #ifdef _USE_MPI_      
@@ -251,12 +299,23 @@
           tprnt   = 0.
         endif
 #ifdef _USE_MPI_
+
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier Before sharing cllients"
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
+
         if(taskid.ne.0) then
-              
+                     
               !send data to neighbrs 
               call share_data_btwn_clients
         endif      
-
+#ifdef _DEBUG_
+!print*,taskid,":","Barrier After sharing cllients"
+call flush(6)
+call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+#endif
 #endif
          call flush(6)
       enddo    ! end time loop
@@ -686,7 +745,7 @@
 !        gs(i)  = 0.
 !      enddo
 
-       
+
       tvn = 0.
       gs = 0.
 
@@ -702,11 +761,11 @@
         enddo
 
       enddo
- 
+
        call photprod ( cx,phprodr,nfl   )         ! calculates phprodr
        call chemrate ( chrate,nfl               ) ! calculates chrate
        call chempl   ( chrate,chloss,chprod,nfl ) ! calcualtes chloss,chprod
-       call recorate ( relossr,nfl              ) ! calculates relossr
+       call recorate ( relossr,nfl)                ! calculates relossr
 
        do i = 1,nz
 
@@ -1197,7 +1256,7 @@
            te(ie,1)  = tn(ie,1)
          enddo
        endif
-       
+
 
        return
        end

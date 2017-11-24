@@ -1125,6 +1125,7 @@ contains
       subroutine rtryds(a,b,c,d,x,n)
       
       include 'param-1.00.inc'
+      include 'com-1.00.inc'
 
 !     arrays a,b,c, and d may be used for storage of alfa, beta and x
 !     in the actual call of this routine, but remember, whatever you
@@ -1134,7 +1135,7 @@ contains
 !     i have modified the input sequence to the routine, but have left it
 !     otherwise intact.  we may  want to eventually change this (gj)
       implicit none
-      real:: a(n),b(n),c(n),d(n),x(n)
+      real,DIMENSION(:):: a,b,c,d,x
       INTEGER::n
       real:: alfa(nz),beta(nz)
 
@@ -1280,6 +1281,7 @@ contains
       subroutine smoothz(finout,ncomp) 
  
       include 'param-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
       REAL,DIMENSION(nz)::finout
       INTEGER::ncomp
@@ -1565,13 +1567,15 @@ contains
                    (0.1*denn(i,nfl,pto)+&
                     denn(i,nfl,pto2)+denn(i,nfl,ptn2)) 
       enddo
-
+      
+      iz300s=1
       i = 1 
       do while ( ratio(i) .le. 3.e-3 .and. i .lt. nz ) 
          iz300s(nfl) = i 
          i         = i + 1 
       enddo 
  
+      iz300n=nz
       i = nz 
       do while ( ratio(i) .le. 3.e-3 .and. i .gt. 1 )  
          iz300n(nfl) = i 

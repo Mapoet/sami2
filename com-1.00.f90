@@ -268,10 +268,81 @@ contains
       ALLOCATE(u3(nz,nf))
       ALLOCATE(u4(nz,nf))
       ALLOCATE(u5(nz,nf))
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       alts=0
+       grs=0
+       glats=0
+       glons=0
+       bms=0
+       gs=0
+       ps=0
+       blats=0
+       coschicrit=0
+       ds=0
+       d2s=0
+       d22s=0
+       dels=0
+       grad_inp=0
 
+       xnorms=0
+       ynorms=0
+       znorms=0
+       xnormp=0
+       ynormp=0
+       znormp=0
+       arg=0
+       athg=0
+       aphig=0
+
+       delsp=0
+       vol=0
+       areap=0
+       areas=0
+       vnx=0
+       vny=0
+       vnz=0
+       xdels=0
+       xdelp=0
+       vexbs=0
+       vexbp=0
+       vexb=0
+
+       deni=0
+       denn=0
+       ne=0
+       vsi=0
+       vsid=0
+       sumvsi=0
+       vsic=0
+       te=0
+       ti=0
+       tn=0
+       u=0
+       v=0
+       vpi=0
+
+
+       vot=0
+       vor=0
+
+
+
+       cx=0
+
+       fluxnt=0
+
+       t1=0
+       t2=0
+       t3=0
+       u1=0
+       u2=0
+       u3=0
+       u4=0
+       u5=0
       end subroutine init_memory
 
       subroutine deinit_memory
+      include 'param-1.00.inc'
       implicit none
       DEALLOCATE(alts(nz,nf))
       DEALLOCATE(grs(nz,nf))
@@ -360,7 +431,7 @@ module inputfiles
 
       character(6),parameter::inputpath="input"
       character(7),parameter::outputpath="output"
-      character::delimiter='\/'
+      character,parameter::delimiter='\/'
       integer,parameter::sami2_1_00_namelist=10
       integer,parameter::parameters_namelist=11
 
@@ -444,16 +515,16 @@ contains
           end subroutine flush_all
 
       subroutine open_file(fileunit,filename)
-            implicit none
-      INTEGER::ios=0
-      CHARACTER(20)::filename
+      implicit none
       INTEGER::fileunit
+      CHARACTER(20)::filename
+      INTEGER::ios=0
       
-      open ( STATUS='OLD',IOSTAT=ios, unit=fileunit,  file=trim(inputpath)//delimiter//trim(filename))
-      IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error opening file: '//trim(inputpath)//delimiter//trim(filename)
-          STOP
-      ENDIF
+          open ( STATUS='OLD',IOSTAT=ios, unit=fileunit,  file=trim(inputpath)//delimiter//trim(filename))
+          IF( ios.ne.0) THEN
+               WRITE(6,*) 'Error opening file: '//trim(inputpath)//delimiter//trim(filename)
+               STOP
+          ENDIF
       end subroutine open_file
 
       subroutine open_input_files
@@ -463,56 +534,56 @@ contains
 !      CHARACTER(11)::fileform
       INTEGER::fileunit=0
 
-      filename='sami2-1.00.namelist'
-      fileunit=sami2_1_00_namelist
-      call open_file(fileunit,filename)
+          filename='sami2-1.00.namelist'
+          fileunit=sami2_1_00_namelist
+          call open_file(fileunit,filename)
 
 
-      filename='deni-init.inp'
-      fileunit=deni_init_inp
-      call open_file(fileunit,filename)
+          filename='deni-init.inp'
+          fileunit=deni_init_inp
+          call open_file(fileunit,filename)
 
-      filename='ichem.inp'
-      fileunit=ichem_inp
-      call open_file(fileunit,filename)
+          filename='ichem.inp'
+          fileunit=ichem_inp
+          call open_file(fileunit,filename)
 
-      filename='phabsdt.inp'
-      fileunit=phabsdt_inp
-      call open_file(fileunit,filename)
+          filename='phabsdt.inp'
+          fileunit=phabsdt_inp
+          call open_file(fileunit,filename)
 
-      filename='phiondt.inp'
-      fileunit=phiondt_inp
-      call open_file(fileunit,filename)
+          filename='phiondt.inp'
+          fileunit=phiondt_inp
+          call open_file(fileunit,filename)
 
-      filename='phionnt.inp'
-      fileunit=phionnt_inp
-      call open_file(fileunit,filename)
+          filename='phionnt.inp'
+          fileunit=phionnt_inp
+          call open_file(fileunit,filename)
 
-      filename='euvflux.inp'
-      fileunit=euvflux_inp
-      call open_file(fileunit,filename)
+          filename='euvflux.inp'
+          fileunit=euvflux_inp
+          call open_file(fileunit,filename)
 
-      filename='thetant.inp'
-      fileunit=thetant_inp
-      call open_file(fileunit,filename)
+          filename='thetant.inp'
+          fileunit=thetant_inp
+          call open_file(fileunit,filename)
 
-      filename='zaltnt.inp'
-      fileunit=zaltnt_inp
-      call open_file(fileunit,filename)
+          filename='zaltnt.inp'
+          fileunit=zaltnt_inp
+          call open_file(fileunit,filename)
 
       end subroutine open_input_files
 
       subroutine close_input_files
       implicit none
-      close ( unit=sami2_1_00_namelist)
-      close ( unit=deni_init_inp)
-      close ( unit=ichem_inp)
-      close ( unit=phabsdt_inp)
-      close ( unit=phiondt_inp)
-      close ( unit=phionnt_inp)
-      close ( unit=euvflux_inp)
-      close ( unit=thetant_inp)
-      close ( unit=zaltnt_inp)
+          close ( unit=sami2_1_00_namelist)
+          close ( unit=deni_init_inp)
+          close ( unit=ichem_inp)
+          close ( unit=phabsdt_inp)
+          close ( unit=phiondt_inp)
+          close ( unit=phionnt_inp)
+          close ( unit=euvflux_inp)
+          close ( unit=thetant_inp)
+          close ( unit=zaltnt_inp)
 
 
       end subroutine close_input_files
@@ -525,31 +596,31 @@ contains
       CHARACTER(11)::fileform
       INTEGER::fileunit=0
 
-      call system('mkdir ' // adjustl(trim( outputpath ) ) )
-!      call system('mkdir -p ' // adjustl(trim( outputpath ) ) )
-      ios=0
-      fileform=merge('formatted  ','unformatted',fmtout)
+          call system('mkdir ' // adjustl(trim( outputpath ) ) )
+     !      call system('mkdir -p ' // adjustl(trim( outputpath ) ) )
+          ios=0
+          fileform=merge('formatted  ','unformatted',fmtout)
 
-      filename='zalt'//merge('f','u',fmtout)//'.dat'
-      fileunit=zaltf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='zalt'//merge('f','u',fmtout)//'.dat'
+          fileunit=zaltf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='glat'//merge('f','u',fmtout)//'.dat'
-      fileunit=glatf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
- 
-      filename='glon'//merge('f','u',fmtout)//'.dat'
-      fileunit=glonf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='glat'//merge('f','u',fmtout)//'.dat'
+          fileunit=glatf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
+     
+          filename='glon'//merge('f','u',fmtout)//'.dat'
+          fileunit=glonf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
       end subroutine open_output_grid_files
 
       subroutine close_output_grid_files
       implicit none
 
-      close ( unit=zaltf_dat)
-      close ( unit=glatf_dat)
-      close ( unit=glonf_dat)
+          close ( unit=zaltf_dat)
+          close ( unit=glatf_dat)
+          close ( unit=glonf_dat)
 
 
       end subroutine close_output_grid_files
@@ -557,15 +628,15 @@ contains
       subroutine write_output_grid_files
       use commons
       implicit none
-      if ( fmtout ) then
-        write(zaltf_dat,105) alts
-        write(glatf_dat,105) glats
-        write(glonf_dat,105) glons
-      else
-        write(zaltf_dat) alts
-        write(glatf_dat) glats
-        write(glonf_dat) glons
-      endif
+          if ( fmtout ) then
+          write(zaltf_dat,105) alts
+          write(glatf_dat,105) glats
+          write(glonf_dat,105) glons
+          else
+          write(zaltf_dat) alts
+          write(glatf_dat) glats
+          write(glonf_dat) glons
+          endif
  105  format (1x,1p10e16.6)
 
       end subroutine write_output_grid_files
@@ -580,18 +651,18 @@ contains
       CHARACTER(11)::fileform
       INTEGER::fileunit
 
-      open ( STATUS='REPLACE',IOSTAT=ios, unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
-      IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error replacing file: '//trim(outputpath)//delimiter//trim(filename)
-          STOP
-      ENDIF
-      close(unit=fileunit)
-      ios=0
-      open (ACCESS='APPEND',IOSTAT=ios,form=trim(fileform), unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
-      IF( ios.ne.0) THEN
-          WRITE(6,*) 'Error opening file: '//trim(outputpath)//delimiter//trim(filename),ios
-          STOP
-      ENDIF
+          open ( STATUS='REPLACE',IOSTAT=ios, unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
+          IF( ios.ne.0) THEN
+               WRITE(6,*) 'Error replacing file: '//trim(outputpath)//delimiter//trim(filename)
+               STOP
+          ENDIF
+          close(unit=fileunit)
+          ios=0
+          open (ACCESS='APPEND',IOSTAT=ios,form=trim(fileform), unit=fileunit,  file=trim(outputpath)//delimiter//trim(filename))
+          IF( ios.ne.0) THEN
+               WRITE(6,*) 'Error opening file: '//trim(outputpath)//delimiter//trim(filename),ios
+               STOP
+          ENDIF
 
       end subroutine open_file_with_replace
 
@@ -603,83 +674,83 @@ contains
       CHARACTER(11)::fileform
       INTEGER::fileunit=0
 
-      call system('mkdir ' // adjustl(trim( outputpath ) ) )
+          call system('mkdir ' // adjustl(trim( outputpath ) ) )
 
-      filename='time'//'.dat'
-      fileunit=time_dat
-      fileform=merge('formatted  ','unformatted',fmtout)
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='time'//'.dat'
+          fileunit=time_dat
+          fileform=merge('formatted  ','unformatted',fmtout)
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      fileform=merge('formatted  ','unformatted',fmtout)
+          fileform=merge('formatted  ','unformatted',fmtout)
 
-      filename='deni'//merge('f','u',fmtout)//'.dat'
-      fileunit=denif_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='deni'//merge('f','u',fmtout)//'.dat'
+          fileunit=denif_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='ti'//merge('f','u',fmtout)//'.dat'
-      fileunit=tif_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='ti'//merge('f','u',fmtout)//'.dat'
+          fileunit=tif_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='vsi'//merge('f','u',fmtout)//'.dat'
-      fileunit=vsif_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='vsi'//merge('f','u',fmtout)//'.dat'
+          fileunit=vsif_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='te'//merge('f','u',fmtout)//'.dat'
-      fileunit=tef_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='te'//merge('f','u',fmtout)//'.dat'
+          fileunit=tef_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='vn'//merge('f','u',fmtout)//'.dat'
-      fileunit=vnf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='vn'//merge('f','u',fmtout)//'.dat'
+          fileunit=vnf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='vt'//merge('f','u',fmtout)//'.dat'
-      fileunit=vtf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='vt'//merge('f','u',fmtout)//'.dat'
+          fileunit=vtf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='vr'//merge('f','u',fmtout)//'.dat'
-      fileunit=vrf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='vr'//merge('f','u',fmtout)//'.dat'
+          fileunit=vrf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='denn'//merge('f','u',fmtout)//'.dat'
-      fileunit=dennf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='denn'//merge('f','u',fmtout)//'.dat'
+          fileunit=dennf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='vexb'//merge('f','u',fmtout)//'.dat'
-      fileunit=vexbf_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='vexb'//merge('f','u',fmtout)//'.dat'
+          fileunit=vexbf_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
 !     diagnostic files (formatted)
-      filename='t1'//merge('f','u',fmtout)//'.dat'
-      fileunit=t1f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='t1'//merge('f','u',fmtout)//'.dat'
+          fileunit=t1f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='t2'//merge('f','u',fmtout)//'.dat'
-      fileunit=t2f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='t2'//merge('f','u',fmtout)//'.dat'
+          fileunit=t2f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='t3'//merge('f','u',fmtout)//'.dat'
-      fileunit=t3f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='t3'//merge('f','u',fmtout)//'.dat'
+          fileunit=t3f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='u1'//merge('f','u',fmtout)//'.dat'
-      fileunit=u1f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='u1'//merge('f','u',fmtout)//'.dat'
+          fileunit=u1f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='u2'//merge('f','u',fmtout)//'.dat'
-      fileunit=u2f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='u2'//merge('f','u',fmtout)//'.dat'
+          fileunit=u2f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='u3'//merge('f','u',fmtout)//'.dat'
-      fileunit=u3f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='u3'//merge('f','u',fmtout)//'.dat'
+          fileunit=u3f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='u4'//merge('f','u',fmtout)//'.dat'
-      fileunit=u4f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='u4'//merge('f','u',fmtout)//'.dat'
+          fileunit=u4f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
-      filename='u5'//merge('f','u',fmtout)//'.dat'
-      fileunit=u5f_dat
-      call open_file_with_replace(fileunit,filename,fileform)
+          filename='u5'//merge('f','u',fmtout)//'.dat'
+          fileunit=u5f_dat
+          call open_file_with_replace(fileunit,filename,fileform)
 
       end subroutine open_uf
 
@@ -694,25 +765,25 @@ contains
       end
 
       subroutine close_uf
-      close ( unit=zaltf_dat)
-      close ( unit=time_dat)
-      close ( unit=denif_dat)
-      close ( unit=tif_dat)
-      close ( unit=vsif_dat)
-      close ( unit=tef_dat)
-      close ( unit=vnf_dat)
-      close ( unit=vtf_dat)
-      close ( unit=vrf_dat)
-      close ( unit=dennf_dat)
-      close ( unit=vexbf_dat)
-      close ( unit=t1f_dat)
-      close ( unit=t2f_dat)
-      close ( unit=t3f_dat)
-      close ( unit=u1f_dat)
-      close ( unit=u2f_dat)
-      close ( unit=u3f_dat)
-      close ( unit=u4f_dat)
-      close ( unit=u5f_dat)
+          close ( unit=zaltf_dat)
+          close ( unit=time_dat)
+          close ( unit=denif_dat)
+          close ( unit=tif_dat)
+          close ( unit=vsif_dat)
+          close ( unit=tef_dat)
+          close ( unit=vnf_dat)
+          close ( unit=vtf_dat)
+          close ( unit=vrf_dat)
+          close ( unit=dennf_dat)
+          close ( unit=vexbf_dat)
+          close ( unit=t1f_dat)
+          close ( unit=t2f_dat)
+          close ( unit=t3f_dat)
+          close ( unit=u1f_dat)
+          close ( unit=u2f_dat)
+          close ( unit=u3f_dat)
+          close ( unit=u4f_dat)
+          close ( unit=u5f_dat)
       
       end subroutine close_uf
 
@@ -726,9 +797,9 @@ contains
 !*******************************************
 !*******************************************
 
-       subroutine output ( hrut,ntm,istep )
+      subroutine output ( hrut,ntm,istep )
 
-       include 'param-1.00.inc'
+      include 'param-1.00.inc'
       use commons
       implicit none
       REAL::hrut
@@ -798,8 +869,8 @@ contains
  100   format(1x,4i6)
  101   format(1x,1p10e16.6)
 
-       return
-       end
+      return
+      end
 
 
 
