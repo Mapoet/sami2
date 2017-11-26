@@ -418,7 +418,7 @@ contains
       real,save,dimension(:,:),allocatable::tmp_buf2_1
       real,save,dimension(:,:,:),allocatable::tmp_buf3
       real,save,dimension(:,:,:,:),allocatable::tmp_buf4
-      integer::i,nion_1,nion_2,jjj,ierr
+      integer::i,ierr
  
       type container
       real,dimension(:),pointer::tmp_buf1
@@ -431,10 +431,8 @@ contains
       Integer::numberOfBuffers,currBuf
       numberOfBuffers=100
       allocate (buffers(numberOfBuffers))
-!objects(0)%obj => s1
-currBuf=1;
-      nion_1=1
-      nion_2=7
+
+      currBuf=1
 
           targetleft=taskid-1
           datanum=0
