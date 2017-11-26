@@ -42,6 +42,7 @@ ifeq ($(OSFLAG),WIN32)
 INC_ADD= '$(subst \,/,$(MSMPI_INC));$(subst \,/,$(MSMPI_INC))$(ARCH)'
 else
 INC_ADD= '/opt/pgi/linux86-64/2017/mpi/openmpi/include/'
+PG_COMPILER=mpifort
 endif
 
 
@@ -72,20 +73,31 @@ PG_COPT +=-Mdepchk
 PG_COPT +=-Miomutex 
 PG_COPT +=-Mrecursive 
 PG_COPT +=-Msave 
-PG_COPT +=-Ktrap=fp 
+PG_COPT +=-Ktrap=align
+PG_COPT +=-Ktrap=denorm
+PG_COPT +=-Ktrap=divz
+PG_COPT +=-Ktrap=fp
+PG_COPT +=-Ktrap=inexact
+PG_COPT +=-Ktrap=inv
+PG_COPT +=-Ktrap=none
+#PG_COPT +=-Ktrap=unf
+#PG_COPT +=-Ktrap=ovf
 PG_COPT +=-g 
 PG_COPT +=-byteswapio
+PG_COPT +=-Kieee
 
 PG_LOPT  =
-#PG_LOPT += -acclibs
-#PG_LOPT += -Mprof
-#PG_LOPT += -Mconcur
-#PG_LOPT += -Mpfi
-#PG_LOPT += -Mpfo
+PG_LOPT += -acclibs
+PG_LOPT += -Mprof
+PG_LOPT += -Mconcur
+PG_LOPT += -Mpfi
+PG_LOPT += -Mpfo
 PG_LOPT += -module obj
 
 ifeq ($(OSFLAG),WIN32)
 PG_LOPT += -Mmpi=msmpi
+else
+#PG_LOPT += -Mmpi
 endif
 
 

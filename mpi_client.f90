@@ -1,8 +1,8 @@
 module mpi_client
       INTEGER,PARAMETER::MPI_TAG_DT_SYNC=1001
-      INTEGER,PARAMETER::MPI_TAG_OUTPUT_DATA_SYNC=1002
-      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC=2000
-      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC=3000
+      INTEGER,PARAMETER::MPI_TAG_OUTPUT_DATA_SYNC=2001
+      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC=3000
+      INTEGER,PARAMETER::MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC=4000
       integer,save::left,right,taskid,numtasks,ierr
       
 contains
@@ -402,115 +402,274 @@ contains
 
 
       end subroutine share_output_data_server
+
+
       subroutine share_data_btwn_clients!(nfl,nfr,i)
       use parameters
       use commons
       implicit none
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
-      INTEGER::targetleft,targetright,datanum
+      INTEGER::targetleft,targetright,base_target,base_tag,base_index,datanum
       INTEGER:: mpirequest
+      real,save,dimension(:),allocatable::tmp_buf1
+      real,save,dimension(:),allocatable::tmp_buf1_1
+      real,save,dimension(:,:),allocatable::tmp_buf2
+      real,save,dimension(:,:),allocatable::tmp_buf2_1
+      real,save,dimension(:,:,:),allocatable::tmp_buf3
+      real,save,dimension(:,:,:,:),allocatable::tmp_buf4
+      integer::i,nion_1,nion_2,jjj,ierr
+ 
+      type container
+      real,dimension(:),pointer::tmp_buf1
+      real,dimension(:,:),pointer::tmp_buf2
+      real,dimension(:,:,:),pointer::tmp_buf3
+      real,dimension(:,:,:,:),pointer::tmp_buf4
+      integer::mpirequest
+      end type container
+      type(container), allocatable, dimension(:) :: buffers
+      Integer::numberOfBuffers,currBuf
+      numberOfBuffers=100
+      allocate (buffers(numberOfBuffers))
+!objects(0)%obj => s1
+currBuf=1;
+      nion_1=1
+      nion_2=7
 
           targetleft=taskid-1
           datanum=0
+
           if(targetleft.ge.1) then
-               call MPI_iSEND(deni(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+            base_target=targetleft
+            base_tag=MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC
+            base_index=2
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nion), STAT = IERR)
+               buffers(currBuf)%tmp_buf2=deni(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(denn(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nneut))
+               buffers(currBuf)%tmp_buf2= denn(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(ne(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= ne(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-!               call MPI_iSEND(vsi(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+
+!               call MPI_iSEND(vsi(:,base_index,:),nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(vsid(:,2,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+!               call MPI_iSEND(vsid(:,base_indexv,:),nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(sumvsi(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+!               call MPI_iSEND(sumvsi(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(vsic(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+!               call MPI_iSEND(vsic(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
 !               datanum=datanum+1
                
-               call MPI_iSEND(te(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= te(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(ti(:,2,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nion))
+               buffers(currBuf)%tmp_buf2= ti(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD, mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(tn(:,2),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= tn(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
+
           endif
 
           targetright=taskid+1
           datanum=0
           if(targetright.le.numtasks-1) then
-               call MPI_iSEND(deni(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+            base_target=targetright
+            base_tag=MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC
+            base_index=nf-1
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nion)) 
+               buffers(currBuf)%tmp_buf2=deni(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(denn(:,nf-1,:),nz*1*nneut,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nneut)) 
+               buffers(currBuf)%tmp_buf2=denn(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(ne(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= ne(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-!               call MPI_iSEND(vsi(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+!               call MPI_iSEND(vsi(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(vsid(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+!               call MPI_iSEND(vsid(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(sumvsi(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+!               call MPI_iSEND(sumvsi(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
 !               datanum=datanum+1
-!               call MPI_iSEND(vsic(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+!               call MPI_iSEND(vsic(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
 !               datanum=datanum+1
 
-               call MPI_iSEND(te(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= te(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(ti(:,nf-1,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf2(nz,nion)) 
+               buffers(currBuf)%tmp_buf2= ti(:,base_index,:)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
-               call MPI_iSEND(tn(:,nf-1),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+
+            ALLOCATE(buffers(currBuf)%tmp_buf1(nz)) 
+               buffers(currBuf)%tmp_buf1= tn(:,base_index)
+               call MPI_iSEND(buffers(currBuf)%tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,mpirequest,ierr)
+               buffers(currBuf)%mpirequest=mpirequest
+               currBuf=currBuf+1
                datanum=datanum+1
+
           endif
 
           datanum=0
           if(targetright.le.numtasks-1) then
-               call MPI_RECV(deni(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+            base_target=base_target
+            base_tag=MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC
+            base_index=nf
+            ALLOCATE(tmp_buf2(nz,nion)) 
+               call MPI_RECV(tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(denn(:,nf,:),nz*1*nneut,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               deni(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nion))
+            ALLOCATE(tmp_buf2(nz,nneut)) 
+               call MPI_RECV(tmp_buf2,nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(ne(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               denn(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nneut))
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-!               call MPI_RECV(vsi(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               ne(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
+!               call MPI_RECV(vsi(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(vsid(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(vsid(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(sumvsi(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(sumvsi(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(vsic(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(vsic(:,base_index,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
 
-               call MPI_RECV(te(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(ti(:,nf,:),nz*1*nion,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               te(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
+
+            ALLOCATE(tmp_buf2(nz,nion)) 
+               call MPI_RECV(tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(tn(:,nf),nz*1,MPI_REAL,targetright,MPI_TAG_SHARE_CLIENT_DATA_LEFT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               ti(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nion))
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
+               tn(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
+
           endif
 
           datanum=0
           if(targetleft.ge.1) then
-               call MPI_RECV(deni(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+          base_target=targetleft
+          base_tag=MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC
+          base_index=1
+            ALLOCATE(tmp_buf2(nz,nion)) 
+               call MPI_RECV(tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(denn(:,1,:),nz*1*nneut,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               deni(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nion))
+            ALLOCATE(tmp_buf2(nz,nneut)) 
+               call MPI_RECV(tmp_buf2,nz*1*nneut,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(ne(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               denn(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nneut))
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-!               call MPI_RECV(vsi(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               ne(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
+!               call MPI_RECV(vsi(:,1,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(vsid(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(vsid(:,1,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(sumvsi(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(sumvsi(:,1,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
-!               call MPI_RECV(vsic(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+!               call MPI_RECV(vsic(:,1,:),nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
 !               datanum=datanum+1
 
-               call MPI_RECV(te(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(ti(:,1,:),nz*1*nion,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               te(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
+            ALLOCATE(tmp_buf2(nz,nion)) 
+               call MPI_RECV(tmp_buf2,nz*1*nion,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
-               call MPI_RECV(tn(:,1),nz*1,MPI_REAL,targetleft,MPI_TAG_SHARE_CLIENT_DATA_RIGHT_SYNC+datanum,MPI_COMM_WORLD,status,ierr)
+               ti(:,base_index,:)=tmp_buf2
+            DEALLOCATE(tmp_buf2(nz,nion))
+            ALLOCATE(tmp_buf1(nz)) 
+               call MPI_RECV(tmp_buf1,nz*1,MPI_REAL,base_target,base_tag+datanum,MPI_COMM_WORLD,status,ierr)
                datanum=datanum+1
+               tn(:,base_index)=tmp_buf1
+            DEALLOCATE(tmp_buf1(nz))
           endif
+
+
+
+do i=1,numberOfBuffers
+call MPI_wait(buffers(i)%mpirequest,status,ierr)
+
+if(ALLOCATED(buffers(i)%tmp_buf1))then
+      deallocate(buffers(i)%tmp_buf1)
+endif
+if(ALLOCATED(buffers(i)%tmp_buf2))then
+      deallocate(buffers(i)%tmp_buf2)
+endif
+if(ALLOCATED(buffers(i)%tmp_buf3))then
+      deallocate(buffers(i)%tmp_buf3)
+endif
+if(ALLOCATED(buffers(i)%tmp_buf4))then
+      deallocate(buffers(i)%tmp_buf4)
+endif
+enddo
+
+deallocate (buffers(numberOfBuffers))
       end subroutine share_data_btwn_clients
 end module mpi_client
