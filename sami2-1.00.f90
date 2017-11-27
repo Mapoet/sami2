@@ -74,6 +74,10 @@
       call MPI_COMM_RANK(MPI_COMM_WORLD, taskid, ierr)
       call MPI_COMM_SIZE(MPI_COMM_WORLD, numtasks, ierr)
       if(taskid .EQ. 0) then
+          print*,"Start"
+          call print_time
+          call flush_all()
+
 #endif
       filename='parameters.namelist'
       call open_file(parameters_namelist,filename)
@@ -280,8 +284,9 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
         endif   
 #endif
           call output ( hrut,ntm,istep )
-          call flush_all()
           print *,'ouput - hour = ',hrut
+          call print_time
+          call flush_all()
           
 #ifdef _USE_MPI_
         endif
@@ -293,6 +298,8 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
         if(taskid.EQ.0)then      
 #endif
           print *,'no ouput yet - hour = ',hrut
+          call print_time
+          call flush_all()
 #ifdef _USE_MPI_
         endif      
 #endif

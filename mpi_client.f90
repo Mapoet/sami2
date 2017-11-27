@@ -651,8 +651,8 @@ contains
 
 
 
-do i=1,numberOfBuffers
-call MPI_wait(buffers(i)%mpirequest,status,ierr)
+do i=1,currBuf-1
+     call MPI_wait(buffers(i)%mpirequest,status,ierr)
 
 if(ALLOCATED(buffers(i)%tmp_buf1))then
       deallocate(buffers(i)%tmp_buf1)

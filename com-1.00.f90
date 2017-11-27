@@ -417,6 +417,12 @@ contains
       
       end subroutine deinit_memory
 
+  subroutine print_time
+  implicit none
+  integer :: values(8)
+  call date_and_time(values=values)
+  print *, values(5),":",values(6),":",values(7),":",values(8)
+  end subroutine print_time
 
 
 
