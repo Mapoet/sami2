@@ -804,7 +804,7 @@ contains
 !*******************************************
 !*******************************************
 
-      subroutine output ( hrut,ntm,istep )
+      subroutine output ( ntm,istep )
 
       include 'param-1.00.inc'
       use commons

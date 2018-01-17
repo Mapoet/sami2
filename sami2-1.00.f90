@@ -283,7 +283,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
           enddo
         endif   
 #endif
-          call output ( hrut,ntm,istep )
+          call output ( ntm,istep )
           print *,'ouput - hour = ',hrut
           call print_time
           call flush_all()
