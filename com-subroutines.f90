@@ -1458,7 +1458,7 @@ contains
 
       !LOPCAL VARIABLES
       real kape(nz)
-      real s1e(nz),s2e(nz),s3e(nz),s4e(nz)
+      real s1e(nz),s2e(nz),s3e(nz),s4e(nz),s6e(nz)
       real s5e(nz),qphe(nz),phprod(nz)
       real qen(nz,nneut)
       real ratio(nz)
@@ -1747,7 +1747,9 @@ contains
         s2e(i) = s2e(i) - 0.6667 * divvexb(i)
       enddo
 
-      call tesolv(tte,te_old,kape,s1e,s2e,s3e,s4e,s5e,nfl)
+! Adding some stuff
+      call se6subr(nfl,s6e)
+      call tesolv(tte,te_old,kape,s1e,s2e,s3e,s4e,s5e,nfl,s6e)
 
       return
       end
@@ -2173,7 +2175,7 @@ contains
 !*******************************************
 !*******************************************
 
-      subroutine tesolv(tte,te_old,kap,s1,s2,s3,s4,s5,nfl)
+      subroutine tesolv(tte,te_old,kap,s1,s2,s3,s4,s5,nfl,s6)
 
       include 'param-1.00.inc'
       include 'com-1.00.inc'
@@ -2181,7 +2183,7 @@ contains
       REAL,dimension(nz)::tte
       REAL,dimension(nz)::te_old
       REAL,dimension(nz)::kap
-      REAL,dimension(nz)::s1,s2,s3,s4,s5
+      REAL,dimension(nz)::s1,s2,s3,s4,s5,s6
       INTEGER::nfl
 
       REAL:: a(nz),b(nz),c(nz),d(nz)
@@ -2208,7 +2210,7 @@ contains
         c(j) = - bms(j,nfl)**2 / ne(j,nfl) /d22s(j,nfl)&
          *.5 * ( kap(j+1) + kap(j) )/ ds(j+1,nfl)
 
-        d(j) = te_old(j)/dt + s1(j) + s4(j) + s5(j)
+        d(j) = te_old(j)/dt + s1(j) + s4(j) + s5(j) + s6(j)
 
        enddo
 

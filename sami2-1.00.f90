@@ -66,7 +66,7 @@
 #endif
 
       integer::ntm,istep,nfl
-      real::hrut,timemax,time,tprnt,tneut
+      real::timemax,time,tprnt,tneut
       INTEGER::i
 
 #ifdef _USE_MPI_

@@ -9,6 +9,7 @@ implicit none
 !*******************************************
 !*******************************************
 
+      REAL::hrut
 
 !      number of altitudes
       INTEGER::nf=52
@@ -808,7 +809,6 @@ contains
       include 'param-1.00.inc'
       use commons
       implicit none
-      REAL::hrut
       INTEGER::ntm
       INTEGER::istep
 
