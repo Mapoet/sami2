@@ -156,13 +156,13 @@
       DATA SV/25*1./
       IF(ISW.NE.64999) CALL TSELEC(SV)
 !      Put identification data into common/datime/
-      DO 1 I=1,3
+      DO I=1,3
         ISDATE(I)=ISD(I)
-    1 CONTINUE
-      DO 2 I=1,2
+      END DO
+      DO I=1,2 
         ISTIME(I)=IST(I)
         NAME(I)=NAM(I)
-    2 CONTINUE
+      END DO
 !
 !        Test for changed input
       V1=VTST(IYD,SEC,GLAT,GLONG,STL,F107A,F107,AP,1)
@@ -397,7 +397,7 @@
 !
       COMMON/PARMB/GSURF,RE
       COMMON/METSEL/IMR
-      DIMENSION D(9),T(2)
+      DIMENSION D(9),T(2),AP(7)
       SAVE
       DATA BM/1.3806E-19/,RGAS/831.4/
       DATA TEST/.00043/
@@ -569,7 +569,7 @@
       COMMON/GTS3C/TLB,S,DB04,DB16,DB28,DB32,DB40,DB48,DB01,ZA,T0,Z0&
        ,G0,RL,DD,DB14,TR12
       COMMON/MESO7/TN1(5),TN2(4),TN3(5),TGN1(2),TGN2(2),TGN3(2)
-      DIMENSION D(9),T(2),MT(11),AP(1),ALTL(8)
+      DIMENSION D(9),T(2),MT(11),AP(7),ALTL(8)
       COMMON/LOWER7/PTM(10),PDM(10,8)
       COMMON/PARM7/PT(150),PD(150,9),PS(150),PDL(25,2),PTL(100,4),&
        PMA(100,10),SAM(100)

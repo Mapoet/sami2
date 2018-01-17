@@ -1731,7 +1731,7 @@ contains
 
       do i = 1,nz
         s5e(i) = 0.66667 * evtok * qphe(i) / ne(i,nfl) ! * .15
-      enddo 
+      enddo
 
 ! MS: Neglected term, divergence of ExB drift
 ! Divergence of the ExB drift; requires equatorial drift
@@ -2293,10 +2293,10 @@ contains
 !*******************************************
 
        subroutine exb(hrut)
-
+       use vdrift_module
        include 'param-1.00.inc'
        include 'com-1.00.inc'
-      use vdrift_module
+
        real denic(nz,nf,nion)
        real tic(nz,nf,nion)
        real tec(nz,nf)
@@ -2392,9 +2392,9 @@ contains
 !       do ni = nion1,nion2
 !         do j = 1,nf
 !           do i = 1,nz
-!             vot(i,j,ni)   =  vsi(i,j,ni) * cosdips(i,j) + 
+!             vot(i,j,ni)   =  vsi(i,j,ni) * cosdips(i,j) +
 !     .                        vexbp(i,j)  * sindips(i,j)
-!             vor(i,j,ni)   = -vsi(i,j,ni) * sindips(i,j) + 
+!             vor(i,j,ni)   = -vsi(i,j,ni) * sindips(i,j) +
 !     .                        vexbp(i,j)  * cosdips(i,j)
 !           enddo
 !         enddo
@@ -2592,7 +2592,6 @@ contains
        return
        end
 
-
 !*******************************************
 !*******************************************
 
@@ -2629,23 +2628,16 @@ contains
        enddo
 
 !      perpendicular motion
-!$OMP PARALLEL PRIVATE(I,J,dts,dtp,dt1) SHARED(xdels,xdelp,vexbs,vexbp,dtnew)
-!!$OMP DO
+
        do j = 1,nf
-!$OMP DO
          do i = 1,nz
            dts = xdels(i,j,1) / amax1(1.,abs(vexbs(i,j)))
            dtp = xdelp(i,j,1) / amax1(1.,abs(vexbp(i,j)))
            dt1 = amin1 ( dts,dtp )
-!$OMP CRITICAL
            if ( dt1 .lt. dtnew ) dtnew = dt1
-!$OMP END CRITICAL
-
          enddo
-!$OMP END DO
-       enddo 
-!!$OMP END DO
-!$OMP END PARALLEL
+       enddo
+
 
        if ( dtnew .le. .01 ) then
          print *,' Time step too small: dtnew',dtnew
@@ -2655,6 +2647,7 @@ contains
          stop
        endif
        dt = .25 * dtnew
+!       print *,'dtnew,dt',dtnew,dt
        if ( dtnew/dt .le. 1.0  ) dt = amin1(dt00,dtnew   )
        if ( dtnew/dt .ge. 1.2  ) dt = amin1(dt00,dt * 1.2)
 

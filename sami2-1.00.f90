@@ -365,6 +365,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       use commonsubroutines
       implicit none
       include "gonamelist.inc"
+
       !LOCAL VARIABLES
       real,dimension(nz,nf,91):: f1026
       real,dimension(nz,nf,91):: f584
@@ -492,7 +493,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
             if ( n .eq. 5 ) k = ptn2p
             if ( n .eq. 6 ) k = ptnop
             if ( n .eq. 7 ) k = pto2p
-            slope   = ( denii(j0+1,n) - denii(j0,n) ) &
+            slope   = ( denii(j0+1,n) - denii(j0,n) )&
                       / ( zi   (j0+1)   - zi   (j0) )
             deni(i,l,k) = denii(j0,n) + ( alts(i,l) - zi(j0) ) * slope
             deni(i,l,k) = amax1 ( deni(i,l,k) , denmin )
@@ -504,6 +505,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
                 deni(i,l,k) = denmin
               endif
             endif
+
           enddo
         enddo
       enddo
@@ -584,20 +586,15 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       do j = 1,3
         do i = 1,linesuv
-          sigabsdt(i,j) = tm18 * sigabsdt(i,j) 
-        enddo 
-      enddo 
- 
-!     initialize photoionization rates to zero
-
-      do j = 1,nneut
-        do i = 1,linesuv
-          sigidt(i,j)  = 0.
-        enddo
-        do i = 1,linesnt
-          sigint(i,j)  = 0.
+          sigabsdt(i,j) = tm18 * sigabsdt(i,j)
         enddo
       enddo
+
+
+!     initialize photoionization rates to zero
+
+      sigidt  = 0.
+      sigint  = 0.
 
 !     read in daytime photoionization line data
 !     (only n, o, he, n_2, o_2)
@@ -613,10 +610,10 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
  106  format(5f7.2)
 
       do j = 1,nion
-        do i = 1,linesuv
-          sigidt(i,j) = tm18 * sigidt(i,j) 
-        enddo 
-      enddo 
+            do i = 1,linesuv
+               sigidt(i,j) = tm18 * sigidt(i,j)
+            enddo
+         enddo
 
 !     read in nighttime photoionization line data
 !     (only o, n_2, n0, o_2)
@@ -633,7 +630,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
         do i = 1,linesnt
           sigint(i,j) = tm18 * sigint(i,j) 
         enddo 
-      enddo 
+      enddo
 
 !     read in f74113, ai data and set euv flux
 !     (from richards et al., jgr 99, 8981, 1994)
@@ -649,7 +646,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
         flux(i) = f74 * xflux * 1.e9
 !        if ( flux(i) .lt. 0 ) flux(i) = 0.
 !        print *,'i,flux',i,flux(i)
-      enddo 
+      enddo
  107  format (f6.3,1pe11.4)
 
 !      stop
@@ -674,7 +671,6 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 !     (lyman beta 1026, he i 584, he ii 304, lyman alpha 1216)
       do j = 1,nf
         call sf1026 ( f1026,1,j )
-        
         call sf584  ( f584 ,2,j )
         call sf304  ( f304 ,3,j )
         call sf1216 ( f1216,4,j )

@@ -25,7 +25,7 @@
       real brp(nzp1,nfp1),blatp(nzp1,nfp1),blonp(nzp1,nfp1)
       real grp(nzp1,nfp1),glatp(nzp1,nfp1),glonp(nzp1,nfp1)
       real altp(nzp1,nfp1)
-      
+
       do j = 1,nf
         k    = nf + 1 - j
         dx   = float(j-1)/float(nf-1)
@@ -76,7 +76,6 @@
                   ,grad_in+re&
                   ,glat_in&
                   ,glon_in          )
-
 
       pvalue0  = brad / re / cos(blat*po180) ** 2
       rgmin    = altmin + re
@@ -232,7 +231,6 @@
           ys(i,j)    = brs(i,j) * sin( blats(i,j)*po180 )
           zs(i,j)    = brs(i,j) * cos( blats(i,j)*po180 ) *&
                                   cos( blon0     *po180 )
-
         enddo
 
 !       second half of field line

@@ -50,22 +50,16 @@ endif
 
 
 PG_COPT  =
-#PG_COPT += -acc=autopar
-#PG_COPT += -Minfo
-#PG_COPT += -Mprof
-#PG_COPT += -Mconcur
-#PG_COPT += -Mpfi
-#PG_COPT += -Mpfo
-#PG_COPT += -fast
 PG_COPT += -module obj
 PG_COPT += -I$(INC_ADD)
 PG_COPT += -cpp
 PG_COPT += -D _USE_MPI_
+PG_COPT +=-mp
 
 PG_COPT += -Mbounds
-PG_COPT += -Minfo=all
-PG_COPT += -traceback
+
 PG_COPT += -Mchkfpstk
+PG_COPT += -Mchkptr
 PG_COPT += -Mchkstk
 PG_COPT += -Mdalign
 ##PG_COPT +=-Mdclchk 
@@ -80,19 +74,43 @@ PG_COPT +=-Ktrap=fp
 PG_COPT +=-Ktrap=inexact
 PG_COPT +=-Ktrap=inv
 PG_COPT +=-Ktrap=none
-#PG_COPT +=-Ktrap=unf
-#PG_COPT +=-Ktrap=ovf
-PG_COPT +=-g 
 PG_COPT +=-byteswapio
 PG_COPT +=-Kieee
 
+#CONFIG=DEBUG|RELEASE
+CONFIG=RELEASE
+ifeq ($(CONFIG),RELEASE)
+#PG_COPT +=-tp=x64
+#PG_COPT +=-m64
+PG_COPT +=-fast
+else
+PG_COPT +=-g
+PG_COPT += -Minform=inform
+PG_COPT += -Minfo=all
+PG_COPT += -Mneginfo=all
+PG_COPT += -Mprof
+PG_COPT += -Mconcur
+#PG_COPT += -Mpfi
+PG_COPT += -Mpre
+PG_COPT += -Mpfo
+PG_COPT += -traceback
+endif
+
+
+
 PG_LOPT  =
 PG_LOPT += -acclibs
+PG_LOPT += -cudalibs
 PG_LOPT += -Mprof
 PG_LOPT += -Mconcur
-PG_LOPT += -Mpfi
+#PG_LOPT += -Mpfi
 PG_LOPT += -Mpfo
 PG_LOPT += -module obj
+PG_LOPT +=-mp
+#PG_LOPT +=-tp=x64
+#PG_LOPT +=-m64
+#PG_LOPT +=-fast
+#PG_LOPT += -Bstatic
 
 ifeq ($(OSFLAG),WIN32)
 PG_LOPT += -Mmpi=msmpi
@@ -129,6 +147,7 @@ build/sami2.x:|build/input
 build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o obj/com-1.00.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
+#	cp -r build \\IROBO-2\Shared
 
 obj build:
 	mkdir $@
@@ -158,6 +177,7 @@ obj/vdrift_model.o:|obj
 obj/vdrift_model.o:vdrift_model.f90
 	$(FC) $(FCCOPT) -c -o $@ $<
 
+obj/commonsubroutines.mod:obj/vdrift_model.o
 obj/commonsubroutines.mod:obj/com-subroutines.o
 obj/com-subroutines.o:|obj
 obj/com-subroutines.o:com-subroutines.f90
