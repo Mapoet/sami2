@@ -1,4 +1,4 @@
-module vdrift_model
+module vdrift_module
 contains
 
 !*******************************************
@@ -17,17 +17,17 @@ contains
 !       ************************************************************
 
 !       ************************************************************
-!       SUBROUTINE CALCULATES EQUATORIAL VERTICAL DRIFT AS DESCRIBED 
+!       SUBROUTINE CALCULATES EQUATORIAL VERTICAL DRIFT AS DESCRIBED
 !       IN SCHERLIESS AND FEJER, JGR, 104, 6829-6842, 1999
 !       ************************************************************
 
 !       INPUT:   XT: SOLAR LOCAL TIME
 !                XL: GEOGRAPHIC LONGITUDE (+ EAST)
-!               
+!
 !             PARAM: 2-DIM ARRAY (DOY,F10.7CM)
 !                    DOY     :Day of Year has to run from 1 to 365 (366)
 !                    F10.7cm : F10.7cm solar flux
-!             
+!
 !       OUTPUT:   Y: EQUATORIAL VERTICAL DRIFT
 
 !       ************************************************************
@@ -42,8 +42,7 @@ contains
         real param(2),coeff(624),funct(6)
         real coeff1(312),coeff2(312)
       real xt,xl,y
-      real bspl4,bspl4_time,bspl4_long
-
+      real bspl4
       integer i,j,ind,il,kk
       integer index_t/13/,dim_t/78/
       integer index_l/8/,dim_l/48/
@@ -190,7 +189,7 @@ contains
           end do
          end do
 
-      end
+      end subroutine vdrift_model
 !------------------------------------------------------------------
 
 
@@ -240,7 +239,7 @@ contains
       end do
 
       bspl4_time=b(i,order)
-      end
+      end function bspl4_time
 !------------------------------------------------------------------
 
 
@@ -283,7 +282,7 @@ contains
       end do
 
       bspl4_long=b(i,order)
-      end
+      end function bspl4_long
 !------------------------------------------------------------------
 
 
@@ -352,7 +351,7 @@ contains
         funct(6)=(flux-140)*funct(3)
 !       *************************************************
 
-      end
+      end subroutine g
 !------------------------------------------------------------------
 
-end module vdrift_model
+end module vdrift_module

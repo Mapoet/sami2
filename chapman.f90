@@ -16,9 +16,9 @@
 !*                                                                   *C
 !*********************************************************************C
 !*
-!*	To calculate the Chapman Function, Ch(X,chi0), the column 
-!*	depth of an exponential atmosphere integrated along a line 
-!*	from a given point to the sun, divided by the column depth for 
+!*	To calculate the Chapman Function, Ch(X,chi0), the column
+!*	depth of an exponential atmosphere integrated along a line
+!*	from a given point to the sun, divided by the column depth for
 !*	a vertical sun.
 !*
 !*  USAGE:
@@ -40,7 +40,7 @@
 !*
 !*  PERFORMANCE:
 !*
-!*	Compiled and linked using Microsoft FORTRAN 5.1, and executed 
+!*	Compiled and linked using Microsoft FORTRAN 5.1, and executed
 !*	in MS-DOS mode under Windows 95 on a 160 MHz PC.
 !*
 !*    TIMING (in microseconds, typical)
@@ -59,19 +59,19 @@
 !*
 !*    CODING
 !*
-!*	No claims are made that the code is optimized for speed, 
-!*	accuracy, or compactness.  The principal objectives were 
+!*	No claims are made that the code is optimized for speed,
+!*	accuracy, or compactness.  The principal objectives were
 !*
 !*	  (1) Robustness with respect to argument values
 !*	  (2) Rigorous mathematical derivation and error control
 !*	  (3) Maximal use of "well known" mathematical functions
 !*	  (4) Ease of readability and mapping of theory to coding
 !*
-!*	The real*8 accuracy could be improved with more accurate 
+!*	The real*8 accuracy could be improved with more accurate
 !*	representations of E1(), erfc(), I0(), I1(), K0(), K1().
 !*
-!*	In the course of development, many representations and 
-!*	approximations of the Chapman Function were attempted that 
+!*	In the course of development, many representations and
+!*	approximations of the Chapman Function were attempted that
 !*	failed to be robustly extendable to machine-precision.
 !*
 !*  INTERNET ACCESS:
@@ -92,18 +92,18 @@
 !*
 !*    INTRODUCTION
 !*
-!*	    This computer code models the absorption of solar radiation 
-!*	by an atmosphere that depends exponentionally on altitude.  In 
-!*	specific we calculate the effective column depth of a species 
-!*	of local density, n(z), from a point at a given altitude, z0, 
-!*	to the sun at a given solar zenith angle, chi0.  Following Rees 
-!*	[Re89, Section 2.2] we write the column depth for chi0 .le. 90 
+!*	    This computer code models the absorption of solar radiation
+!*	by an atmosphere that depends exponentionally on altitude.  In
+!*	specific we calculate the effective column depth of a species
+!*	of local density, n(z), from a point at a given altitude, z0,
+!*	to the sun at a given solar zenith angle, chi0.  Following Rees
+!*	[Re89, Section 2.2] we write the column depth for chi0 .le. 90
 !*	degrees as
 !*
-!*   (A)  N(z0,chi0) = int{z=z0,infinity} 
+!*   (A)  N(z0,chi0) = int{z=z0,infinity}
 !*	     [ n(z)/sqrt( 1 - ( sin(chi0) * (R+z0) / (R+z) ) **2 ) dz ]
 !*
-!*	where R is the radius of the solid planet (e.g. Earth).  For 
+!*	where R is the radius of the solid planet (e.g. Earth).  For
 !*	chi0 .gt. 90 degrees we write
 !*
 !*	  N(z0,chi0) = 2*N(zs,90) - N(z0,180-chi0)
@@ -114,34 +114,34 @@
 !*
 !*	  n(z) = n(z0) * exp(-(z-z0)/H)
 !*
-!*	with a constant scale height, H, the column depth can be 
-!*	represented by the Chapman function, Ch(X,chi0), named after 
-!*	the author of the first quantitative mathematical investigation 
+!*	with a constant scale height, H, the column depth can be
+!*	represented by the Chapman function, Ch(X,chi0), named after
+!*	the author of the first quantitative mathematical investigation
 !*	[Ch31b] trough the relation
 !*
 !*	  N(z0,chi0) = H * n(z0) * Ch(X,chi0)
 !*
-!*	where X = (R+z0)/H is a dimensionless measure of the radius 
+!*	where X = (R+z0)/H is a dimensionless measure of the radius
 !*	of curvature, with values from about 300 to 1300 on Earth.
 !*
 !*
 !*    APPROACH
 !*
-!*	    We provide function entry points for very stable and 
-!*	reasonably efficient evaluation of Ch(X,chi0) with full 
-!*	single-precision accuracy (.le. 6.0E-7 relative) for a wide 
-!*	range of parameters.  A 15-digit-accurate double precision 
+!*	    We provide function entry points for very stable and
+!*	reasonably efficient evaluation of Ch(X,chi0) with full
+!*	single-precision accuracy (.le. 6.0E-7 relative) for a wide
+!*	range of parameters.  A 15-digit-accurate double precision
 !*	numerical integration routine is also provided.
 !*
-!*	    Below we will develop (1) a compact asymptotic expansion of 
-!*	good accuracy for moderately large values of X (.gt. 36) and all 
-!*	values of chi0, (2) an efficient numerical integral for 
-!*	all values of X and chi0, and (3) an explicit analytical 
-!*	representation, valid for all values of X and chi0, based 
+!*	    Below we will develop (1) a compact asymptotic expansion of
+!*	good accuracy for moderately large values of X (.gt. 36) and all
+!*	values of chi0, (2) an efficient numerical integral for
+!*	all values of X and chi0, and (3) an explicit analytical
+!*	representation, valid for all values of X and chi0, based
 !*	the differential equation satisfied by Ch(X,chi0).
 !*
-!*	    All three of these represent new research results as well 
-!*	as significant computational improvements over the previous 
+!*	    All three of these represent new research results as well
+!*	as significant computational improvements over the previous
 !*	literature, much of which is cited below.
 !*
 !*
@@ -152,7 +152,7 @@
 !*   (B)  Ch(X,chi0) = X * int{y=0,infinity}
 !*	     [ exp(-X*y) / sqrt( 1 - ( sin(chi0) / (1+y) )**2 ) dy ]
 !*
-!*	The futher substitutions s = (1+y)/sin(chi0), s0 = 1/sin(chi0) 
+!*	The futher substitutions s = (1+y)/sin(chi0), s0 = 1/sin(chi0)
 !*	give
 !*
 !*   (C)  Ch(X,chi0) = X*sin(chi0) * int{s=s0,infinity}
@@ -165,7 +165,7 @@
 !*	[AS64, Equations 9.6.23 and 9.6.27].  If we now substitute
 !*	s = 1/sin(lambda) we obtain
 !*
-!*   (D)  Ch(X,chi0) = X*sin(chi0) * int{lambda=0,chi0} 
+!*   (D)  Ch(X,chi0) = X*sin(chi0) * int{lambda=0,chi0}
 !*	    [ exp(X*(1-sin(chi0)*csc(lambda))) * csc(lambda)**2 dlambda]
 !*
 !*	which is the same as Chapman's original formulation [Ch31b, p486,
@@ -173,20 +173,20 @@
 !*
 !*	  1/sqrt(1-q) = 1 + q/( sqrt(1-q)*(1+sqrt(1-q)) )
 !*
-!*	with q = ( sin(chi0) / (1+y) )**2 = sin(lambda)**2, we obtain 
-!*	a new form of (D) without numerical sigularities and simple 
+!*	with q = ( sin(chi0) / (1+y) )**2 = sin(lambda)**2, we obtain
+!*	a new form of (D) without numerical sigularities and simple
 !*	convergence to Ch(0,chi0) = Ch(X,0) = 1
 !*
-!*   (E)  Ch(X,chi0) = 1 + X*sin(chi0) * int{lambda=0,chi0} 
-!*	    [ exp(X*(1-sin(chi0)*csc(lambda))) 
+!*   (E)  Ch(X,chi0) = 1 + X*sin(chi0) * int{lambda=0,chi0}
+!*	    [ exp(X*(1-sin(chi0)*csc(lambda)))
 !*		/ (1 + cos(lambda) ) dlambda ]
 !*
-!*	Alternatively, we may substitute t**2 = y + t0**2, 
+!*	Alternatively, we may substitute t**2 = y + t0**2,
 !*	into Equation (B), with t0**2 = 1-sin(chi0), finding
 !*
-!*   (F)  Ch(X,chi0) = X * int{s=t0,infinity} 
+!*   (F)  Ch(X,chi0) = X * int{s=t0,infinity}
 !*	    [ exp(-X*(t**2-t0**2)) * f(t,chi0) dt ]
-!* 
+!*
 !*	where
 !*
 !*	  f(t,chi0) = (t**2 + sin(chi0)) / sqrt(t**2+2*sin(chi0))
@@ -194,59 +194,59 @@
 !*	  f(t,chi0) = (t**2-t0**2+1)/sqrt(t**2-t0**2+1+sin(chi0))
 !*
 !*	    Below we will use Equation (F) above to develop a
-!*	compact asymptotic expansion of good accuracy for moderately 
-!*	large values of X (.gt. 36) and all values of chi0, Equation (E) 
-!*	to develop an efficient numerical integral for Ch(X,chi0) for 
-!*	all values of X and chi0, and Equation (C) to derive an explicit 
-!*	analytical representation, valid for all values of X and chi0,  
+!*	compact asymptotic expansion of good accuracy for moderately
+!*	large values of X (.gt. 36) and all values of chi0, Equation (E)
+!*	to develop an efficient numerical integral for Ch(X,chi0) for
+!*	all values of X and chi0, and Equation (C) to derive an explicit
+!*	analytical representation, valid for all values of X and chi0,
 !*	based on the differential equation satisfied by Ch(X,chi0).
 !*
 !*    atm_chapman(X,chi0) and atm8_chapman(X,chi0)
 !*
 !*	These routines return real*4 and real*8 values of Ch(X,chi0)
-!*	selecting the asymptotic expansion or differential equation 
-!*	approaches, depending on the value of X.  These routines also 
+!*	selecting the asymptotic expansion or differential equation
+!*	approaches, depending on the value of X.  These routines also
 !*	handle the case of chi0 .gt. 90 degrees.
 !*
 !*    atm_chap_num(X,chi0) and atm8_chap_num(X,chi0)
 !*
 !*	These routines return real*4 and real*8 values of Ch(X,chi0)
-!*	evaluated numerically.  They are both more accurate than the 
-!*	corresponding atm*_chapman() functions, but take significantly 
+!*	evaluated numerically.  They are both more accurate than the
+!*	corresponding atm*_chapman() functions, but take significantly
 !*	more CPU time.
 !*
 !*
 !*    ASYMPTOTIC EXPANSION
 !*
-!*	From Equation (F) we expand, with t0**2 = 1-sin(chi0), 
+!*	From Equation (F) we expand, with t0**2 = 1-sin(chi0),
 !*
 !*	  f(t,chi0) = sum{n=0,3} [ C(n,chi0) * (t**2-t0**2)**n ]
 !*
-!*	The function atm8_chap_asy(X,chi0) evaluates integrals of the 
+!*	The function atm8_chap_asy(X,chi0) evaluates integrals of the
 !*	form
 !*
 !*	  int{t=t0,infinity} [exp(-X*(t**2-t0**2))*(t**2-t0**2)**n dt]
 !*
-!*	in terms of incomplete gamma functions, and sums them to 
-!*	compute Ch(X,chi0).  For large values of X, this results in an 
-!*	asymptotic expansion in negative powers of X, with coefficients 
+!*	in terms of incomplete gamma functions, and sums them to
+!*	compute Ch(X,chi0).  For large values of X, this results in an
+!*	asymptotic expansion in negative powers of X, with coefficients
 !*	that are stable for all values of chi0.
 !*
-!*	In contrast, the asymptotic expansions of Chapman [Ch31b, 
-!*	p488, Equation (22) and p490, Equation (38)], Hulburt [He39], 
-!*	and Swider [Sw64, p777, Equation (43)] use negative powers of 
-!*	X*cos(chi0)**2 or X*sin(chi0), and are accurate only for 
+!*	In contrast, the asymptotic expansions of Chapman [Ch31b,
+!*	p488, Equation (22) and p490, Equation (38)], Hulburt [He39],
+!*	and Swider [Sw64, p777, Equation (43)] use negative powers of
+!*	X*cos(chi0)**2 or X*sin(chi0), and are accurate only for
 !*	small values or large values of chi0, respectively.
 !*
-!*	Taking only the first term in the present expansion gives the 
+!*	Taking only the first term in the present expansion gives the
 !*	simple formula
 !*
 !*	  Ch(X,chi0) = sqrt(pi*X/(1+sin(chi0))) * exp(X*(1-sin(chi0)))
 !*		* erfc( sqrt(X*(1-sin(chi0))) )
 !*
-!*	This is slightly more accurate than the semiempirical 
-!*	formula of Fitzmaurice [Fi64, Equation (3)], and sightly less 
-!*	accurate than that of Swider [Sw64, p780, Equation (52), 
+!*	This is slightly more accurate than the semiempirical
+!*	formula of Fitzmaurice [Fi64, Equation (3)], and sightly less
+!*	accurate than that of Swider [Sw64, p780, Equation (52),
 !*	corrected in SG69].
 !*
 !*
@@ -254,63 +254,63 @@
 !*
 !*	We are integrating
 !*
-!*   (E)  Ch(X,chi0) = 1 + X*sin(chi0) * int{lambda=0,chi0} 
-!*	    [ exp(X*(1-sin(chi0)*csc(lambda))) 
+!*   (E)  Ch(X,chi0) = 1 + X*sin(chi0) * int{lambda=0,chi0}
+!*	    [ exp(X*(1-sin(chi0)*csc(lambda)))
 !*		/ ( 1 + cos(lambda) ) dlambda ]
 !*
-!*	The integrand is numerically very smooth, and rapidly varying 
-!*	only near lambda = 0.  For X .ne. 0 we choose the lower limit 
-!*	of numerical integration such that the integrand is 
-!*	exponentially small, 7.0E-13 (3.0E-20 for real*8).  The domain 
-!*	of integration is divided into 64 equal intervals (6000 for 
-!*	real*8), and integrated numerically using the 9-point closed 
+!*	The integrand is numerically very smooth, and rapidly varying
+!*	only near lambda = 0.  For X .ne. 0 we choose the lower limit
+!*	of numerical integration such that the integrand is
+!*	exponentially small, 7.0E-13 (3.0E-20 for real*8).  The domain
+!*	of integration is divided into 64 equal intervals (6000 for
+!*	real*8), and integrated numerically using the 9-point closed
 !*	Newton-Cotes formula from Hildebrand [Hi56a, page 75, Equation
 !*	(3.5.17)].
 !*
 !*
 !*    INHOMOGENOUS DIFFERENTIAL EQUATION
 !*
-!*	    The function atm8_chap_deq(X,chi0) calculates Ch(X,chi0), 
-!*	based on Equation (C) above, using the inhomogeneous 
-!*	Bessel's equation as described below.  Consider the function 
+!*	    The function atm8_chap_deq(X,chi0) calculates Ch(X,chi0),
+!*	based on Equation (C) above, using the inhomogeneous
+!*	Bessel's equation as described below.  Consider the function
 !*
 !*	  Z(Q) = int{s=s0,infinity} [ exp(-Q*s) / sqrt(s**2-1) ds ]
 !*
-!*	Differentiating with respect to Q we find that 
+!*	Differentiating with respect to Q we find that
 !*
 !*	  Ch(X,chi0) = - Q * exp(X) * d/dQ [ Z(Q) ]
 !*
-!*	with Q = X*sin(chi0), s0 = 1/sin(chi0).  Differentiating 
+!*	with Q = X*sin(chi0), s0 = 1/sin(chi0).  Differentiating
 !*	inside the integral, we find that
 !*
 !*	  Z"(Q) + Z'(Q)/Q - Z(Q) = sqrt(s0**2-1) * exp(-Q*s0) / Q
 !*
-!*	giving us an inhomogeneous modified Bessel's equation of order 
-!*	zero.  Following Rabenstein [Ra66, pp43-45,149] the solution 
+!*	giving us an inhomogeneous modified Bessel's equation of order
+!*	zero.  Following Rabenstein [Ra66, pp43-45,149] the solution
 !*	of this equation can be written as
 !*
-!*	  Z(Q) = A*I0(Q) + B*K0(Q) - sqrt(s0**2-1) 
-!*	         * int{t=Q,infinity} [ exp(-t*s0) 
-!*		   * ( I0(Q)*K0(t) - I0(t)*K0(Q) ) dt ] 
+!*	  Z(Q) = A*I0(Q) + B*K0(Q) - sqrt(s0**2-1)
+!*	         * int{t=Q,infinity} [ exp(-t*s0)
+!*		   * ( I0(Q)*K0(t) - I0(t)*K0(Q) ) dt ]
 !*
-!*	with coefficients A and B to be determined by matching 
+!*	with coefficients A and B to be determined by matching
 !*	boundary conditions.
 !*
 !*	    Differentiating with respect to Q we obtain
 !*
-!*	  Ch(X,chi0) = X*sin(chi0)*exp(X)*( 
-!*		- A*I1(X*sin(chi0)) + B*K1(X*sin(chi0)) 
-!*		+ cos(chi0) * int{y=X,infinity} [ exp(-y) 
+!*	  Ch(X,chi0) = X*sin(chi0)*exp(X)*(
+!*		- A*I1(X*sin(chi0)) + B*K1(X*sin(chi0))
+!*		+ cos(chi0) * int{y=X,infinity} [ exp(-y)
 !*		  * ( I1(X*sin(chi0))*K0(y*sin(chi0))
 !*		    + K1(X*sin(chi0))*I0(y*sin(chi0)) ) dy ] )
 !*
-!*	Applying the boundary condition Ch(X,0) = 1 requires that 
-!*	B = 0.  Similarly, the requirement that Ch(X,chi0) approach 
-!*	the finite value of sec(chi0) as X approaches infinity [Ch31b, 
+!*	Applying the boundary condition Ch(X,0) = 1 requires that
+!*	B = 0.  Similarly, the requirement that Ch(X,chi0) approach
+!*	the finite value of sec(chi0) as X approaches infinity [Ch31b,
 !*	p486, Equation (12)] implies A = 0.  Thus we have
 !*
 !*	  Ch(X,chi0) = X*sin(chi0)*cos(chi0)*exp(X)*
-!*		int{y=X,infinity} [ exp(-y) 
+!*		int{y=X,infinity} [ exp(-y)
 !*		  * ( I1(X*sin(chi0))*K0(y*sin(chi0))
 !*		    + K1(X*sin(chi0))*I0(y*sin(chi0)) ) dy ]
 !*
@@ -329,14 +329,14 @@
 !*
 !*  REFERENCES:
 !*
-!*	AS64	M. Abramowitz and I. A. Stegun, "Handbook of 
-!*		Mathematical Functions," NBS AMS 55 (USGPO, 
+!*	AS64	M. Abramowitz and I. A. Stegun, "Handbook of
+!*		Mathematical Functions," NBS AMS 55 (USGPO,
 !*		Washington, DC, June 1964, 9th printing, November 1970).
 !*
 !*	Ch31b	S. Chapman, "The Absorption and Dissociative or
 !*		Ionizing Effect of Monochromatic Radiation in an
 !*		Atmosphere on a Rotating Earth: Part II. Grazing
-!*		Incidence," Proc. Phys. Soc. (London), _43_, 483-501 
+!*		Incidence," Proc. Phys. Soc. (London), _43_, 483-501
 !*		(1931).
 !*
 !*	Fi64	J. A. Fitzmaurice, "Simplfication of the Chapman
@@ -346,11 +346,11 @@
 !*	Hi56a	F. B. Hildebrand, "Introduction to Numerical
 !*		Analysis," (McGraw-Hill, New York, 1956).
 !*
-!*	Hu39	E. O. Hulburt, "The E Region of the Ionosphere," 
+!*	Hu39	E. O. Hulburt, "The E Region of the Ionosphere,"
 !*		Phys. Rev. _55_, 639-645 (1939).
 !*
-!*	PFT86	W. H. Press, B. P. Flannery, S. A. Teukolsky, and 
-!*		W. T. Vetterling, "Numerical Recipes," (Cambridge, 
+!*	PFT86	W. H. Press, B. P. Flannery, S. A. Teukolsky, and
+!*		W. T. Vetterling, "Numerical Recipes," (Cambridge,
 !*		1986).
 !*
 !*	Ra66	A. L. Rabenstein, "Introduction to Ordinary
@@ -359,12 +359,12 @@
 !*	Re89	M. H. Rees, "Physics and Chemistry of the Upper
 !*		Atmosphere," (Cambridge, 1989).
 !*
-!*	SG69	W. Swider, Jr., and M. E. Gardner, "On the Accuracy 
+!*	SG69	W. Swider, Jr., and M. E. Gardner, "On the Accuracy
 !*		of Chapman Function Approximations," Appl. Opt. _8_,
 !*		725 (1969).
 !*
-!*	Sw64	W. Swider, Jr., "The Determination of the Optical 
-!*		Depth at Large Solar Zenith Angles," Planet. Space 
+!*	Sw64	W. Swider, Jr., "The Determination of the Optical
+!*		Depth at Large Solar Zenith Angles," Planet. Space
 !*		Sci. _12_, 761-782 (1964).
 !
 !  ####################################################################
@@ -388,11 +388,11 @@
 !
 !	These are the entries for the user to call.
 !
-!	chi0 can range from 0 to 180 in degrees.  For chi0 .gt. 90, the 
-!	product X*(1-sin(chi0)) must not be too large, otherwise we 
+!	chi0 can range from 0 to 180 in degrees.  For chi0 .gt. 90, the
+!	product X*(1-sin(chi0)) must not be too large, otherwise we
 !	will get an exponential overflow.
 !
-!	For chi0 .le. 90 degrees, X can range from 0 to thousands 
+!	For chi0 .le. 90 degrees, X can range from 0 to thousands
 !	without overflow.
 !
 !  ====================================================================
@@ -436,7 +436,7 @@
 
 !  ====================================================================
 !
-!	this chapman function routine calculates
+!	This Chapman function routine calculates
 !
 !	  ch(x,chi0) = atm8_chap_asy(x,chi0)
 !		     = sum{n=0,3} [c(n) * int{t=t0,infinity} 
@@ -494,8 +494,8 @@
 !
 !	  ch(x,chi0) = atm8_chap_deq(x,chi0)
 !		     = x * sin(chi0) * cos(chi0) * exp(x*sin(chi0))
-!		       * int{y=x,infinity} [ exp(-y)*( 
-!			 i1(x*sin(chi0))*k0(y*sin(chi0)) 
+!		       * int{y=x,infinity} [ exp(-y)*(
+!			 i1(x*sin(chi0))*k0(y*sin(chi0))
 !			 + k1(x*sin(chi0))*i0(y*sin(chi0)) ) dy ]
 !
 !  ====================================================================
@@ -512,7 +512,7 @@
 !
 !	this code fragment calculates
 !
-!	  yi0 = exp(x*(1-sin(chi0))) * cos(chi0) * 
+!	  yi0 = exp(x*(1-sin(chi0))) * cos(chi0) *
 !		int{y=x,infinity} [ exp(-y) * i0(y*sin(chi0)) dy ]
 !
 !  --------------------------------------------------------------------
@@ -523,7 +523,7 @@
 !
 !	this code fragment calculates
 !
-!	  yk0 = exp(x*(1+sin(chi0))) x * sin(chi0) * cos(chi0) * 
+!	  yk0 = exp(x*(1+sin(chi0))) x * sin(chi0) * cos(chi0) *
 !		int{y=x,infinity} [ exp(-y) * k0(y*sin(chi0)) dy ]
 !
 !  --------------------------------------------------------------------
@@ -673,8 +673,8 @@
 
 !  ####################################################################
 !
-!	the following "bessel integral" routines return various 
-!	combinations of integrals of bessel functions, powers, 
+!	the following "bessel integral" routines return various
+!	combinations of integrals of bessel functions, powers,
 !	and exponentials, involving trigonometric functions of chi0.
 !
 !	for small values of z = x*sin(chi0) we expand
@@ -687,7 +687,7 @@
 !	  i0(z) = exp(z) * sum{n=0,8} [ bi0(n) * z**(-n-0.5) ]
 !	  k0(z) = exp(-z) * sum{n=0,6} [ bk0(n) * z**(-n-0.5) ]
 !
-!	the expansion coefficients are calculated from those given 
+!	the expansion coefficients are calculated from those given
 !	by abramowitz and stegun [as64, pp378-9, section 9.8] and
 !	press et al. [pft86, pp177-8, bessi0.for, bessk0.for].
 !
@@ -721,7 +721,7 @@
 !
 !	this bessel integral routine calculates
 !
-!	  yi0 = exp(x*(1-sin(chi0))) * cos(chi0) * 
+!	  yi0 = exp(x*(1-sin(chi0))) * cos(chi0) *
 !		int{y=x,infinity} [ exp(-y) * i0(y*sin(chi0)) dy ]
 !
 !  ====================================================================
@@ -787,7 +787,7 @@
 !
 !	this bessel integral routine calculates
 !
-!	  yk0 = exp(x*(1+sin(chi0))) x * sin(chi0) * cos(chi0) * 
+!	  yk0 = exp(x*(1+sin(chi0))) x * sin(chi0) * cos(chi0) *
 !		int{y=x,infinity} [ exp(-y) * k0(y*sin(chi0)) dy ]
 !
 !  ====================================================================
@@ -869,7 +869,7 @@
 !
 !	  xi1 = exp(-|z|) * i1(z)
 !
-!	following press et al [pft86, page 178, bessi1.for] and 
+!	following press et al [pft86, page 178, bessi1.for] and
 !	abrahamson and stegun [as64, page 378, 9.8.3, 9.8.4].
 !
 !  ====================================================================
@@ -916,7 +916,7 @@
 !
 !	  xk1 = z * exp(+z) * k1(z)
 !
-!	following press et al [pft86, page 179, bessk1.for] and 
+!	following press et al [pft86, page 179, bessk1.for] and
 !	abrahamson and stegun [as64, page 379, 9.8.7, 9.8.8].
 !
 !  ====================================================================

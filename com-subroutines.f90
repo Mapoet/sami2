@@ -39,8 +39,7 @@ contains
         hrut = hrut + 24.
       enddo
 
-      
-      do while ( hrut .ge. 24. )
+      do while ( hrut.ge. 24. )
         hrut = hrut - 24.
       enddo
 
@@ -53,7 +52,7 @@ contains
 !*******************************************
 !*******************************************
 
-!            neutambt            
+!            neutambt
 
 !*******************************************
 !*******************************************
@@ -66,7 +65,7 @@ contains
 
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit  none
       REAL,intent(in)::hrut
 
@@ -196,7 +195,7 @@ contains
       subroutine sf1026 ( f,line,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
       REAL,DIMENSION(nz,nf,91):: f
       INTEGER::line
@@ -270,7 +269,6 @@ contains
       return
       end
 
-
 !*******************************************
 !*******************************************
 
@@ -285,7 +283,7 @@ contains
       subroutine sf584 ( f,line,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
       REAL,DIMENSION(nz,nf,91):: f
       INTEGER::line
@@ -372,7 +370,6 @@ contains
       return
       end
 
-
 !*******************************************
 !*******************************************
 
@@ -387,8 +384,9 @@ contains
       subroutine sf304 ( f,line,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz,nf,91):: f
       INTEGER::line
       INTEGER::nfl
@@ -474,7 +472,6 @@ contains
       return
       end
 
-
 !*******************************************
 !*******************************************
 
@@ -489,8 +486,9 @@ contains
       subroutine sf1216 ( f,line,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz,nf,91):: f
       INTEGER::line
       INTEGER::nfl
@@ -575,8 +573,9 @@ contains
       subroutine photprod ( cxl,phprodr,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       REAL atm_chapman
 
       REAL,DIMENSION(nz,nf)::cxl
@@ -620,8 +619,8 @@ contains
                xscale   = rp / hscale
                y1       = sqrt ( .5 * xscale ) * abs(coschi)
                ch1      = atm_chapman(xscale,rtod*acos(coschi))
-               if (ch1 .gt. 1.e22) ch1 = 1.e22
-               xmass(i) = denn(iz,nfl,idx(i)) * hscale * ch1 * 1.e5
+              if (ch1 .gt. 1.e22) ch1 = 1.e22
+              xmass(i) = denn(iz,nfl,idx(i)) * hscale * ch1 * 1.e5
             enddo
 
             do l=1,linesuv
@@ -709,8 +708,8 @@ contains
 
       chrate(iz,11) = 1.533e-12 -&
                    5.920e-13 * ti300o +&
-                   8.600e-14 * ti300o ** 2                    ! o+ + n2 --> no+ + n (bb)&
-      if ( ti(iz,nfl,ptop) .gt. 1700 ) &
+                   8.600e-14 * ti300o ** 2                    ! o+ + n2 --> no+ + n (bb)
+      if ( ti(iz,nfl,ptop) .gt. 1700 )&
         chrate(iz,11) = 2.730e-12 -&
                       1.155e-12 * ti300o +&
                       1.483e-13 * ti300o ** 2
@@ -763,8 +762,9 @@ contains
       subroutine chempl ( chrate,chloss,chprod,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz,nchem)::chrate
       REAL,DIMENSION(nz,nion)::chloss
       REAL,DIMENSION(nz,nion)::chprod
@@ -810,8 +810,9 @@ contains
       subroutine recorate ( relossr,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz,nion):: relossr
       INTEGER::nfl
 
@@ -883,7 +884,7 @@ contains
 !     hybrid used in the other terms. I've changed that.
 
 !            teff    = 0.5 * ( ti(i,nfl,ni) + tn(i,nfl) ) ! original
-            teff    = ti(i,nfl,ni) 
+            teff    = ti(i,nfl,ni)
             fac     = ( 1.00 - .047 * alog10(teff) ) ** 2
             tfactor = sqrt(teff) * fac
             nuin(i,ni,nn)  = 6.61e-11 * denn(i,nfl,nn) * tfactor
@@ -1041,8 +1042,8 @@ contains
             sumnuj(i,ni) = sumnuj(i,ni) + nuij(i,ni,nj)
           enddo
           sumnuj(i,ni) = sumnuj(i,ni) + nuint(i,ni)
-        enddo     
-      enddo              
+        enddo
+      enddo
 
 !     update ne
 
@@ -1055,11 +1056,6 @@ contains
       enddo
 
 !     get a new value for vsid
-
-!     reversed order of do loops
-
-!        do i = 2,nz-1              ! original
-!          do ni = nion1,nion2      ! original 
 
       do ni = nion1,nion2
         do i = 2,nz-1
@@ -1087,8 +1083,8 @@ contains
 
           vsid(i,nfl,ni)  =  term1 + term2 + term3
 
-          if ( deni(i,nfl,ni) .le. .0001*ne(i,nfl) ) &
-            vsid(i,nfl,ni) =   vsid(i,nfl,ni) &
+          if ( deni(i,nfl,ni) .le. .0001*ne(i,nfl) )&
+           vsid(i,nfl,ni) =   vsid(i,nfl,ni)&
                              * exp ( -.0001*ne(i,nfl)/deni(i,nfl,ni) )
 
         enddo
@@ -1123,7 +1119,7 @@ contains
 !*******************************************
 
       subroutine rtryds(a,b,c,d,x,n)
-      
+
       include 'param-1.00.inc'
       include 'com-1.00.inc'
 
@@ -1135,6 +1131,7 @@ contains
 !     i have modified the input sequence to the routine, but have left it
 !     otherwise intact.  we may  want to eventually change this (gj)
       implicit none
+
       real,DIMENSION(:):: a,b,c,d,x
       INTEGER::n
       real:: alfa(nz),beta(nz)
@@ -1191,6 +1188,7 @@ contains
       include 'param-1.00.inc'
       include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz)::vi
       REAL,DIMENSION(nz)::vid
       REAL,DIMENSION(nz)::viold
@@ -1278,11 +1276,13 @@ contains
 !
 ! *********************
 
-      subroutine smoothz(finout,ncomp) 
- 
-      include 'param-1.00.inc' 
+      subroutine smoothz(finout,ncomp)
+
+      include 'param-1.00.inc'
       include 'com-1.00.inc'
       implicit none
+
+
       REAL,DIMENSION(nz)::finout
       INTEGER::ncomp
 
@@ -1298,44 +1298,43 @@ contains
 ! 
  
 ! do smoothz in the z direction 
- 
 
-       do i = 1,nz 
-          ip1 = i +1 
-          if(i .eq. nz) ip1 = 1 
-          im1 = i -1 
-          if(i .eq. 1) im1 = nz 
-          tempz(i) = .25*(finout(im1) +2.*finout(i)  &
-                         +finout(ip1)) 
-       enddo 
-       do i = 1,nz 
-          finout(i) = tempz(i) 
-       enddo 
- 
-       if ( ncomp .ne. 0 ) then 
- 
-! put in compensator  
-! the alogrithm below is equivalent to  
-! fftmp(i)=(1./16.)*(-ff0(i-2)+4.*ff0(i-1)+10.*ff0(i)+4.*ff0(i+1)-ff0(i+2)) 
- 
-! do compensation in the z direction 
- 
-       const = sqrt(1.4571072) 
-       do i = 1,nz  
-          ip1 = i +1 
-          if(i .eq. nz) ip1 = 1 
-          finout(i) = const*(finout(i) -.171573*finout(ip1)) 
-       enddo 
-       do i = nz,1,-1 
-          im1 = i -1 
-          if(i .eq. 1) im1 = nz 
-          finout(i) = const*(finout(i) -.171573*finout(im1)) 
-       enddo 
- 
-      endif 
- 
-      return 
-      end 
+       do i = 1,nz
+          ip1 = i +1
+          if(i .eq. nz) ip1 = 1
+          im1 = i -1
+          if(i .eq. 1) im1 = nz
+          tempz(i) = .25*(finout(im1) +2.*finout(i)&
+                         +finout(ip1))
+       enddo
+       do i = 1,nz
+          finout(i) = tempz(i)
+       enddo
+
+       if ( ncomp .ne. 0 ) then
+
+! put in compensator
+! the alogrithm below is equivalent to
+! fftmp(i)=(1./16.)*(-ff0(i-2)+4.*ff0(i-1)+10.*ff0(i)+4.*ff0(i+1)-ff0(i+2))
+
+! do compensation in the z direction
+
+       const = sqrt(1.4571072)
+       do i = 1,nz
+          ip1 = i +1
+          if(i .eq. nz) ip1 = 1
+          finout(i) = const*(finout(i) -.171573*finout(ip1))
+       enddo
+       do i = nz,1,-1
+          im1 = i -1
+          if(i .eq. 1) im1 = nz
+          finout(i) = const*(finout(i) -.171573*finout(im1))
+       enddo
+
+      endif
+
+      return
+      end
 
 !*******************************************
 !*******************************************
@@ -1348,8 +1347,9 @@ contains
       subroutine densolv2( ni,tdeni,prod,loss,oldion,nfl )
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       implicit none
+
       INTEGER::ni
       REAL,DIMENSION(nz)::tdeni
       REAL,DIMENSION(nz)::prod
@@ -1450,6 +1450,7 @@ contains
       include 'param-1.00.inc'
       include 'com-1.00.inc'
       implicit none
+
       REAL,DIMENSION(nz)::tte
       REAL,DIMENSION(nz)::te_old
       REAL,DIMENSION(nz,nion)::phprodr
@@ -1480,14 +1481,13 @@ contains
       kape = 0.
       qen = 0.
 
-
       do i = 1,nz
 
-        fac1 = denn(i,nfl,pto)  * 1.1e-16  &
+        fac1 = denn(i,nfl,pto)  * 1.1e-16&
                 * ( 1. + 5.7e-4 * te(i,nfl) )
         fac2 = denn(i,nfl,ptn2) * 2.82e-17 * sqrt(te(i,nfl))&
                 * ( 1  - 1.2e-4 * te(i,nfl) )
-        fac3 = denn(i,nfl,pto2) * 2.2e-16  &
+        fac3 = denn(i,nfl,pto2) * 2.2e-16&
                * ( 1. + 3.6e-2  * sqrt(te(i,nfl)) )
         akpefac = fac1 + fac2 + fac3
 
@@ -1600,14 +1600,14 @@ contains
           enddo
       else
           do i = 1,iz300s(nfl)
-            xarg =   ne(i,nfl) &
-                   / (        denn(i,nfl,pto2) &
-                       +      denn(i,nfl,ptn2) &
+            xarg =   ne(i,nfl)&
+                   / (        denn(i,nfl,pto2)&
+                       +      denn(i,nfl,ptn2)&
                        + .1 * denn(i,nfl,pto)   )
             x    = alog ( xarg )
-            earg =     12.75 &
-                     + 6.941 * x &
-                     + 1.166 * x ** 2 &
+            earg =     12.75&
+                     + 6.941 * x&
+                     + 1.166 * x ** 2&
                      + 0.08034 * x ** 3&
                      + 0.001996 * x ** 4
             epsi = exp ( -earg )
@@ -1641,9 +1641,9 @@ contains
         q0s = epsi300 * phprod300 / ne300s
 
         do i = iz300n(nfl),nz
-          xarg =   ne(i,nfl) &
-                 / (       denn(i,nfl,pto2) &
-                    +      denn(i,nfl,ptn2) &
+          xarg =   ne(i,nfl)&
+                 / (       denn(i,nfl,pto2)&
+                    +      denn(i,nfl,ptn2)&
                     + .1 * denn(i,nfl,pto) )
           x    = alog ( xarg )
           earg =     12.75&
@@ -1695,7 +1695,7 @@ contains
               (dels(iz300n(nfl)-1,nfl) - dels300n ) 
         do i =iz300n(nfl)-2,iz300s(nfl)+1,-1 
            xn = xn + 0.5 * ( ne(i,nfl) + ne(i+1,nfl) ) * dels(i,nfl) 
-        enddo 
+        enddo
 
 !        cqe   = 6.e-14                     ! constant (now in namelist)
 
@@ -1720,8 +1720,8 @@ contains
                                * dels(i-1,nfl) 
            endif 
  
-           xints = cqe*xs  
-           xintn = cqe*xn 
+           xints = cqe*xs
+           xintn = cqe*xn
            xqs    = ne(i,nfl) * q0s * bms(i,nfl) / xbms * exp(-xints) 
            xqn    = ne(i,nfl) * q0n * bms(i,nfl) / xbmn * exp(-xintn) 
            qphe(i) = xqs + xqn 
@@ -1738,14 +1738,14 @@ contains
 
       nzh    = (nz+1)/2
       vexbeq = vexb(nzh,nfl)
-      do i = 1,nz 
-        divvexb(i) = 6.*vexbeq / &
-                       (ps(i,nfl)*re*1.e5) * &
-                       cos(blats(i,nfl)*po180)**2 * &
-                       (1.+sin(blats(i,nfl)*po180)**2) / &
-                       (1.+3.*sin(blats(i,nfl)*po180)**2)**2 
+      do i = 1,nz
+        divvexb(i) = 6.*vexbeq /&
+                       (ps(i,nfl)*re*1.e5) *&
+                       cos(blats(i,nfl)*po180)**2 *&
+                       (1.+sin(blats(i,nfl)*po180)**2) /&
+                       (1.+3.*sin(blats(i,nfl)*po180)**2)**2
         s2e(i) = s2e(i) - 0.6667 * divvexb(i)
-      enddo 
+      enddo
 
       call tesolv(tte,te_old,kape,s1e,s2e,s3e,s4e,s5e,nfl)
 
@@ -1856,7 +1856,6 @@ contains
       end
 
 
-
 !*******************************************
 !*******************************************
 
@@ -1949,9 +1948,9 @@ contains
                      (ps(i,nfl)*re*1.e5) * &
                      cos(blats(i,nfl)*po180)**2 * &
                      (1.+sin(blats(i,nfl)*po180)**2) / &
-                     (1.+3.*sin(blats(i,nfl)*po180)**2)**2 
+                     (1.+3.*sin(blats(i,nfl)*po180)**2)**2
         s2i(i) = s2i(i) - 0.6667 * divvexb(i)
-      enddo 
+      enddo
 
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,pthep,nfl)
 
@@ -2049,9 +2048,9 @@ contains
                      (ps(i,nfl)*re*1.e5) * &
                      cos(blats(i,nfl)*po180)**2 * &
                      (1.+sin(blats(i,nfl)*po180)**2) / &
-                     (1.+3.*sin(blats(i,nfl)*po180)**2)**2 
+                     (1.+3.*sin(blats(i,nfl)*po180)**2)**2
         s2i(i) = s2i(i) - 0.6667 * divvexb(i)
-      enddo 
+      enddo
 
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,ptop,nfl)
 
@@ -2247,8 +2246,9 @@ contains
        subroutine zenith (hrut,nfl)
 
        include 'param-1.00.inc'
-       include 'com-1.00.inc' 
+       include 'com-1.00.inc'
       implicit none
+
       REAL::hrut,sdec,cossdec,sinsdec,clat,slat
       INTEGER::nfl
 !      geometric variables
@@ -2282,6 +2282,409 @@ contains
 
        return
        end
+
+
+!*******************************************
+!*******************************************
+
+!             EXB
+
+!*******************************************
+!*******************************************
+
+       subroutine exb(hrut)
+
+       include 'param-1.00.inc'
+       include 'com-1.00.inc'
+      use vdrift_module
+       real denic(nz,nf,nion)
+       real tic(nz,nf,nion)
+       real tec(nz,nf)
+       real fluxnp(nz,nf,nion),fluxtp(nz,nf,nion)
+       real fluxtep(nz,nf)
+       real fluxns(nz,nf,nion),fluxts(nz,nf,nion)
+       real fluxtes(nz,nf)
+       real param(2)
+
+!     define the e x b drift
+
+      param(1) = day
+      param(2) = f10p7
+      nzh      = ( nz - 1 ) / 2
+!     note: modification of vexb because of field line variation
+!           uses cos^3/sqrt(1.+3sin^2) instead of
+!           uses sin^3/sqrt(1.+3cos^2) because
+!           blats = 0 at the magnetic equator 
+!           (as opposed to pi/2 in spherical coordinates)
+
+
+      hrl = hrut + glons(nzh,1) / 15.
+      do while ( hrl .ge. 24. ) 
+               hrl = hrl - 24.
+         enddo
+      call vdrift_model(hrl,glon_in,param,vd,fejer,ve01)
+
+      do j = 1,nf
+!        altfac = ( alts(nzh,j) + re ) / re ! L^2 dependence on E x B drift
+        altfac = 1.
+        vexb0 = 100. * vd * tvexb0 * altfac * altfac ! convert to cm/s
+        do i = 1,nz
+          vexb(i,j) = 0.
+          blat = blats(i,j) * po180
+          vexb(i,j) = vexb0 *&
+                      cos(blat) * cos(blat) * cos(blat)/&
+                      sqrt( 1. + 3. * sin(blat)* sin(blat) )
+        enddo
+      enddo
+
+      do j = 1,nf
+        do i = 1,nz
+          if ( alts(i,j) .lt. alt_crit ) then
+            dela      = 20.
+            farg      = ( alt_crit - alts(i,j) ) / dela
+            vexb(i,j) = vexb(i,j) * exp (-farg*farg)
+          endif
+        enddo
+      enddo
+
+      do j = 1,nf
+        vexb(nzp1,j) = vexb(nz,j)
+      enddo
+      do i = 1,nzp1
+        vexb(i,nfp1) = vexb(i,nf) 
+      enddo
+
+!     sweep in p-direction
+
+      do j = 1,nfp1
+        do i = 1,nz
+          vexbp(i,j) = vexb(i,j) * ( vnx(i,j) * xnormp(i,j) +&
+                                     vny(i,j) * ynormp(i,j) +&
+                                     vnz(i,j) * znormp(i,j)   )
+        enddo
+      enddo
+
+!     sweep in s-direction
+
+      do j = 1,nf
+        do i = 1,nzp1
+          vexbs(i,j) = vexb(i,j) * ( vnx(i,j) * xnorms(i,j) +&
+                                     vny(i,j) * ynorms(i,j) +&
+                                     vnz(i,j) * znorms(i,j)   )
+        enddo
+      enddo
+
+!     output e x b velocities
+
+      do j = 1,nf
+        do i = 1,nz
+          u1(i,j) = vexbp(i,j)
+          u2(i,j) = vexbs(i,j)
+        enddo
+      enddo
+
+!      dump velocity
+!        vot: velocity in theta direction
+!        vor: velocity in radial direction
+!      needs to be redone ....
+
+
+!       do ni = nion1,nion2
+!         do j = 1,nf
+!           do i = 1,nz
+!             vot(i,j,ni)   =  vsi(i,j,ni) * cosdips(i,j) + 
+!     .                        vexbp(i,j)  * sindips(i,j)
+!             vor(i,j,ni)   = -vsi(i,j,ni) * sindips(i,j) + 
+!     .                        vexbp(i,j)  * cosdips(i,j)
+!           enddo
+!         enddo
+!       enddo
+
+!      calculate conserved particle number: denic
+!      and 'conserved' temperature: tic,tec
+
+       do ni = nion1,nion2
+         do j = 1,nf
+           do i = 1,nz
+             denic(i,j,ni) = deni(i,j,ni) * vol(i,j)
+             tic(i,j,ni)   = ti(i,j,ni) * vol(i,j)
+           enddo
+         enddo
+       enddo
+
+       do j = 1,nf
+         do i = 1,nz
+           tec(i,j)   = te(i,j) * vol(i,j)
+         enddo
+       enddo
+
+!      calculate flux in p-direction at interface
+
+       do ni = nion1,nion2
+         do j = 2,nf
+           do i = 1,nz
+             if ( vexbp(i,j) .ge. 0 ) then
+               fluxnp(i,j,ni) = deni(i,j-1,ni) * vexbp(i,j)
+               fluxtp(i,j,ni) = ti(i,j-1,ni)   * vexbp(i,j)
+             else
+               fluxnp(i,j,ni) = deni(i,j,ni) * vexbp(i,j)
+               fluxtp(i,j,ni) = ti(i,j,ni)   * vexbp(i,j)
+               if ( j .eq. nf ) then
+                 fluxnp(i,j,ni) = fluxnp(i,j-1,ni)*&
+                                  areap(i,j-1)/areap(i,j)       
+                 fluxtp(i,j,ni) = fluxtp(i,j-1,ni)*&
+                                  areap(i,j-1)/areap(i,j)       
+
+                 if ( ni .eq. 1 ) then
+                 fluxnp(i,j,ni) = (deni(i,j-1,ni) -&
+                                  (areas(i,j-1) / areas(i,j-2)) *&
+                                  (deni(i,j-2,ni) - deni(i,j-1,ni)))*&
+                                  vexbp(i,j)
+
+                 fluxtp(i,j,ni) = fluxtp(i,j-1,ni) -&
+                                  (areas(i,j-1) / areas(i,j-2)) *&
+                                  (fluxtp(i,j-2,ni) - fluxtp(i,j-1,ni))
+
+                  endif
+
+!                 fluxnp(i,j,ni) = fluxnp(i,j-1,ni)
+!                 fluxtp(i,j,ni) = fluxtp(i,j-1,ni)
+               endif
+             endif
+           enddo
+         enddo
+       enddo
+
+       do j = 2,nf
+         do i = 1,nz
+           if ( vexbp(i,j) .ge. 0 ) then
+             fluxtep(i,j) = te(i,j-1)   * vexbp(i,j)
+           else
+             fluxtep(i,j) = te(i,j)   * vexbp(i,j)
+             if ( j .eq. nf ) then
+                fluxtep(i,j) = fluxtep(i,j-1)*&
+                              areap(i,j-1)/areap(i,j)       
+                
+                if (ni .eq. 1 ) &
+                fluxtep(i,j) = fluxtep(i,j-1) -&
+                               (areas(i,j-1) / areas(i,j-2)) *&
+                               (fluxtep(i,j-2) - fluxtep(i,j-1))
+
+!              fluxtep(i,j) = fluxtep(i,j-1)
+             endif
+           endif
+         enddo
+       enddo
+
+!      calculate flux in s-direction at interface
+
+       do ni = nion1,nion2
+         do j = 1,nf
+           do i = 2,nz
+             if ( vexbs(i,j) .ge. 0 ) then
+               fluxns(i,j,ni) = deni(i-1,j,ni) * vexbs(i,j)
+               fluxts(i,j,ni) = ti(i-1,j,ni)   * vexbs(i,j)
+             else
+               fluxns(i,j,ni) = deni(i,j,ni) * vexbs(i,j)
+               fluxts(i,j,ni) = ti(i,j,ni)   * vexbs(i,j)
+             endif
+           enddo
+         enddo
+       enddo
+
+       do j = 1,nf
+         do i = 2,nz
+           if ( vexbs(i,j) .ge. 0 ) then
+             fluxtes(i,j) = te(i-1,j)   * vexbs(i,j)
+           else
+             fluxtes(i,j) = te(i,j)   * vexbs(i,j)
+           endif
+         enddo
+       enddo
+
+!      update total particle number and density
+!      and temperatures
+
+       do ni = nion1,nion2
+         do j = 2,nfm1
+           do i = 2,nzm1
+             denic(i,j,ni) = denic(i,j,ni)&
+                             + dt * ( areap(i,j)   * fluxnp(i,j,ni) -&
+                                      areap(i,j+1) * fluxnp(i,j+1,ni) )&
+                             + dt * ( areas(i,j)   * fluxns(i,j,ni) -&
+                                      areas(i+1,j) * fluxns(i+1,j,ni) )
+             deni(i,j,ni)  = denic(i,j,ni) / vol(i,j)
+             tic(i,j,ni) = tic(i,j,ni)&
+                             + dt * ( areap(i,j)   * fluxtp(i,j,ni) -&
+                                      areap(i,j+1) * fluxtp(i,j+1,ni) )&
+                             + dt * ( areas(i,j)   * fluxts(i,j,ni) -&
+                                      areas(i+1,j) * fluxts(i+1,j,ni) )
+             ti(i,j,ni)  = tic(i,j,ni) / vol(i,j)
+           enddo
+         enddo
+       enddo
+
+       do j = 2,nfm1
+         do i = 2,nzm1
+           tec(i,j) = tec(i,j)&
+                           + dt * ( areap(i,j)   * fluxtep(i,j) -&
+                                    areap(i,j+1) * fluxtep(i,j+1) )&
+                           + dt * ( areas(i,j)   * fluxtes(i,j) -&
+                                    areas(i+1,j) * fluxtes(i+1,j) )
+           te(i,j)  = tec(i,j) / vol(i,j)
+         enddo
+       enddo
+
+!      fill cells at j = 1 and nf with j = 2 and nfm1
+
+       
+
+          do ni = nion1,nion2
+             do i = 2,nzm1
+                deni(i,1,ni)  = deni(i,2,ni)
+           deni(i,nf,ni) = deni(i,nfm1,ni)
+                ti(i,1,ni)    = ti(i,2,ni)
+           ti(i,nf,ni)   = ti(i,nfm1,ni)
+             enddo
+          enddo
+
+       do i = 2,nzm1
+         te(i,1)    = te(i,2)
+         te(i,nf)   = te(i,nfm1)
+       enddo
+
+!      fill cells at i = 1 and nz with i = 2 and nzm1
+
+       do ni = nion1,nion2
+         do j = 1,nf
+           deni(1,j,ni)  = deni(2,j,ni)
+           deni(nz,j,ni) = deni(nzm1,j,ni)
+           ti(1,j,ni)    = ti(2,j,ni)
+           ti(nz,j,ni)   = ti(nzm1,j,ni)
+         enddo
+       enddo
+
+       do j = 1,nf
+          te(1,j)    = te(2,j)
+          te(nz,j)   = te(nzm1,j)
+       enddo
+
+!      E x B drift can cause excessive density
+!      if the first field line peak is below alt_crit
+!      and the second field line peak is above alt_crit
+!      using zero gradient boundary condition -
+!      this is a fix
+
+       if ( alts(nz/2,2) .ge. alt_crit .and.&
+            alts(nz/2,1) .lt. alt_crit       ) then
+         do ni = nion1,nion2
+           do i = 1,nz
+             deni(i,1,ni)  = denmin
+             ti(i,1,ni)    = tn(i,1)
+           enddo
+         enddo
+         do ie = 1,nz
+           te(ie,1)  = tn(ie,1)
+         enddo
+       endif
+
+
+       return
+       end
+
+
+!*******************************************
+!*******************************************
+
+!             courant
+
+!*******************************************
+!*******************************************
+
+       subroutine courant (hrut)
+
+       include 'param-1.00.inc'
+       include 'com-1.00.inc'
+!          implicit none
+          REAL::hrut
+          REAL::hr24ut,dt00,hr24l,dtnew,dt1
+          INTEGER::k,j,i
+       hr24ut = mod(hrut,24.)
+       dt00   = dt0
+       hr24l = hr24ut + glon_in / 15.
+       if ( hr24l .ge. 24. ) hr24l = hr24l - 24.
+       if ( hr24l .gt. 18. .and. hr24l .le. 24. ) dt00 = .4 * dt0
+       if ( hr24l .gt.  0. .and. hr24l .le.  6. ) dt00 = .4 * dt0
+
+!      parallel motion
+
+       dtnew = 1.e6
+       do k = nion1,nion2
+         do j = 1,nf
+           do i = 1,nz
+             dt1 = dels(i,j) / amax1(1.,abs(vsi(i,j,k)))
+             if ( dt1 .lt. dtnew ) dtnew = dt1
+           enddo
+         enddo
+       enddo
+
+!      perpendicular motion
+!$OMP PARALLEL PRIVATE(I,J,dts,dtp,dt1) SHARED(xdels,xdelp,vexbs,vexbp,dtnew)
+!!$OMP DO
+       do j = 1,nf
+!$OMP DO
+         do i = 1,nz
+           dts = xdels(i,j,1) / amax1(1.,abs(vexbs(i,j)))
+           dtp = xdelp(i,j,1) / amax1(1.,abs(vexbp(i,j)))
+           dt1 = amin1 ( dts,dtp )
+!$OMP CRITICAL
+           if ( dt1 .lt. dtnew ) dtnew = dt1
+!$OMP END CRITICAL
+
+         enddo
+!$OMP END DO
+       enddo 
+!!$OMP END DO
+!$OMP END PARALLEL
+
+       if ( dtnew .le. .01 ) then
+         print *,' Time step too small: dtnew',dtnew
+         stop
+       elseif ( dtnew .ge. 5e4 ) then
+         print *,' Time step too big: dtnew',dtnew
+         stop
+       endif
+       dt = .25 * dtnew
+       if ( dtnew/dt .le. 1.0  ) dt = amin1(dt00,dtnew   )
+       if ( dtnew/dt .ge. 1.2  ) dt = amin1(dt00,dt * 1.2)
+
+       return
+       end
+
+
+
+!*******************************************
+!*******************************************
+
+!             xerfcexp
+
+!*******************************************
+!*******************************************
+
+        function xerfcexp(x)
+
+        include 'param-1.00.inc'
+      use vdrift_module
+          t          = 1. / (1 + pas * x)
+          xerfcexp   = (   z1 * t&
+                        + z2 * t ** 2&
+                        + z3 * t ** 3&
+                        + z4 * t ** 4&
+                        + z5 * t ** 5  )
+
+        return
+        end
+
 
 
 

@@ -25,7 +25,7 @@
       real brp(nzp1,nfp1),blatp(nzp1,nfp1),blonp(nzp1,nfp1)
       real grp(nzp1,nfp1),glatp(nzp1,nfp1),glonp(nzp1,nfp1)
       real altp(nzp1,nfp1)
-
+      
       do j = 1,nf
         k    = nf + 1 - j
         dx   = float(j-1)/float(nf-1)
@@ -88,7 +88,7 @@
 
 !     s grid
 
-      do j = 1,nf
+      do j = 1,nf 
 
         i    = 0
         delp = .01 / re
@@ -179,7 +179,7 @@
         delqs = qmins
         delqn = qminn
 
-!       firs half of field line
+!       First half of field line
 
         do i = 1,nzh+1
 
