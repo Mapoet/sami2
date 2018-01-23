@@ -29,6 +29,7 @@ implicit none
       INTEGER,save::maxstep
       REAL,save::hrmax
       REAL,save::dt0
+      LOGICAL,save::adaptivedt
       REAL,save::dthr
       REAL,save::hrpr
       REAL,save::grad_in
@@ -345,76 +346,76 @@ contains
       subroutine deinit_memory
       include 'param-1.00.inc'
       implicit none
-      DEALLOCATE(alts(nz,nf))
-      DEALLOCATE(grs(nz,nf))
-      DEALLOCATE(glats(nz,nf))
-      DEALLOCATE(glons(nz,nf))
-      DEALLOCATE(bms(nz,nf))
-      DEALLOCATE(gs(nz))
-      DEALLOCATE(ps(nz,nf))
-      DEALLOCATE(blats(nz,nf))
-      DEALLOCATE(coschicrit(nz,nf))
-      DEALLOCATE(ds(nz,nf))
-      DEALLOCATE(d2s(nz,nf))
-      DEALLOCATE(d22s(nz,nf))
-      DEALLOCATE(dels(nz,nf))
-      DEALLOCATE(grad_inp(nf))
+      DEALLOCATE(alts)
+      DEALLOCATE(grs)
+      DEALLOCATE(glats)
+      DEALLOCATE(glons)
+      DEALLOCATE(bms)
+      DEALLOCATE(gs)
+      DEALLOCATE(ps)
+      DEALLOCATE(blats)
+      DEALLOCATE(coschicrit)
+      DEALLOCATE(ds)
+      DEALLOCATE(d2s)
+      DEALLOCATE(d22s)
+      DEALLOCATE(dels)
+      DEALLOCATE(grad_inp)
 
-      DEALLOCATE(xnorms(nzp1,nf))
-      DEALLOCATE(ynorms(nzp1,nf))
-      DEALLOCATE(znorms(nzp1,nf))
-      DEALLOCATE(xnormp(nz,nfp1))
-      DEALLOCATE(ynormp(nz,nfp1))
-      DEALLOCATE(znormp(nz,nfp1))
-      DEALLOCATE(arg(nz,nf))
-      DEALLOCATE(athg(nz,nf))
-      DEALLOCATE(aphig(nz,nf))
+      DEALLOCATE(xnorms)
+      DEALLOCATE(ynorms)
+      DEALLOCATE(znorms)
+      DEALLOCATE(xnormp)
+      DEALLOCATE(ynormp)
+      DEALLOCATE(znormp)
+      DEALLOCATE(arg)
+      DEALLOCATE(athg)
+      DEALLOCATE(aphig)
 
-      DEALLOCATE(delsp(nz,nfp1))
-      DEALLOCATE(vol(nz,nf))
-      DEALLOCATE(areap(nz,nfp1))
-      DEALLOCATE(areas(nzp1,nfp1))
-      DEALLOCATE(vnx(nzp1,nfp1))
-      DEALLOCATE(vny(nzp1,nfp1))
-      DEALLOCATE(vnz(nzp1,nfp1))
-      DEALLOCATE(xdels(nz,nfp1,2))
-      DEALLOCATE(xdelp(nzp1,nf,2))
-      DEALLOCATE(vexbs(nzp1,nf))
-      DEALLOCATE(vexbp(nz,nfp1))
-      DEALLOCATE(vexb(nzp1,nfp1))
+      DEALLOCATE(delsp)
+      DEALLOCATE(vol)
+      DEALLOCATE(areap)
+      DEALLOCATE(areas)
+      DEALLOCATE(vnx)
+      DEALLOCATE(vny)
+      DEALLOCATE(vnz)
+      DEALLOCATE(xdels)
+      DEALLOCATE(xdelp)
+      DEALLOCATE(vexbs)
+      DEALLOCATE(vexbp)
+      DEALLOCATE(vexb)
 
-      DEALLOCATE(deni(nz,nf,nion))
-      DEALLOCATE(denn(nz,nf,nneut))
-      DEALLOCATE(ne(nz,nf))
-      DEALLOCATE(vsi(nz,nf,nion))
-      DEALLOCATE(vsid(nz,nf,nion))
-      DEALLOCATE(sumvsi(nz,nf,nion))
-      DEALLOCATE(vsic(nz,nf,nion))
-      DEALLOCATE(te(nz,nf))
-      DEALLOCATE(ti(nz,nf,nion))
-      DEALLOCATE(tn(nz,nf))
-      DEALLOCATE(u(nz,nf))
-      DEALLOCATE(v(nz,nf))
-      DEALLOCATE(vpi(nz,nf))
-
-
-      DEALLOCATE(vot(nz,nf,nion))
-      DEALLOCATE(vor(nz,nf,nion))
+      DEALLOCATE(deni)
+      DEALLOCATE(denn)
+      DEALLOCATE(ne)
+      DEALLOCATE(vsi)
+      DEALLOCATE(vsid)
+      DEALLOCATE(sumvsi)
+      DEALLOCATE(vsic)
+      DEALLOCATE(te)
+      DEALLOCATE(ti)
+      DEALLOCATE(tn)
+      DEALLOCATE(u)
+      DEALLOCATE(v)
+      DEALLOCATE(vpi)
 
 
+      DEALLOCATE(vot)
+      DEALLOCATE(vor)
 
-      DEALLOCATE(cx(nz,nf))
 
-      DEALLOCATE(fluxnt(nz,nf,91,linesnt))
 
-      DEALLOCATE(t1(nz,nf,nion))
-      DEALLOCATE(t2(nz,nf,nion))
-      DEALLOCATE(t3(nz,nf,nion))
-      DEALLOCATE(u1(nz,nf))
-      DEALLOCATE(u2(nz,nf))
-      DEALLOCATE(u3(nz,nf))
-      DEALLOCATE(u4(nz,nf))
-      DEALLOCATE(u5(nz,nf))
+      DEALLOCATE(cx)
+
+      DEALLOCATE(fluxnt)
+
+      DEALLOCATE(t1)
+      DEALLOCATE(t2)
+      DEALLOCATE(t3)
+      DEALLOCATE(u1)
+      DEALLOCATE(u2)
+      DEALLOCATE(u3)
+      DEALLOCATE(u4)
+      DEALLOCATE(u5)
       
       end subroutine deinit_memory
 
@@ -524,7 +525,7 @@ contains
       subroutine open_file(fileunit,filename)
       implicit none
       INTEGER::fileunit
-      CHARACTER(20)::filename
+      CHARACTER(23)::filename
       INTEGER::ios=0
       
           open ( STATUS='OLD',IOSTAT=ios, unit=fileunit,  file=trim(inputpath)//delimiter//trim(filename))
@@ -537,7 +538,7 @@ contains
       subroutine open_input_files
       implicit none
       INTEGER::ios=0
-      CHARACTER(20)::filename
+      CHARACTER(23)::filename
 !      CHARACTER(11)::fileform
       INTEGER::fileunit=0
 
@@ -764,12 +765,12 @@ contains
       subroutine open_u
       call open_uf
       return
-      end
+      end subroutine open_u
 
       subroutine open_f
       call open_uf
       return
-      end
+      end subroutine open_f
 
       subroutine close_uf
           close ( unit=zaltf_dat)
@@ -849,7 +850,7 @@ contains
 !         write(vtf_dat,101) vot
 !         write(vrf_dat,101) vor
 !         write(dennf_dat,101) denn
-       endif 
+          endif
 
        if ( .not. fmtout ) then
          write (time_dat) ntm,nthr,ntmin,ntsec
@@ -876,14 +877,14 @@ contains
  101   format(1x,1p10e16.6)
 
       return
-      end
+      end subroutine output
 
 
 
 
 end module inputfiles
 
-module TRACE
+module TRACE_mod
 contains 
       subroutine TRACE(a,b,c,d,e,f,g)
       optional::a,b,c,d,e,f,g
@@ -894,4 +895,4 @@ contains
       RETURN
       end subroutine TRACE
 
-end module TRACE
+end module TRACE_mod

@@ -144,7 +144,7 @@ sami2.x: build/sami2.x
 
 build/sami2.x:|build
 build/sami2.x:|build/input
-build/sami2.x: obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o obj/com-1.00.o
+build/sami2.x: obj/se6.Subr.o obj/sami2-1.00.o obj/grid-1.00.o obj/chapman.o obj/nrlmsise00.o obj/hwm93.o obj/com-1.00.o obj/com-subroutines.o obj/vdrift_model.o obj/mpi_client.o obj/param-1.00.o obj/com-1.00.o
 	$(FC) $(FCLOPT) -o $@ $^
 	cp $@ build/sami2.exe
 #	cp -r build \\IROBO-2\Shared
@@ -159,6 +159,11 @@ build/input/sami2-1.00.namelist:input/sami2-1.00.namelist
 obj/sami2-1.00.o:|obj obj/parameters.mod obj/commons.mod obj/inputfiles.mod obj/commonsubroutines.mod obj/vdrift_model.mod obj/mpi_client.mod
 obj/sami2-1.00.o:sami2-1.00.f90 com-1.00.inc param-1.00.inc gonamelist.inc
 	$(FC) $(FCCOPT) -c -o $@ $<
+
+obj/se6.Subr.o:|obj  obj/parameters.mod obj/commons.mod
+obj/se6.Subr.o:se6.Subr.f90
+	$(FC) $(FCCOPT) -c -o $@ $<
+
 
 obj/parameters.mod:obj/param-1.00.o
 obj/param-1.00.o:|obj

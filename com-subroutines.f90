@@ -46,7 +46,7 @@ contains
       secut  = hrut * 3600.
 
       return
-      end
+      end subroutine msistim
 
 
 !*******************************************
@@ -179,7 +179,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine neutambt
 
 !*******************************************
 !*******************************************
@@ -267,7 +267,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine sf1026
 
 !*******************************************
 !*******************************************
@@ -368,7 +368,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine sf584
 
 !*******************************************
 !*******************************************
@@ -470,7 +470,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine sf304
 
 !*******************************************
 !*******************************************
@@ -557,7 +557,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine sf1216
 
 
 !*******************************************
@@ -652,7 +652,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine photprod
 
 
 !*******************************************
@@ -742,7 +742,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine chemrate
 
 
 !*******************************************
@@ -793,7 +793,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine chempl
 
 
 !*******************************************
@@ -835,7 +835,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine recorate
 
 
 !*******************************************
@@ -1107,7 +1107,7 @@ contains
 !      enddo
 
       return
-      end
+      end subroutine update
 
 
 !*******************************************
@@ -1172,7 +1172,7 @@ contains
       enddo
 
       return
-      end
+      end subroutine rtryds
 
 
 !*******************************************
@@ -1267,7 +1267,7 @@ contains
       call rtryds(a,b,c,d,vi,nz)
 
       return
-      end
+      end subroutine vsisolv
 
 
 ! *********************
@@ -1334,7 +1334,7 @@ contains
       endif
 
       return
-      end
+      end subroutine smoothz
 
 !*******************************************
 !*******************************************
@@ -1434,7 +1434,7 @@ contains
       call rtryds ( a,b,c,d,tdeni,nz )
 
       return
-      end
+      end subroutine densolv2
 
 
 !*******************************************
@@ -1458,11 +1458,12 @@ contains
 
       !LOPCAL VARIABLES
       real kape(nz)
-      real s1e(nz),s2e(nz),s3e(nz),s4e(nz),s6e(nz)
+      real s1e(nz),s2e(nz),s3e(nz),s4e(nz)
       real s5e(nz),qphe(nz),phprod(nz)
       real qen(nz,nneut)
       real ratio(nz)
       real divvexb(nz)
+      real s6e(nz)
       integer iz300s(nf),iz300n(nf)
 
       INTEGER::i,ni,nn,izs,izn,nzh
@@ -1748,11 +1749,11 @@ contains
       enddo
 
 ! Adding some stuff
-      call se6subr(nfl,s6e)
+      call s6esubr(nfl,s6e)
       call tesolv(tte,te_old,kape,s1e,s2e,s3e,s4e,s5e,nfl,s6e)
 
       return
-      end
+      end subroutine etemp
 
 
 !*******************************************
@@ -1855,7 +1856,7 @@ contains
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,pthp,nfl)
 
       return
-      end
+      end subroutine htemp
 
 
 !*******************************************
@@ -1957,7 +1958,7 @@ contains
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,pthep,nfl)
 
       return
-      end
+      end subroutine hetemp
 
 
 !*******************************************
@@ -2057,7 +2058,7 @@ contains
       call tisolv(tti,tiold,kapi,s1i,s2i,s3i,s4i,s5i,s6i,s7i,ptop,nfl)
 
       return
-      end
+      end subroutine otemp
 
 
 
@@ -2165,7 +2166,7 @@ contains
 
 
       return
-      end
+      end subroutine tisolv
 
 !*******************************************
 !*******************************************
@@ -2234,7 +2235,7 @@ contains
       call rtryds(a,b,c,d,tte,nz)
 
       return
-      end
+      end subroutine tesolv
 
 
 !*******************************************
@@ -2283,7 +2284,7 @@ contains
        enddo
 
        return
-       end
+       end subroutine zenith
 
 
 !*******************************************
@@ -2592,7 +2593,7 @@ contains
 
 
        return
-       end
+       end subroutine exb
 
 !*******************************************
 !*******************************************
@@ -2654,7 +2655,7 @@ contains
        if ( dtnew/dt .ge. 1.2  ) dt = amin1(dt00,dt * 1.2)
 
        return
-       end
+       end subroutine courant
 
 
 
@@ -2678,7 +2679,7 @@ contains
                         + z5 * t ** 5  )
 
         return
-        end
+        end function xerfcexp
 
 
 

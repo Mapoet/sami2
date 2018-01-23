@@ -9,7 +9,7 @@ contains
       subroutine share_data_server(nfl,nfr,i)
       use parameters
       use commons
-      use TRACE
+      use TRACE_mod
       implicit none
       include "mpif.h"
       INTEGER,INTENT(IN)::nfl,nfr,i

@@ -46,7 +46,7 @@
 !     *******************************************
 !
       program main
-      
+
 
       include 'param-1.00.inc'
       include 'com-1.00.inc'
@@ -56,7 +56,7 @@
 #endif
       implicit none
       include "parametersnamelist.inc"
-      CHARACTER(20)::filename
+      CHARACTER(23)::filename
 #ifdef _USE_MPI_
       include "mpif.h"
       integer::status(MPI_STATUS_SIZE)
@@ -82,7 +82,7 @@
       filename='parameters.namelist'
       call open_file(parameters_namelist,filename)
       read(parameters_namelist,parameters)
-      print*,nf,nz
+
       call flush(6)
       call init_param
       call initial
@@ -226,7 +226,11 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       if((taskid .NE. 0).or.(numtasks.eq.1)) then
 #endif
 
+!       sometimes it's better to keep dt the same all along
+!       so just comment the line below to keep it equal to dt0
+      if(adaptivedt) then
         call courant ( hrut )
+      endif
 
 !       update neutrals
 
@@ -361,7 +365,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       subroutine initial
 
       include 'param-1.00.inc'
-      include 'com-1.00.inc' 
+      include 'com-1.00.inc'
       use commonsubroutines
       implicit none
       include "gonamelist.inc"
@@ -386,7 +390,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 !     open input files
       call open_input_files
 
-!     read in parameters and initial ion density data 
+!     read in parameters and initial ion density data
 
       read(sami2_1_00_namelist,go)
       call init_memory
@@ -581,8 +585,8 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       do i = 1,linesuv
         read (phabsdt_inp,105) (sigabsdt(i,j), j=1,3)
- 105    format (3f7.2) 
-      enddo 
+ 105    format (3f7.2)
+      enddo
 
       do j = 1,3
         do i = 1,linesuv
@@ -927,8 +931,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       enddo
 
       return
-      end
-
+      end subroutine transprt
 
 
 

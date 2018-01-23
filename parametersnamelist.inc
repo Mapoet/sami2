@@ -1,1 +1,1 @@
-            namelist / parameters / nf,nz
+            namelist / parameters / nf,nz,adaptivedt

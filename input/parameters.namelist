@@ -1,6 +1,7 @@
  &parameters
   nf   = 102,
-  nz  =  801
+  nz  =  801,
+  adaptivedt=FALSE
   /
 
 
